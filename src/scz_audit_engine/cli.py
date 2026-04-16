@@ -13,6 +13,8 @@ from . import __version__
 from .strict_open import (
     build_source_manifest,
     build_run_manifest,
+    run_strict_open_split_definition,
+    run_tcp_harmonization,
     run_tcp_audit,
     strict_open_paths,
     write_run_manifest,
@@ -106,6 +108,18 @@ def _build_invoked_command(command_name: str, args: argparse.Namespace) -> list[
         _append_flag(command, "--raw-root", getattr(args, "raw_root", None))
         _append_flag(command, "--manifest-dir", getattr(args, "manifest_dir", None))
         _append_flag(command, "--profile-dir", getattr(args, "profile_dir", None))
+        return command
+
+    if command_name == "harmonize":
+        _append_flag(command, "--raw-root", getattr(args, "raw_root", None))
+        _append_flag(command, "--manifest-dir", getattr(args, "manifest_dir", None))
+        _append_flag(command, "--output-dir", getattr(args, "output_dir", None))
+        return command
+
+    if command_name == "define-splits":
+        _append_flag(command, "--harmonized-dir", getattr(args, "harmonized_dir", None))
+        _append_flag(command, "--manifest-dir", getattr(args, "manifest_dir", None))
+        _append_flag(command, "--output-dir", getattr(args, "output_dir", None))
         return command
 
     return command
@@ -241,6 +255,115 @@ def _build_audit_handler() -> Callable[[argparse.Namespace], int]:
     return handler
 
 
+def _build_harmonize_handler() -> Callable[[argparse.Namespace], int]:
+    def handler(args: argparse.Namespace) -> int:
+        path_contract = strict_open_paths()
+        repo_root = path_contract.repo_root
+        config_path = _resolve_path(args.config, repo_root=repo_root, fallback=path_contract.config_path)
+        config = _load_strict_open_config(config_path)
+        paths_config = config.get("paths", {})
+        if not isinstance(paths_config, dict):
+            paths_config = {}
+
+        raw_base_root = _resolve_path(
+            paths_config.get("raw_root"),
+            repo_root=repo_root,
+            fallback=path_contract.raw_root,
+        )
+        manifests_root = _resolve_path(
+            paths_config.get("manifests_root"),
+            repo_root=repo_root,
+            fallback=path_contract.manifests_root,
+        )
+        harmonized_root = _resolve_path(
+            paths_config.get("harmonized_root"),
+            repo_root=repo_root,
+            fallback=path_contract.harmonized_root,
+        )
+        raw_root = Path(args.raw_root).resolve() if args.raw_root else raw_base_root / DEFAULT_TCP_SOURCE
+        if args.manifest_dir:
+            manifests_root = Path(args.manifest_dir).resolve()
+        if args.output_dir:
+            harmonized_root = Path(args.output_dir).resolve()
+
+        adapter = _build_tcp_adapter(config)
+        seed = int(config.get("seed", 1729))
+        git_sha = resolve_git_sha(repo_root)
+        command = _build_invoked_command("harmonize", args)
+        results = run_tcp_harmonization(
+            raw_root=raw_root,
+            manifests_root=manifests_root,
+            harmonized_root=harmonized_root,
+            command=command,
+            git_sha=git_sha,
+            seed=seed,
+            dataset_version=adapter.dataset_version,
+            source_manifest_path=manifests_root / "tcp_source_manifest.json",
+        )
+        print(json.dumps(results, indent=2, sort_keys=True))
+        return 0
+
+    return handler
+
+
+def _build_define_splits_handler() -> Callable[[argparse.Namespace], int]:
+    def handler(args: argparse.Namespace) -> int:
+        path_contract = strict_open_paths()
+        repo_root = path_contract.repo_root
+        config_path = _resolve_path(args.config, repo_root=repo_root, fallback=path_contract.config_path)
+        config = _load_strict_open_config(config_path)
+        paths_config = config.get("paths", {})
+        if not isinstance(paths_config, dict):
+            paths_config = {}
+        split_config = config.get("splits", {})
+        if not isinstance(split_config, dict):
+            split_config = {}
+
+        manifests_root = _resolve_path(
+            paths_config.get("manifests_root"),
+            repo_root=repo_root,
+            fallback=path_contract.manifests_root,
+        )
+        harmonized_root = _resolve_path(
+            paths_config.get("harmonized_root"),
+            repo_root=repo_root,
+            fallback=path_contract.harmonized_root,
+        )
+        splits_root = _resolve_path(
+            paths_config.get("splits_root"),
+            repo_root=repo_root,
+            fallback=path_contract.splits_root,
+        )
+        if args.harmonized_dir:
+            harmonized_root = Path(args.harmonized_dir).resolve()
+        if args.manifest_dir:
+            manifests_root = Path(args.manifest_dir).resolve()
+        if args.output_dir:
+            splits_root = Path(args.output_dir).resolve()
+
+        seed = int(config.get("seed", 1729))
+        git_sha = resolve_git_sha(repo_root)
+        command = _build_invoked_command("define-splits", args)
+        split_fractions = {
+            "train": float(split_config.get("train_fraction", 0.6)),
+            "validation": float(split_config.get("validation_fraction", 0.2)),
+            "test": float(split_config.get("test_fraction", 0.2)),
+        }
+        results = run_strict_open_split_definition(
+            harmonized_root=harmonized_root,
+            manifests_root=manifests_root,
+            splits_root=splits_root,
+            command=command,
+            git_sha=git_sha,
+            seed=seed,
+            split_fractions=split_fractions,
+        )
+        print(json.dumps(results, indent=2, sort_keys=True))
+        return 0
+
+    return handler
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Create the top-level CLI parser."""
 
@@ -313,6 +436,34 @@ def build_parser() -> argparse.ArgumentParser:
                 help="Destination directory for audit manifests and provenance.",
             )
             command_parser.set_defaults(handler=_build_audit_handler())
+        elif command_name == "harmonize":
+            command_parser.add_argument(
+                "--raw-root",
+                help="Raw TCP root to harmonize.",
+            )
+            command_parser.add_argument(
+                "--manifest-dir",
+                help="Destination directory for run manifests.",
+            )
+            command_parser.add_argument(
+                "--output-dir",
+                help="Destination directory for harmonized outputs.",
+            )
+            command_parser.set_defaults(handler=_build_harmonize_handler())
+        elif command_name == "define-splits":
+            command_parser.add_argument(
+                "--harmonized-dir",
+                help="Directory containing harmonized strict-open tables.",
+            )
+            command_parser.add_argument(
+                "--manifest-dir",
+                help="Destination directory for run manifests.",
+            )
+            command_parser.add_argument(
+                "--output-dir",
+                help="Destination directory for split outputs.",
+            )
+            command_parser.set_defaults(handler=_build_define_splits_handler())
         else:
             command_parser.set_defaults(handler=_build_stub_handler(command_name))
 

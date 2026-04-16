@@ -5,7 +5,7 @@ import pytest
 
 from scz_audit_engine.cli import STRICT_OPEN_COMMANDS, main
 
-IMPLEMENTED_COMMANDS = {"ingest", "audit"}
+IMPLEMENTED_COMMANDS = {"ingest", "audit", "harmonize", "define-splits"}
 STUB_COMMANDS = tuple(command_name for command_name in STRICT_OPEN_COMMANDS if command_name not in IMPLEMENTED_COMMANDS)
 FIXTURE_SOURCE_ROOT = Path(__file__).resolve().parents[1] / "fixtures" / "tcp_raw" / "source_input"
 
@@ -165,3 +165,155 @@ def test_audit_command_writes_tcp_profile(capsys: pytest.CaptureFixture[str], tm
     ]
     assert audit_run_manifest["command"] == expected_command
     assert audit_provenance["command"] == expected_command
+
+
+def test_harmonize_command_writes_canonical_outputs(capsys: pytest.CaptureFixture[str], tmp_path) -> None:
+    raw_root = tmp_path / "data" / "raw" / "strict_open" / "tcp"
+    manifests_root = tmp_path / "data" / "processed" / "strict_open" / "manifests"
+    harmonized_root = tmp_path / "data" / "processed" / "strict_open" / "harmonized"
+    config_path = tmp_path / "strict_open_test.toml"
+    config_path.write_text(Path("config/strict_open_v0.toml").read_text(encoding="utf-8"), encoding="utf-8")
+
+    ingest_exit_code = main(
+        [
+            "strict-open",
+            "ingest",
+            "--config",
+            str(config_path),
+            "--source",
+            "tcp",
+            "--source-root",
+            str(FIXTURE_SOURCE_ROOT),
+            "--raw-root",
+            str(raw_root),
+            "--manifest-dir",
+            str(manifests_root),
+        ]
+    )
+    assert ingest_exit_code == 0
+    capsys.readouterr()
+
+    harmonize_exit_code = main(
+        [
+            "strict-open",
+            "harmonize",
+            "--config",
+            str(config_path),
+            "--raw-root",
+            str(raw_root),
+            "--manifest-dir",
+            str(manifests_root),
+            "--output-dir",
+            str(harmonized_root),
+        ]
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    harmonization_manifest = json.loads((harmonized_root / "harmonization_manifest.json").read_text(encoding="utf-8"))
+    run_manifest = json.loads((manifests_root / "tcp_harmonize_run_manifest.json").read_text(encoding="utf-8"))
+    expected_command = [
+        "scz-audit",
+        "strict-open",
+        "harmonize",
+        "--config",
+        str(config_path),
+        "--raw-root",
+        str(raw_root),
+        "--manifest-dir",
+        str(manifests_root),
+        "--output-dir",
+        str(harmonized_root),
+    ]
+
+    assert harmonize_exit_code == 0
+    assert Path(payload["subjects"]).exists()
+    assert Path(payload["visits"]).exists()
+    assert Path(payload["cognition_scores"]).exists()
+    assert Path(payload["symptom_behavior_scores"]).exists()
+    assert Path(payload["mri_features"]).exists()
+    assert Path(payload["harmonization_manifest"]).exists()
+    assert harmonization_manifest["command"] == expected_command
+    assert run_manifest["command"] == expected_command
+
+
+def test_define_splits_command_writes_split_outputs(capsys: pytest.CaptureFixture[str], tmp_path) -> None:
+    raw_root = tmp_path / "data" / "raw" / "strict_open" / "tcp"
+    manifests_root = tmp_path / "data" / "processed" / "strict_open" / "manifests"
+    harmonized_root = tmp_path / "data" / "processed" / "strict_open" / "harmonized"
+    splits_root = tmp_path / "data" / "processed" / "strict_open" / "splits"
+    config_path = tmp_path / "strict_open_test.toml"
+    config_path.write_text(Path("config/strict_open_v0.toml").read_text(encoding="utf-8"), encoding="utf-8")
+
+    ingest_exit_code = main(
+        [
+            "strict-open",
+            "ingest",
+            "--config",
+            str(config_path),
+            "--source",
+            "tcp",
+            "--source-root",
+            str(FIXTURE_SOURCE_ROOT),
+            "--raw-root",
+            str(raw_root),
+            "--manifest-dir",
+            str(manifests_root),
+        ]
+    )
+    assert ingest_exit_code == 0
+    capsys.readouterr()
+
+    harmonize_exit_code = main(
+        [
+            "strict-open",
+            "harmonize",
+            "--config",
+            str(config_path),
+            "--raw-root",
+            str(raw_root),
+            "--manifest-dir",
+            str(manifests_root),
+            "--output-dir",
+            str(harmonized_root),
+        ]
+    )
+    assert harmonize_exit_code == 0
+    capsys.readouterr()
+
+    define_splits_exit_code = main(
+        [
+            "strict-open",
+            "define-splits",
+            "--config",
+            str(config_path),
+            "--harmonized-dir",
+            str(harmonized_root),
+            "--manifest-dir",
+            str(manifests_root),
+            "--output-dir",
+            str(splits_root),
+        ]
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    split_manifest = json.loads((splits_root / "split_manifest.json").read_text(encoding="utf-8"))
+    run_manifest = json.loads((manifests_root / "tcp_define_splits_run_manifest.json").read_text(encoding="utf-8"))
+    expected_command = [
+        "scz-audit",
+        "strict-open",
+        "define-splits",
+        "--config",
+        str(config_path),
+        "--harmonized-dir",
+        str(harmonized_root),
+        "--manifest-dir",
+        str(manifests_root),
+        "--output-dir",
+        str(splits_root),
+    ]
+
+    assert define_splits_exit_code == 0
+    assert Path(payload["split_assignments"]).exists()
+    assert Path(payload["split_manifest"]).exists()
+    assert split_manifest["command"] == expected_command
+    assert run_manifest["command"] == expected_command

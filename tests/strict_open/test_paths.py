@@ -13,10 +13,14 @@ def test_default_path_helpers_resolve_under_repo_root() -> None:
     assert paths.curated_root == repo_root / "data" / "curated" / "strict_open"
     assert paths.manifests_root == repo_root / "data" / "processed" / "strict_open" / "manifests"
     assert paths.profiles_root == repo_root / "data" / "processed" / "strict_open" / "profiles"
+    assert paths.harmonized_root == repo_root / "data" / "processed" / "strict_open" / "harmonized"
+    assert paths.splits_root == repo_root / "data" / "processed" / "strict_open" / "splits"
     assert paths.examples_root == repo_root / "examples" / "strict_open_v0"
     assert paths.config_path == repo_root / "config" / "strict_open_v0.toml"
     assert paths.source_raw_root("tcp") == repo_root / "data" / "raw" / "strict_open" / "tcp"
     assert paths.default_profile_path() == repo_root / "data" / "processed" / "strict_open" / "profiles" / "audit_profile.json"
+    assert paths.default_harmonized_path() == repo_root / "data" / "processed" / "strict_open" / "harmonized" / "subjects.csv"
+    assert paths.default_split_path() == repo_root / "data" / "processed" / "strict_open" / "splits" / "split_assignments.csv"
 
 
 def test_explicit_repo_root_keeps_paths_deterministic() -> None:
@@ -29,7 +33,11 @@ def test_explicit_repo_root_keeps_paths_deterministic() -> None:
         "curated": repo_root / "data" / "curated" / "strict_open",
         "manifests": repo_root / "data" / "processed" / "strict_open" / "manifests",
         "profiles": repo_root / "data" / "processed" / "strict_open" / "profiles",
+        "harmonized": repo_root / "data" / "processed" / "strict_open" / "harmonized",
+        "splits": repo_root / "data" / "processed" / "strict_open" / "splits",
         "examples": repo_root / "examples" / "strict_open_v0",
     }
     assert paths.default_manifest_path() == repo_root / "data" / "processed" / "strict_open" / "manifests" / "run_manifest.json"
     assert paths.default_profile_path("tcp_audit_profile.json") == repo_root / "data" / "processed" / "strict_open" / "profiles" / "tcp_audit_profile.json"
+    assert paths.default_harmonized_path("visits.csv") == repo_root / "data" / "processed" / "strict_open" / "harmonized" / "visits.csv"
+    assert paths.default_split_path("split_manifest.json") == repo_root / "data" / "processed" / "strict_open" / "splits" / "split_manifest.json"
