@@ -4,10 +4,10 @@
 
 - `ds005237 / TCP` is the default core dataset for `strict-open v0`.
 
-## Public datasets that are not core in this PR
+## Public datasets that are not part of the core path
 
-- Other truly public OpenNeuro cohorts may be useful later as robustness checks.
-- Those cohorts are not part of the `strict-open v0` core path for this PR.
+- Other truly public OpenNeuro cohorts may be considered later for robustness testing.
+- Those cohorts are not part of the `strict-open v0` core path.
 
 ## Biology-context layers
 
@@ -16,5 +16,5 @@
 
 ## Explicit exclusions
 
-- HCP-YA is not part of the `strict-open` core.
+- HCP-YA is not part of the `strict-open v0` core path.
 - Gated data is out of scope for `strict-open v0`.

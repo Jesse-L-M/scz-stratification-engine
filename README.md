@@ -4,4 +4,4 @@
 
 This is not the final gated-data product. The current goal is to lock the claim boundary, document the intended source stack, and de-risk later gated-data work without making sponsor-facing or gated-data claims.
 
-The implementation roadmap lives in [`docs/strict_open_pr_roadmap.md`](docs/strict_open_pr_roadmap.md). The current PR scope is the docs/bootstrap layer that defines the charter for `strict-open v0`.
+The implementation roadmap lives in [`docs/strict_open_pr_roadmap.md`](docs/strict_open_pr_roadmap.md). The current focus is the `strict-open v0` charter, source, and execution-stack foundation for that public feasibility engine.

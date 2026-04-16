@@ -2,11 +2,13 @@
 
 ## Core claim
 
-`strict-open v0` can show whether a schizophrenia stratification workflow built only from public data is technically feasible and credible enough to justify later gated-data follow-on work.
+`strict-open v0` is a public feasibility engine for estimating a stable, uncertainty-aware cognitive-neurobehavioral or cognitive-psychiatric liability-style signal from fully public schizophrenia-relevant data.
 
 ## What this build is trying to prove
 
-This build is trying to prove that a public feasibility engine can establish a clear claim boundary, anchor on a default public core dataset, and support later technical de-risking without pretending to be the final product.
+This build is trying to prove that a fully public workflow can produce a technically credible, bounded estimate of that liability-style signal, with outputs that surface uncertainty rather than overclaiming precision.
+
+Those outputs may include biology-context or evidence-card style interpretation layers, but `strict-open v0` does not claim sponsor-grade enrichment or a final commercial-grade decision product.
 
 ## Explicit non-claims
 
