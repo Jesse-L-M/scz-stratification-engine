@@ -9,6 +9,9 @@ description = "Docs/bootstrap for the strict-open v0 public feasibility engine."
 readme = "README.md"
 requires-python = ">=3.11"
 
+[project.scripts]
+scz-stratification = "scz_stratification_engine.cli:main"
+
 [project.optional-dependencies]
 test = ["pytest>=8,<9"]
 
@@ -16,4 +19,7 @@ test = ["pytest>=8,<9"]
 testpaths = ["tests"]
 
 [tool.setuptools]
-py-modules = []
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,10 @@
+dataset_id = "tcp-ds005237"
+seed = 1729
+
+[paths]
+raw_root = "data/raw/strict_open"
+processed_root = "data/processed/strict_open"
+curated_root = "data/curated/strict_open"
+manifests_root = "data/processed/strict_open/manifests"
+examples_root = "examples/strict_open_v0"
+default_manifest_path = "data/processed/strict_open/manifests/run_manifest.json"
