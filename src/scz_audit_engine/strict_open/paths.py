@@ -37,6 +37,10 @@ class StrictOpenPaths:
         return self.processed_root / "manifests"
 
     @property
+    def profiles_root(self) -> Path:
+        return self.processed_root / "profiles"
+
+    @property
     def examples_root(self) -> Path:
         return self.repo_root / "examples" / "strict_open_v0"
 
@@ -52,6 +56,7 @@ class StrictOpenPaths:
             "processed": self.processed_root,
             "curated": self.curated_root,
             "manifests": self.manifests_root,
+            "profiles": self.profiles_root,
             "examples": self.examples_root,
         }
 
@@ -59,6 +64,16 @@ class StrictOpenPaths:
         """Return the default destination for a strict-open run manifest."""
 
         return self.manifests_root / filename
+
+    def source_raw_root(self, source_name: str) -> Path:
+        """Return the raw directory for a specific source."""
+
+        return self.raw_root / source_name
+
+    def default_profile_path(self, filename: str = "audit_profile.json") -> Path:
+        """Return the default destination for a strict-open audit profile."""
+
+        return self.profiles_root / filename
 
 
 def strict_open_paths(repo_root: str | Path | None = None) -> StrictOpenPaths:

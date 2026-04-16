@@ -6,5 +6,11 @@ raw_root = "data/raw/strict_open"
 processed_root = "data/processed/strict_open"
 curated_root = "data/curated/strict_open"
 manifests_root = "data/processed/strict_open/manifests"
+profiles_root = "data/processed/strict_open/profiles"
 examples_root = "examples/strict_open_v0"
 default_manifest_path = "data/processed/strict_open/manifests/run_manifest.json"
+
+[sources.tcp]
+dataset_version = "1.1.3"
+github_repo = "OpenNeuroDatasets/ds005237"
+github_ref = "main"
