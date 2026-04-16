@@ -15,4 +15,4 @@ jobs:
           python-version: "3.11"
       - run: python -m pip install --upgrade pip
       - run: python -m pip install ".[test]"
-      - run: pytest tests/test_docs_presence.py
+      - run: pytest -q
