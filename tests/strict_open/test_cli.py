@@ -55,11 +55,15 @@ def test_stub_commands_exit_with_not_implemented_message(
 def test_ingest_command_stages_tcp_fixture(capsys: pytest.CaptureFixture[str], tmp_path) -> None:
     raw_root = tmp_path / "data" / "raw" / "strict_open" / "tcp"
     manifests_root = tmp_path / "data" / "processed" / "strict_open" / "manifests"
+    config_path = tmp_path / "strict_open_test.toml"
+    config_path.write_text(Path("config/strict_open_v0.toml").read_text(encoding="utf-8"), encoding="utf-8")
 
     exit_code = main(
         [
             "strict-open",
             "ingest",
+            "--config",
+            str(config_path),
             "--source",
             "tcp",
             "--source-root",
@@ -77,17 +81,40 @@ def test_ingest_command_stages_tcp_fixture(capsys: pytest.CaptureFixture[str], t
     assert payload["raw_root"] == str(raw_root)
     assert (raw_root / "participants.tsv").exists()
     assert (manifests_root / "tcp_source_manifest.json").exists()
+    source_manifest = json.loads((manifests_root / "tcp_source_manifest.json").read_text(encoding="utf-8"))
+    run_manifest = json.loads((manifests_root / "tcp_ingest_run_manifest.json").read_text(encoding="utf-8"))
+    expected_command = [
+        "scz-audit",
+        "strict-open",
+        "ingest",
+        "--config",
+        str(config_path),
+        "--source",
+        "tcp",
+        "--source-root",
+        str(FIXTURE_SOURCE_ROOT),
+        "--raw-root",
+        str(raw_root),
+        "--manifest-dir",
+        str(manifests_root),
+    ]
+    assert source_manifest["command"] == expected_command
+    assert run_manifest["command"] == expected_command
 
 
 def test_audit_command_writes_tcp_profile(capsys: pytest.CaptureFixture[str], tmp_path) -> None:
     raw_root = tmp_path / "data" / "raw" / "strict_open" / "tcp"
     manifests_root = tmp_path / "data" / "processed" / "strict_open" / "manifests"
     profiles_root = tmp_path / "data" / "processed" / "strict_open" / "profiles"
+    config_path = tmp_path / "strict_open_test.toml"
+    config_path.write_text(Path("config/strict_open_v0.toml").read_text(encoding="utf-8"), encoding="utf-8")
 
     ingest_exit_code = main(
         [
             "strict-open",
             "ingest",
+            "--config",
+            str(config_path),
             "--source",
             "tcp",
             "--source-root",
@@ -105,6 +132,8 @@ def test_audit_command_writes_tcp_profile(capsys: pytest.CaptureFixture[str], tm
         [
             "strict-open",
             "audit",
+            "--config",
+            str(config_path),
             "--raw-root",
             str(raw_root),
             "--manifest-dir",
@@ -119,3 +148,20 @@ def test_audit_command_writes_tcp_profile(capsys: pytest.CaptureFixture[str], tm
     assert Path(payload["audit_profile"]).exists()
     assert Path(payload["audit_provenance"]).exists()
     assert Path(payload["run_manifest"]).exists()
+    audit_run_manifest = json.loads((manifests_root / "tcp_audit_run_manifest.json").read_text(encoding="utf-8"))
+    audit_provenance = json.loads((manifests_root / "tcp_audit_provenance.json").read_text(encoding="utf-8"))
+    expected_command = [
+        "scz-audit",
+        "strict-open",
+        "audit",
+        "--config",
+        str(config_path),
+        "--raw-root",
+        str(raw_root),
+        "--manifest-dir",
+        str(manifests_root),
+        "--profile-dir",
+        str(profiles_root),
+    ]
+    assert audit_run_manifest["command"] == expected_command
+    assert audit_provenance["command"] == expected_command

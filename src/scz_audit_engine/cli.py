@@ -83,6 +83,34 @@ def _build_tcp_adapter(config: dict[str, object]) -> TCPDS005237SourceAdapter:
     )
 
 
+def _append_flag(command: list[str], flag: str, value: str | None) -> None:
+    if value is None:
+        return
+    command.extend([flag, value])
+
+
+def _build_invoked_command(command_name: str, args: argparse.Namespace) -> list[str]:
+    command = ["scz-audit", "strict-open", command_name]
+    config_path = getattr(args, "config", None)
+    if config_path is not None and config_path != DEFAULT_CONFIG_PATH:
+        _append_flag(command, "--config", str(config_path))
+
+    if command_name == "ingest":
+        _append_flag(command, "--source", str(getattr(args, "source", DEFAULT_TCP_SOURCE)))
+        _append_flag(command, "--source-root", getattr(args, "source_root", None))
+        _append_flag(command, "--raw-root", getattr(args, "raw_root", None))
+        _append_flag(command, "--manifest-dir", getattr(args, "manifest_dir", None))
+        return command
+
+    if command_name == "audit":
+        _append_flag(command, "--raw-root", getattr(args, "raw_root", None))
+        _append_flag(command, "--manifest-dir", getattr(args, "manifest_dir", None))
+        _append_flag(command, "--profile-dir", getattr(args, "profile_dir", None))
+        return command
+
+    return command
+
+
 def _build_ingest_handler() -> Callable[[argparse.Namespace], int]:
     def handler(args: argparse.Namespace) -> int:
         if args.source != DEFAULT_TCP_SOURCE:
@@ -116,7 +144,7 @@ def _build_ingest_handler() -> Callable[[argparse.Namespace], int]:
         adapter = _build_tcp_adapter(config)
         stage_result = adapter.stage(raw_root, source_root=args.source_root)
 
-        command = ["scz-audit", "strict-open", "ingest", "--source", args.source]
+        command = _build_invoked_command("ingest", args)
         source_manifest_path = manifests_root / "tcp_source_manifest.json"
         source_manifest = build_source_manifest(
             source=stage_result.source,
@@ -196,7 +224,7 @@ def _build_audit_handler() -> Callable[[argparse.Namespace], int]:
         adapter = _build_tcp_adapter(config)
         seed = int(config.get("seed", 1729))
         git_sha = resolve_git_sha(repo_root)
-        command = ["scz-audit", "strict-open", "audit"]
+        command = _build_invoked_command("audit", args)
         results = run_tcp_audit(
             raw_root=raw_root,
             manifests_root=manifests_root,

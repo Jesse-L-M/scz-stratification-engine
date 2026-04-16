@@ -11,6 +11,8 @@ from typing import Any
 
 from .run_manifest import utc_now_iso
 
+GIT_ANNEX_POINTER_PREFIX = "../.git/annex/objects/"
+
 
 def file_sha256(path: str | Path, chunk_size: int = 65536) -> str:
     """Return the SHA256 digest for a local file."""
@@ -23,6 +25,24 @@ def file_sha256(path: str | Path, chunk_size: int = 65536) -> str:
                 break
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def is_git_annex_pointer_text(text: str) -> bool:
+    """Return whether a text payload is a git-annex pointer."""
+
+    return text.startswith(GIT_ANNEX_POINTER_PREFIX)
+
+
+def local_file_content_kind(path: str | Path, sample_bytes: int = 512) -> str:
+    """Classify a local file payload for provenance purposes."""
+
+    with Path(path).open("rb") as handle:
+        sample = handle.read(sample_bytes)
+    try:
+        decoded = sample.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        return "file"
+    return "git-annex-pointer" if is_git_annex_pointer_text(decoded) else "file"
 
 
 def resolve_git_sha(repo_root: str | Path) -> str | None:
@@ -258,6 +278,8 @@ __all__ = [
     "build_audit_provenance",
     "build_source_manifest",
     "file_sha256",
+    "is_git_annex_pointer_text",
+    "local_file_content_kind",
     "load_source_manifest",
     "resolve_git_sha",
     "write_audit_provenance",

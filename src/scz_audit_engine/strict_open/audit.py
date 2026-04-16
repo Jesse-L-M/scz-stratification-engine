@@ -14,11 +14,13 @@ from .provenance import (
     SourceFileRecord,
     build_audit_provenance,
     file_sha256,
+    local_file_content_kind,
     load_source_manifest,
     write_audit_provenance,
     write_json_artifact,
 )
 from .run_manifest import build_run_manifest, write_run_manifest
+from .sources.base import inspect_local_tree
 
 COGNITION_INSTRUMENT_CODES = {
     "cerq01",
@@ -180,20 +182,9 @@ def run_tcp_audit(
 
 
 def _inspect_local_inventory(raw_root: Path) -> dict[str, SourceFileRecord]:
-    inventory: dict[str, SourceFileRecord] = {}
     if not raw_root.exists():
-        return inventory
-    for path in sorted(candidate for candidate in raw_root.rglob("*") if candidate.is_file()):
-        relative_path = path.relative_to(raw_root).as_posix()
-        inventory[relative_path] = SourceFileRecord(
-            relative_path=relative_path,
-            storage="staged",
-            size_bytes=path.stat().st_size,
-            sha256=file_sha256(path),
-            source_url=None,
-            content_kind="file",
-        )
-    return inventory
+        return {}
+    return {record.relative_path: record for record in inspect_local_tree(raw_root)}
 
 
 def _merge_file_inventory(
@@ -201,8 +192,32 @@ def _merge_file_inventory(
     source_manifest_files: tuple[SourceFileRecord, ...],
 ) -> dict[str, SourceFileRecord]:
     merged = {record.relative_path: record for record in source_manifest_files}
-    merged.update(local_inventory)
+    for relative_path, local_record in local_inventory.items():
+        source_record = merged.get(relative_path)
+        if source_record is None:
+            merged[relative_path] = local_record
+            continue
+        merged[relative_path] = _merge_source_file_records(source_record, local_record)
     return merged
+
+
+def _merge_source_file_records(source_record: SourceFileRecord, local_record: SourceFileRecord) -> SourceFileRecord:
+    content_kind = local_record.content_kind
+    if source_record.content_kind != "file" and local_record.content_kind == "file":
+        content_kind = source_record.content_kind
+
+    storage = local_record.storage
+    if source_record.storage in {"copied", "staged"}:
+        storage = source_record.storage
+
+    return SourceFileRecord(
+        relative_path=local_record.relative_path,
+        storage=storage,
+        size_bytes=local_record.size_bytes if local_record.size_bytes is not None else source_record.size_bytes,
+        sha256=local_record.sha256 or source_record.sha256,
+        source_url=local_record.source_url or source_record.source_url,
+        content_kind=content_kind,
+    )
 
 
 def _load_notes_map(path: Path, raw_root: Path, used_inputs: set[str]) -> dict[str, str]:
@@ -223,7 +238,7 @@ def _read_tsv_rows(path: Path, raw_root: Path, used_inputs: set[str]) -> list[di
         return []
     used_inputs.add(path.relative_to(raw_root).as_posix())
     text = path.read_text(encoding="utf-8-sig")
-    if text.startswith("../.git/annex/objects/"):
+    if local_file_content_kind(path) == "git-annex-pointer":
         return []
     reader = csv.DictReader(text.splitlines(), delimiter="\t")
     return [dict(row) for row in reader]
@@ -234,7 +249,7 @@ def _read_csv_rows(path: Path, raw_root: Path, used_inputs: set[str]) -> list[di
         return []
     used_inputs.add(path.relative_to(raw_root).as_posix())
     text = path.read_text(encoding="utf-8-sig")
-    if text.startswith("../.git/annex/objects/"):
+    if local_file_content_kind(path) == "git-annex-pointer":
         return []
     reader = csv.DictReader(text.splitlines())
     return [dict(row) for row in reader]
@@ -322,8 +337,7 @@ def _instrument_category(instrument_code: str) -> str | None:
 
 def _instrument_storage(data_path: Path, record: SourceFileRecord | None) -> str:
     if data_path.exists():
-        content = data_path.read_text(encoding="utf-8-sig")
-        if content.startswith("../.git/annex/objects/"):
+        if local_file_content_kind(data_path) == "git-annex-pointer":
             return "git-annex-pointer"
         return "tabular"
     if record is not None and record.content_kind == "git-annex-pointer":

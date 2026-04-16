@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
 
-from ..provenance import SourceFileRecord, file_sha256
+from ..provenance import SourceFileRecord, file_sha256, local_file_content_kind
 
 
 @dataclass(frozen=True, slots=True)
@@ -57,7 +57,7 @@ def copy_source_tree(source_root: str | Path, destination: str | Path) -> tuple[
                 size_bytes=output_path.stat().st_size,
                 sha256=file_sha256(output_path),
                 source_url=None,
-                content_kind="file",
+                content_kind=local_file_content_kind(output_path),
             )
         )
     return tuple(records)
@@ -76,7 +76,7 @@ def inspect_local_tree(raw_root: str | Path, *, storage: str = "staged") -> tupl
                 size_bytes=local_path.stat().st_size,
                 sha256=file_sha256(local_path),
                 source_url=None,
-                content_kind="file",
+                content_kind=local_file_content_kind(local_path),
             )
         )
     return tuple(records)
