@@ -3,6 +3,7 @@
 ## Core dataset
 
 - `ds005237 / TCP` is the default core dataset for `strict-open v0`.
+- The default core path uses it to estimate stable baseline-like signal and contrast it against transient visit noise.
 
 ## Public datasets that are not part of the core path
 

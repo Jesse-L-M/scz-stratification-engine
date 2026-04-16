@@ -8,7 +8,7 @@ It does not assume gated data, HCP-YA, sponsor-grade enrichment, treatment-respo
 
 - Python `src/` layout
 - `pytest` for tests
-- one CLI entrypoint such as `scz-stratification strict-open ...`
+- one CLI entrypoint such as `scz-audit strict-open ...`
 - `PyTorch` for core modeling
 - `MONAI` for MRI ingestion, transforms, and imaging-model utilities
 - `CUDA`-friendly training and inference path
@@ -58,7 +58,7 @@ If the claim boundary is fuzzy at the start, later PRs will quietly drift into g
 
 **Acceptance Criteria**
 
-- docs explicitly frame this as a public feasibility engine
+- docs explicitly frame this as a public cohort stability and noise audit engine with a strict-open public-feasibility boundary
 - docs explicitly exclude gated-data claims and sponsor-grade positioning
 - docs state that Allen and Open Targets are interpretation layers, not core model drivers
 - docs state that product/spec choices are vendor-neutral while implementation is GPU-native and NVIDIA-friendly
@@ -85,12 +85,12 @@ Every later implementation slice depends on a stable package root and a stable p
 
 **Files / Directories To Add Or Modify**
 
-- `src/scz_stratification_engine/__init__.py`
-- `src/scz_stratification_engine/cli.py`
-- `src/scz_stratification_engine/strict_open/__init__.py`
-- `src/scz_stratification_engine/strict_open/schema.py`
-- `src/scz_stratification_engine/strict_open/paths.py`
-- `src/scz_stratification_engine/strict_open/run_manifest.py`
+- `src/scz_audit_engine/__init__.py`
+- `src/scz_audit_engine/cli.py`
+- `src/scz_audit_engine/strict_open/__init__.py`
+- `src/scz_audit_engine/strict_open/schema.py`
+- `src/scz_audit_engine/strict_open/paths.py`
+- `src/scz_audit_engine/strict_open/run_manifest.py`
 - `config/strict_open_v0.toml`
 - `docker/Dockerfile.gpu`
 - `docker/README.md`
@@ -109,16 +109,16 @@ Every later implementation slice depends on a stable package root and a stable p
 
 **CLI Commands Or Workflows Affected**
 
-- `scz-stratification strict-open ingest`
-- `scz-stratification strict-open audit`
-- `scz-stratification strict-open harmonize`
-- `scz-stratification strict-open define-splits`
-- `scz-stratification strict-open build-features`
-- `scz-stratification strict-open build-targets`
-- `scz-stratification strict-open train-baselines`
-- `scz-stratification strict-open train`
-- `scz-stratification strict-open eval`
-- `scz-stratification strict-open report`
+- `scz-audit strict-open ingest`
+- `scz-audit strict-open audit`
+- `scz-audit strict-open harmonize`
+- `scz-audit strict-open define-splits`
+- `scz-audit strict-open build-features`
+- `scz-audit strict-open build-targets`
+- `scz-audit strict-open train-baselines`
+- `scz-audit strict-open train`
+- `scz-audit strict-open eval`
+- `scz-audit strict-open report`
 
 These can be stubs in this PR.
 
@@ -163,11 +163,11 @@ The data audit should shape the canonical implementation, not be backfilled afte
 
 **Files / Directories To Add Or Modify**
 
-- `src/scz_stratification_engine/strict_open/sources/__init__.py`
-- `src/scz_stratification_engine/strict_open/sources/base.py`
-- `src/scz_stratification_engine/strict_open/sources/tcp_ds005237.py`
-- `src/scz_stratification_engine/strict_open/audit.py`
-- `src/scz_stratification_engine/strict_open/provenance.py`
+- `src/scz_audit_engine/strict_open/sources/__init__.py`
+- `src/scz_audit_engine/strict_open/sources/base.py`
+- `src/scz_audit_engine/strict_open/sources/tcp_ds005237.py`
+- `src/scz_audit_engine/strict_open/audit.py`
+- `src/scz_audit_engine/strict_open/provenance.py`
 - `tests/fixtures/tcp_raw/` fixtures as needed
 
 **Tests To Add**
@@ -178,8 +178,8 @@ The data audit should shape the canonical implementation, not be backfilled afte
 
 **CLI Commands Or Workflows Affected**
 
-- `scz-stratification strict-open ingest --source tcp`
-- `scz-stratification strict-open audit`
+- `scz-audit strict-open ingest --source tcp`
+- `scz-audit strict-open audit`
 
 **Expected Outputs / Artifacts**
 
@@ -217,10 +217,10 @@ Features, targets, and evaluation will all rot if harmonization is ad hoc or if 
 
 **Files / Directories To Add Or Modify**
 
-- `src/scz_stratification_engine/strict_open/harmonize.py`
-- `src/scz_stratification_engine/strict_open/splits.py`
+- `src/scz_audit_engine/strict_open/harmonize.py`
+- `src/scz_audit_engine/strict_open/splits.py`
 - `docs/strict_open_eval_protocol.md`
-- optional mapping helpers such as `src/scz_stratification_engine/strict_open/mappings/tcp.py`
+- optional mapping helpers such as `src/scz_audit_engine/strict_open/mappings/tcp.py`
 
 **Tests To Add**
 
@@ -229,8 +229,8 @@ Features, targets, and evaluation will all rot if harmonization is ad hoc or if 
 
 **CLI Commands Or Workflows Affected**
 
-- `scz-stratification strict-open harmonize`
-- `scz-stratification strict-open define-splits`
+- `scz-audit strict-open harmonize`
+- `scz-audit strict-open define-splits`
 
 **Expected Outputs / Artifacts**
 
@@ -266,8 +266,8 @@ Baselines and trait/state modeling should train on the same feature and target c
 
 **Files / Directories To Add Or Modify**
 
-- `src/scz_stratification_engine/strict_open/features.py`
-- `src/scz_stratification_engine/strict_open/targets.py`
+- `src/scz_audit_engine/strict_open/features.py`
+- `src/scz_audit_engine/strict_open/targets.py`
 
 **Tests To Add**
 
@@ -276,19 +276,20 @@ Baselines and trait/state modeling should train on the same feature and target c
 
 **CLI Commands Or Workflows Affected**
 
-- `scz-stratification strict-open build-features`
-- `scz-stratification strict-open build-targets`
+- `scz-audit strict-open build-features`
+- `scz-audit strict-open build-targets`
 
 **Expected Outputs / Artifacts**
 
 - feature tables under `data/processed/strict_open/features/`
-- derived target outputs with `global_cognition_dev`, `state_noise_score`, and `stable_cognitive_burden_proxy`
+- derived target outputs with `global_cognition_dev`, `state_noise_score`, and `stable_cognitive_burden_proxy`, where the proxy is used to contrast against state noise and estimate the patient's stable baseline-like signal
 
 **Acceptance Criteria**
 
 - features include cognition domain summaries, symptom composites, state-noise proxies, missingness indicators, and compact MRI summaries
 - the soft target is probabilistic, not categorical
 - the target uses symptom/function proxies only where available
+- `stable_cognitive_burden_proxy` is framed as a stable baseline-like estimate rather than a claim about a true baseline
 - feature and target outputs are keyed to the frozen split contract rather than redefining train, validation, and test behavior ad hoc
 - no treatment history or gated longitudinal assumptions leak into the target
 
@@ -311,8 +312,8 @@ If simple baselines are confounded or useless, there is no reason to hide that b
 
 **Files / Directories To Add Or Modify**
 
-- `src/scz_stratification_engine/strict_open/baselines.py`
-- `src/scz_stratification_engine/strict_open/baseline_eval.py`
+- `src/scz_audit_engine/strict_open/baselines.py`
+- `src/scz_audit_engine/strict_open/baseline_eval.py`
 
 **Tests To Add**
 
@@ -320,7 +321,7 @@ If simple baselines are confounded or useless, there is no reason to hide that b
 
 **CLI Commands Or Workflows Affected**
 
-- `scz-stratification strict-open train-baselines`
+- `scz-audit strict-open train-baselines`
 
 **Expected Outputs / Artifacts**
 
@@ -352,10 +353,10 @@ Only after baseline behavior is known does it make sense to pay the complexity c
 **Files / Directories To Add Or Modify**
 
 - `pyproject.toml`
-- `src/scz_stratification_engine/strict_open/model.py`
-- `src/scz_stratification_engine/strict_open/train.py`
-- `src/scz_stratification_engine/strict_open/losses.py`
-- `src/scz_stratification_engine/strict_open/imaging.py`
+- `src/scz_audit_engine/strict_open/model.py`
+- `src/scz_audit_engine/strict_open/train.py`
+- `src/scz_audit_engine/strict_open/losses.py`
+- `src/scz_audit_engine/strict_open/imaging.py`
 
 **Tests To Add**
 
@@ -363,7 +364,7 @@ Only after baseline behavior is known does it make sense to pay the complexity c
 
 **CLI Commands Or Workflows Affected**
 
-- `scz-stratification strict-open train`
+- `scz-audit strict-open train`
 
 **Expected Outputs / Artifacts**
 
@@ -399,8 +400,8 @@ This is the first real decision point. Training that merely runs is not evidence
 
 **Files / Directories To Add Or Modify**
 
-- `src/scz_stratification_engine/strict_open/eval.py`
-- `src/scz_stratification_engine/strict_open/metrics.py`
+- `src/scz_audit_engine/strict_open/eval.py`
+- `src/scz_audit_engine/strict_open/metrics.py`
 
 **Tests To Add**
 
@@ -408,7 +409,7 @@ This is the first real decision point. Training that merely runs is not evidence
 
 **CLI Commands Or Workflows Affected**
 
-- `scz-stratification strict-open eval`
+- `scz-audit strict-open eval`
 
 **Expected Outputs / Artifacts**
 
@@ -421,6 +422,7 @@ This is the first real decision point. Training that merely runs is not evidence
 - calibration and abstention behavior are measured directly
 - site leakage is measured directly
 - missing-modality robustness is measured directly
+- evaluation checks whether the model can confidently flag noisy or ambiguous visits that would otherwise contaminate a trial endpoint
 - evaluation is run against the frozen subject-level split and site-aware protocol
 - report ends in a clear go / no-go decision
 
@@ -441,9 +443,9 @@ Interpretation belongs after the predictive core is proven to be at least direct
 
 **Files / Directories To Add Or Modify**
 
-- `src/scz_stratification_engine/strict_open/sources/allen.py`
-- `src/scz_stratification_engine/strict_open/sources/opentargets_public.py`
-- `src/scz_stratification_engine/strict_open/biology.py`
+- `src/scz_audit_engine/strict_open/sources/allen.py`
+- `src/scz_audit_engine/strict_open/sources/opentargets_public.py`
+- `src/scz_audit_engine/strict_open/biology.py`
 
 **Tests To Add**
 
@@ -451,7 +453,7 @@ Interpretation belongs after the predictive core is proven to be at least direct
 
 **CLI Commands Or Workflows Affected**
 
-- `scz-stratification strict-open build-biology`
+- `scz-audit strict-open build-biology`
 
 **Expected Outputs / Artifacts**
 
@@ -473,7 +475,7 @@ Interpretation belongs after the predictive core is proven to be at least direct
 
 **Purpose**
 
-Package the technical work into the one artifact people will actually read and the docs that explain what closed data unlocks next.
+Package the technical work into a `Cohort Integrity Report` and the docs that explain why PIs and sponsors need this audit to de-risk trial readouts and what closed data unlocks next.
 
 **Why This PR Comes Now**
 
@@ -481,7 +483,7 @@ The report should reflect a finished `strict-open v0` evaluation state, not a mo
 
 **Files / Directories To Add Or Modify**
 
-- `src/scz_stratification_engine/strict_open/reporting.py`
+- `src/scz_audit_engine/strict_open/reporting.py`
 - `docs/strict_open_results.md`
 - `docs/strict_open_closed_data_unlocks.md`
 - `docs/strict_open_access_packet.md`
@@ -493,18 +495,18 @@ The report should reflect a finished `strict-open v0` evaluation state, not a mo
 
 **CLI Commands Or Workflows Affected**
 
-- `scz-stratification strict-open report`
+- `scz-audit strict-open report`
 
 **Expected Outputs / Artifacts**
 
-- one clean example report generated by `scz-stratification strict-open report`, with stable liability score, state-noise score, confidence tier, abstain flag, and short biology-context evidence card
-- docs that explain why public data is insufficient and what exact closed data would unlock next
+- one clean `Cohort Integrity Report` generated by `scz-audit strict-open report`, with cohort-level state-noise contamination, site-leakage warnings, individual patient stability tiering, abstain flags, and short biology-context evidence cards
+- docs that explain why public data is insufficient, why PIs and sponsors need this audit to de-risk trial readouts, and what exact closed data would unlock next
 
 **Acceptance Criteria**
 
 - the example report is generated from the reporting command rather than hand-authored markdown that can drift
 - the generated report is understandable in about one minute
-- docs make a narrow, credible case for the next data-access step
+- docs make a narrow, credible case for why PIs and sponsors need this audit to de-risk trial readouts and what exact closed data would unlock next
 - all language stays inside `strict-open v0` boundaries
 
 **Non-Goals**

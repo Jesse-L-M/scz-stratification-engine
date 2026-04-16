@@ -2,7 +2,7 @@
 
 ## Product and spec posture
 
-Product and scientific claims for `strict-open v0` stay vendor-neutral.
+Product and scientific claims for `strict-open v0` stay vendor-neutral, even as the build is framed narrowly around cohort stability and noise auditing.
 
 ## Intended execution path
 

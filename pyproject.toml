@@ -3,14 +3,14 @@ requires = ["setuptools>=69"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "scz-stratification-engine"
+name = "scz-audit-engine"
 version = "0.0.0"
-description = "Docs/bootstrap for the strict-open v0 public feasibility engine."
+description = "Docs/bootstrap for the strict-open v0 cognitive stability and trial-noise audit engine."
 readme = "README.md"
 requires-python = ">=3.11"
 
 [project.scripts]
-scz-stratification = "scz_stratification_engine.cli:main"
+scz-audit = "scz_audit_engine.cli:main"
 
 [project.optional-dependencies]
 test = ["pytest>=8,<9"]
