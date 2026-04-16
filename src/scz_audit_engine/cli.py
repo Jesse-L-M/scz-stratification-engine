@@ -3,10 +3,23 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from collections.abc import Callable, Sequence
+from pathlib import Path
+import tomllib
 
 from . import __version__
+from .strict_open import (
+    build_source_manifest,
+    build_run_manifest,
+    run_tcp_audit,
+    strict_open_paths,
+    write_run_manifest,
+    write_source_manifest,
+)
+from .strict_open.provenance import resolve_git_sha
+from .strict_open.sources import TCPDS005237SourceAdapter
 
 STRICT_OPEN_COMMANDS = (
     "ingest",
@@ -22,6 +35,7 @@ STRICT_OPEN_COMMANDS = (
 )
 
 DEFAULT_CONFIG_PATH = "config/strict_open_v0.toml"
+DEFAULT_TCP_SOURCE = "tcp"
 
 
 def _build_help_handler(parser: argparse.ArgumentParser) -> Callable[[argparse.Namespace], int]:
@@ -39,6 +53,162 @@ def _build_stub_handler(command_name: str) -> Callable[[argparse.Namespace], int
             file=sys.stderr,
         )
         return 1
+
+    return handler
+
+
+def _load_strict_open_config(config_path: str | Path) -> dict[str, object]:
+    with Path(config_path).open("rb") as handle:
+        return tomllib.load(handle)
+
+
+def _resolve_path(value: str | None, *, repo_root: Path, fallback: Path) -> Path:
+    if not value:
+        return fallback
+    candidate = Path(value)
+    if candidate.is_absolute():
+        return candidate
+    return (repo_root / candidate).resolve()
+
+
+def _build_tcp_adapter(config: dict[str, object]) -> TCPDS005237SourceAdapter:
+    source_config = config.get("sources", {})
+    tcp_config = source_config.get("tcp", {}) if isinstance(source_config, dict) else {}
+    if not isinstance(tcp_config, dict):
+        tcp_config = {}
+    return TCPDS005237SourceAdapter(
+        dataset_version=tcp_config.get("dataset_version", TCPDS005237SourceAdapter.dataset_version),
+        github_repo=tcp_config.get("github_repo", TCPDS005237SourceAdapter.github_repo),
+        github_ref=tcp_config.get("github_ref", TCPDS005237SourceAdapter.github_ref),
+    )
+
+
+def _build_ingest_handler() -> Callable[[argparse.Namespace], int]:
+    def handler(args: argparse.Namespace) -> int:
+        if args.source != DEFAULT_TCP_SOURCE:
+            print("Only --source tcp is implemented in PR3.", file=sys.stderr)
+            return 2
+
+        path_contract = strict_open_paths()
+        repo_root = path_contract.repo_root
+        config_path = _resolve_path(args.config, repo_root=repo_root, fallback=path_contract.config_path)
+        config = _load_strict_open_config(config_path)
+        paths_config = config.get("paths", {})
+        if not isinstance(paths_config, dict):
+            paths_config = {}
+
+        raw_base_root = _resolve_path(
+            paths_config.get("raw_root"),
+            repo_root=repo_root,
+            fallback=path_contract.raw_root,
+        )
+        manifests_root = _resolve_path(
+            paths_config.get("manifests_root"),
+            repo_root=repo_root,
+            fallback=path_contract.manifests_root,
+        )
+        raw_root = Path(args.raw_root).resolve() if args.raw_root else raw_base_root / args.source
+        if args.manifest_dir:
+            manifests_root = Path(args.manifest_dir).resolve()
+
+        seed = int(config.get("seed", 1729))
+        git_sha = resolve_git_sha(repo_root)
+        adapter = _build_tcp_adapter(config)
+        stage_result = adapter.stage(raw_root, source_root=args.source_root)
+
+        command = ["scz-audit", "strict-open", "ingest", "--source", args.source]
+        source_manifest_path = manifests_root / "tcp_source_manifest.json"
+        source_manifest = build_source_manifest(
+            source=stage_result.source,
+            source_identifier=stage_result.source_identifier,
+            dataset_accession=stage_result.dataset_accession,
+            dataset_version=stage_result.dataset_version,
+            command=command,
+            git_sha=git_sha,
+            raw_root=stage_result.raw_root,
+            files=stage_result.files,
+        )
+        write_source_manifest(source_manifest, source_manifest_path)
+
+        run_manifest_path = manifests_root / "tcp_ingest_run_manifest.json"
+        run_manifest = build_run_manifest(
+            dataset_source=stage_result.source,
+            dataset_version=stage_result.dataset_version,
+            command=command,
+            git_sha=git_sha,
+            seed=seed,
+            output_paths={
+                "raw_root": stage_result.raw_root,
+                "source_manifest": source_manifest_path,
+            },
+        )
+        write_run_manifest(run_manifest, run_manifest_path)
+
+        print(
+            json.dumps(
+                {
+                    "files_discovered": len(stage_result.files),
+                    "raw_root": str(stage_result.raw_root),
+                    "run_manifest": str(run_manifest_path),
+                    "source_manifest": str(source_manifest_path),
+                    "source": args.source,
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+
+    return handler
+
+
+def _build_audit_handler() -> Callable[[argparse.Namespace], int]:
+    def handler(args: argparse.Namespace) -> int:
+        path_contract = strict_open_paths()
+        repo_root = path_contract.repo_root
+        config_path = _resolve_path(args.config, repo_root=repo_root, fallback=path_contract.config_path)
+        config = _load_strict_open_config(config_path)
+        paths_config = config.get("paths", {})
+        if not isinstance(paths_config, dict):
+            paths_config = {}
+
+        raw_base_root = _resolve_path(
+            paths_config.get("raw_root"),
+            repo_root=repo_root,
+            fallback=path_contract.raw_root,
+        )
+        manifests_root = _resolve_path(
+            paths_config.get("manifests_root"),
+            repo_root=repo_root,
+            fallback=path_contract.manifests_root,
+        )
+        profiles_root = _resolve_path(
+            paths_config.get("profiles_root"),
+            repo_root=repo_root,
+            fallback=path_contract.profiles_root,
+        )
+        raw_root = Path(args.raw_root).resolve() if args.raw_root else raw_base_root / DEFAULT_TCP_SOURCE
+        if args.manifest_dir:
+            manifests_root = Path(args.manifest_dir).resolve()
+        if args.profile_dir:
+            profiles_root = Path(args.profile_dir).resolve()
+
+        adapter = _build_tcp_adapter(config)
+        seed = int(config.get("seed", 1729))
+        git_sha = resolve_git_sha(repo_root)
+        command = ["scz-audit", "strict-open", "audit"]
+        results = run_tcp_audit(
+            raw_root=raw_root,
+            manifests_root=manifests_root,
+            profiles_root=profiles_root,
+            command=command,
+            git_sha=git_sha,
+            seed=seed,
+            dataset_version=adapter.dataset_version,
+            source_manifest_path=manifests_root / "tcp_source_manifest.json",
+        )
+        print(json.dumps(results, indent=2, sort_keys=True))
+        return 0
 
     return handler
 
@@ -81,7 +251,42 @@ def build_parser() -> argparse.ArgumentParser:
             default=DEFAULT_CONFIG_PATH,
             help="Path to the strict-open v0 config file.",
         )
-        command_parser.set_defaults(handler=_build_stub_handler(command_name))
+        if command_name == "ingest":
+            command_parser.add_argument(
+                "--source",
+                default=DEFAULT_TCP_SOURCE,
+                choices=[DEFAULT_TCP_SOURCE],
+                help="Public source to ingest.",
+            )
+            command_parser.add_argument(
+                "--source-root",
+                help="Optional local TCP source directory to stage instead of fetching public metadata.",
+            )
+            command_parser.add_argument(
+                "--raw-root",
+                help="Destination raw root for the staged source.",
+            )
+            command_parser.add_argument(
+                "--manifest-dir",
+                help="Destination directory for source and run manifests.",
+            )
+            command_parser.set_defaults(handler=_build_ingest_handler())
+        elif command_name == "audit":
+            command_parser.add_argument(
+                "--raw-root",
+                help="Raw TCP root to audit.",
+            )
+            command_parser.add_argument(
+                "--profile-dir",
+                help="Destination directory for audit profiles.",
+            )
+            command_parser.add_argument(
+                "--manifest-dir",
+                help="Destination directory for audit manifests and provenance.",
+            )
+            command_parser.set_defaults(handler=_build_audit_handler())
+        else:
+            command_parser.set_defaults(handler=_build_stub_handler(command_name))
 
     return parser
 

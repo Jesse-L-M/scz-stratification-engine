@@ -1,0 +1,3 @@
+Fixture TCP dataset for strict-open PR3 tests.
+
+This fixture mirrors the TCP / ds005237 raw layout at a small scale.

@@ -1,0 +1,4 @@
+participant_id	interview_date	qids_1	qids_2	qc_qids
+sub-TCP001	2026-01-01	1	2	0
+sub-TCP001	2026-02-15	3		1
+sub-TCP003	2026-01-03	999	2	0
