@@ -1,13 +1,13 @@
 import json
 
-from scz_stratification_engine.strict_open.run_manifest import build_run_manifest, write_run_manifest
+from scz_audit_engine.strict_open.run_manifest import build_run_manifest, write_run_manifest
 
 
 def test_run_manifest_has_required_fields() -> None:
     manifest = build_run_manifest(
         dataset_source="tcp",
         dataset_version="ds005237",
-        command=["scz-stratification", "strict-open", "ingest"],
+        command=["scz-audit", "strict-open", "ingest"],
         git_sha="abc1234",
         seed=1729,
         output_paths={"manifest": "data/processed/strict_open/manifests/run_manifest.json"},
@@ -16,7 +16,7 @@ def test_run_manifest_has_required_fields() -> None:
 
     assert manifest.to_dict() == {
         "dataset": {"source": "tcp", "version": "ds005237"},
-        "command": ["scz-stratification", "strict-open", "ingest"],
+        "command": ["scz-audit", "strict-open", "ingest"],
         "git_sha": "abc1234",
         "seed": 1729,
         "output_paths": {"manifest": "data/processed/strict_open/manifests/run_manifest.json"},
@@ -27,7 +27,7 @@ def test_run_manifest_has_required_fields() -> None:
 def test_write_run_manifest_serializes_json(tmp_path) -> None:
     manifest = build_run_manifest(
         dataset_source="tcp",
-        command=["scz-stratification", "strict-open", "audit"],
+        command=["scz-audit", "strict-open", "audit"],
         git_sha=None,
         seed=1729,
         output_paths={"profile": tmp_path / "data/processed/strict_open/profiles/audit.json"},

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from scz_stratification_engine.strict_open.paths import StrictOpenPaths, strict_open_paths
+from scz_audit_engine.strict_open.paths import StrictOpenPaths, strict_open_paths
 
 
 def test_default_path_helpers_resolve_under_repo_root() -> None:

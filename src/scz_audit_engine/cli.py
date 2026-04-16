@@ -1,4 +1,4 @@
-"""Command-line interface for the scz stratification engine."""
+"""Command-line interface for the scz audit engine."""
 
 from __future__ import annotations
 
@@ -47,8 +47,8 @@ def build_parser() -> argparse.ArgumentParser:
     """Create the top-level CLI parser."""
 
     parser = argparse.ArgumentParser(
-        prog="scz-stratification",
-        description="Bootstrap CLI for the strict-open v0 public feasibility engine.",
+        prog="scz-audit",
+        description="Bootstrap CLI for the strict-open v0 cognitive stability and trial-noise audit engine.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
@@ -58,7 +58,7 @@ def build_parser() -> argparse.ArgumentParser:
     strict_open_parser = subparsers.add_parser(
         "strict-open",
         help="Commands for the strict-open v0 namespace.",
-        description="Bootstrap commands for the strict-open v0 public feasibility engine.",
+        description="Bootstrap commands for the strict-open v0 cohort stability and noise audit engine.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     strict_open_parser.add_argument(

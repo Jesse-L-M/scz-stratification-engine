@@ -1,4 +1,4 @@
-from scz_stratification_engine.strict_open.schema import STRICT_OPEN_TABLE_SCHEMAS
+from scz_audit_engine.strict_open.schema import STRICT_OPEN_TABLE_SCHEMAS
 
 
 EXPECTED_COLUMNS = {

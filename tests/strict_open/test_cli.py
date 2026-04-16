@@ -1,6 +1,6 @@
 import pytest
 
-from scz_stratification_engine.cli import STRICT_OPEN_COMMANDS, main
+from scz_audit_engine.cli import STRICT_OPEN_COMMANDS, main
 
 
 def test_top_level_help_works(capsys: pytest.CaptureFixture[str]) -> None:
@@ -17,7 +17,8 @@ def test_strict_open_help_works(capsys: pytest.CaptureFixture[str]) -> None:
 
     assert excinfo.value.code == 0
     output = capsys.readouterr().out
-    assert "Bootstrap commands for the strict-open v0 public feasibility engine." in output
+    assert "Bootstrap commands for the strict-open v0" in output
+    assert "cohort stability and noise audit" in output
     assert "ingest" in output
 
 
