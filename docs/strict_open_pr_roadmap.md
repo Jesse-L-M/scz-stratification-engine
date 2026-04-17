@@ -64,10 +64,9 @@ Do not preserve as mainline scientific assumptions:
 
 ## New Namespace Direction
 
-The recommended mainline namespace is a new one, such as:
+The chosen mainline namespace is:
 
 - `benchmark/`
-- `psychosis_benchmark/`
 
 `strict_open/` can remain in the repo as archived exploratory work until useful
 infrastructure is extracted or copied forward.
