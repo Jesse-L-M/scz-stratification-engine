@@ -1,0 +1,11 @@
+# PR1 scaffolding leaves the dataset registry undefined until PR2 introduces it.
+dataset_registry_path = ""
+seed = 1729
+
+[paths]
+raw_root = "data/raw/benchmark"
+processed_root = "data/processed/benchmark"
+curated_root = "data/curated/benchmark"
+manifests_root = "data/processed/benchmark/manifests"
+examples_root = "examples/benchmark_v0"
+default_manifest_path = "data/processed/benchmark/manifests/run_manifest.json"

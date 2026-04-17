@@ -24,6 +24,14 @@ Current source-of-truth docs:
 - [`docs/benchmark_eval_protocol.md`](docs/benchmark_eval_protocol.md):
   evaluation rules for the new mainline
 
+Current code scaffold:
+
+- `src/scz_audit_engine/benchmark/`: benchmark namespace for repo-relative
+  paths, provenance helpers, and run manifests
+- `config/benchmark_v0.toml`: benchmark config scaffold for shared path
+  contracts and defaults
+- `scz-audit benchmark --help`: stub CLI lane for the future benchmark flow
+
 Practical note:
 
 - `strict_open/` can still be mined for reusable ingest, provenance,

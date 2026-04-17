@@ -25,6 +25,14 @@ from .strict_open import (
 from .strict_open.provenance import resolve_git_sha
 from .strict_open.sources import TCPDS005237SourceAdapter
 
+BENCHMARK_COMMANDS = (
+    "audit-datasets",
+    "define-schema",
+    "harmonize",
+    "build-representations",
+    "run-benchmark",
+    "report",
+)
 STRICT_OPEN_COMMANDS = (
     "ingest",
     "audit",
@@ -38,6 +46,7 @@ STRICT_OPEN_COMMANDS = (
     "report",
 )
 
+DEFAULT_BENCHMARK_CONFIG_PATH = "config/benchmark_v0.toml"
 DEFAULT_CONFIG_PATH = "config/strict_open_v0.toml"
 DEFAULT_TCP_SOURCE = "tcp"
 
@@ -54,6 +63,17 @@ def _build_stub_handler(command_name: str) -> Callable[[argparse.Namespace], int
     def handler(_args: argparse.Namespace) -> int:
         print(
             f"strict-open {command_name} is not implemented yet in PR2; this command is a bootstrap stub.",
+            file=sys.stderr,
+        )
+        return 1
+
+    return handler
+
+
+def _build_benchmark_stub_handler(command_name: str) -> Callable[[argparse.Namespace], int]:
+    def handler(_args: argparse.Namespace) -> int:
+        print(
+            f"benchmark {command_name} is not implemented yet; PR1 only scaffolds the new mainline CLI.",
             file=sys.stderr,
         )
         return 1
@@ -509,17 +529,50 @@ def build_parser() -> argparse.ArgumentParser:
 
     parser = argparse.ArgumentParser(
         prog="scz-audit",
-        description="Bootstrap CLI for the strict-open v0 cognitive stability and trial-noise audit engine.",
+        description=(
+            "CLI for the benchmark mainline, with strict-open preserved as exploratory infrastructure."
+        ),
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     parser.set_defaults(handler=_build_help_handler(parser))
 
     subparsers = parser.add_subparsers(dest="command")
+    benchmark_parser = subparsers.add_parser(
+        "benchmark",
+        help="Mainline benchmark commands.",
+        description="Mainline commands for the multi-cohort psychosis benchmark scaffold.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    benchmark_parser.add_argument(
+        "--config",
+        default=DEFAULT_BENCHMARK_CONFIG_PATH,
+        help="Path to the benchmark v0 config file.",
+    )
+    benchmark_parser.set_defaults(handler=_build_help_handler(benchmark_parser))
+
+    benchmark_subparsers = benchmark_parser.add_subparsers(dest="benchmark_command")
+    for command_name in BENCHMARK_COMMANDS:
+        command_parser = benchmark_subparsers.add_parser(
+            command_name,
+            help=f"Stub command for benchmark {command_name}.",
+            description=f"Stub command for benchmark {command_name}.",
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        )
+        command_parser.add_argument(
+            "--config",
+            default=DEFAULT_BENCHMARK_CONFIG_PATH,
+            help="Path to the benchmark v0 config file.",
+        )
+        command_parser.set_defaults(handler=_build_benchmark_stub_handler(command_name))
+
     strict_open_parser = subparsers.add_parser(
         "strict-open",
         help="Commands for the strict-open v0 namespace.",
-        description="Bootstrap commands for the strict-open v0 cohort stability and noise audit engine.",
+        description=(
+            "Bootstrap commands for the strict-open v0 cohort stability and noise audit engine. "
+            "This namespace remains exploratory infrastructure."
+        ),
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     strict_open_parser.add_argument(
