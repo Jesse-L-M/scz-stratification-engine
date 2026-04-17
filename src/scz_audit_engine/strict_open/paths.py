@@ -49,6 +49,14 @@ class StrictOpenPaths:
         return self.processed_root / "splits"
 
     @property
+    def features_root(self) -> Path:
+        return self.processed_root / "features"
+
+    @property
+    def targets_root(self) -> Path:
+        return self.processed_root / "targets"
+
+    @property
     def examples_root(self) -> Path:
         return self.repo_root / "examples" / "strict_open_v0"
 
@@ -67,6 +75,8 @@ class StrictOpenPaths:
             "profiles": self.profiles_root,
             "harmonized": self.harmonized_root,
             "splits": self.splits_root,
+            "features": self.features_root,
+            "targets": self.targets_root,
             "examples": self.examples_root,
         }
 
@@ -94,6 +104,16 @@ class StrictOpenPaths:
         """Return the default destination for a split artifact."""
 
         return self.splits_root / filename
+
+    def default_feature_path(self, filename: str = "visit_features.csv") -> Path:
+        """Return the default destination for a feature artifact."""
+
+        return self.features_root / filename
+
+    def default_target_path(self, filename: str = "derived_targets.csv") -> Path:
+        """Return the default destination for a target artifact."""
+
+        return self.targets_root / filename
 
 
 def strict_open_paths(repo_root: str | Path | None = None) -> StrictOpenPaths:

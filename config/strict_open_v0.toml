@@ -9,6 +9,8 @@ manifests_root = "data/processed/strict_open/manifests"
 profiles_root = "data/processed/strict_open/profiles"
 harmonized_root = "data/processed/strict_open/harmonized"
 splits_root = "data/processed/strict_open/splits"
+features_root = "data/processed/strict_open/features"
+targets_root = "data/processed/strict_open/targets"
 examples_root = "examples/strict_open_v0"
 default_manifest_path = "data/processed/strict_open/manifests/run_manifest.json"
 
