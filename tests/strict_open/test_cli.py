@@ -5,7 +5,15 @@ import pytest
 
 from scz_audit_engine.cli import STRICT_OPEN_COMMANDS, main
 
-IMPLEMENTED_COMMANDS = {"ingest", "audit", "harmonize", "define-splits", "build-features", "build-targets"}
+IMPLEMENTED_COMMANDS = {
+    "ingest",
+    "audit",
+    "harmonize",
+    "define-splits",
+    "build-features",
+    "build-targets",
+    "train-baselines",
+}
 STUB_COMMANDS = tuple(command_name for command_name in STRICT_OPEN_COMMANDS if command_name not in IMPLEMENTED_COMMANDS)
 FIXTURE_SOURCE_ROOT = Path(__file__).resolve().parents[1] / "fixtures" / "tcp_raw" / "source_input"
 
@@ -512,6 +520,82 @@ def test_build_features_manifest_keeps_explicit_default_config_flag(capsys: pyte
     ]
 
 
+def test_train_baselines_command_writes_baseline_outputs(capsys: pytest.CaptureFixture[str], tmp_path) -> None:
+    raw_root = tmp_path / "data" / "raw" / "strict_open" / "tcp"
+    manifests_root = tmp_path / "data" / "processed" / "strict_open" / "manifests"
+    harmonized_root = tmp_path / "data" / "processed" / "strict_open" / "harmonized"
+    splits_root = tmp_path / "data" / "processed" / "strict_open" / "splits"
+    features_root = tmp_path / "data" / "processed" / "strict_open" / "features"
+    targets_root = tmp_path / "data" / "processed" / "strict_open" / "targets"
+    models_root = tmp_path / "data" / "processed" / "strict_open" / "models" / "baselines"
+    reports_root = tmp_path / "data" / "processed" / "strict_open" / "reports"
+    config_path = tmp_path / "strict_open_test.toml"
+    config_path.write_text(Path("config/strict_open_v0.toml").read_text(encoding="utf-8"), encoding="utf-8")
+
+    _run_cli_pipeline_to_targets(
+        capsys=capsys,
+        config_path=config_path,
+        raw_root=raw_root,
+        manifests_root=manifests_root,
+        harmonized_root=harmonized_root,
+        splits_root=splits_root,
+        features_root=features_root,
+        targets_root=targets_root,
+    )
+
+    train_baselines_exit_code = main(
+        [
+            "strict-open",
+            "train-baselines",
+            "--config",
+            str(config_path),
+            "--features-dir",
+            str(features_root),
+            "--targets-dir",
+            str(targets_root),
+            "--splits-dir",
+            str(splits_root),
+            "--manifest-dir",
+            str(manifests_root),
+            "--models-dir",
+            str(models_root),
+            "--reports-dir",
+            str(reports_root),
+        ]
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    registry_payload = json.loads((models_root / "baseline_registry.json").read_text(encoding="utf-8"))
+    run_manifest = json.loads((manifests_root / "tcp_train_baselines_run_manifest.json").read_text(encoding="utf-8"))
+    expected_command = [
+        "scz-audit",
+        "strict-open",
+        "train-baselines",
+        "--config",
+        str(config_path),
+        "--features-dir",
+        str(features_root),
+        "--targets-dir",
+        str(targets_root),
+        "--splits-dir",
+        str(splits_root),
+        "--manifest-dir",
+        str(manifests_root),
+        "--models-dir",
+        str(models_root),
+        "--reports-dir",
+        str(reports_root),
+    ]
+
+    assert train_baselines_exit_code == 0
+    assert Path(payload["baseline_predictions"]).exists()
+    assert Path(payload["baseline_registry"]).exists()
+    assert Path(payload["baseline_summary_json"]).exists()
+    assert Path(payload["baseline_summary_md"]).exists()
+    assert registry_payload["command"] == expected_command
+    assert run_manifest["command"] == expected_command
+
+
 def _run_cli_pipeline_to_splits(
     *,
     capsys: pytest.CaptureFixture[str],
@@ -572,4 +656,65 @@ def _run_cli_pipeline_to_splits(
         ]
     )
     assert define_splits_exit_code == 0
+    capsys.readouterr()
+
+
+def _run_cli_pipeline_to_targets(
+    *,
+    capsys: pytest.CaptureFixture[str],
+    config_path: Path,
+    raw_root: Path,
+    manifests_root: Path,
+    harmonized_root: Path,
+    splits_root: Path,
+    features_root: Path,
+    targets_root: Path,
+) -> None:
+    _run_cli_pipeline_to_splits(
+        capsys=capsys,
+        config_path=config_path,
+        raw_root=raw_root,
+        manifests_root=manifests_root,
+        harmonized_root=harmonized_root,
+        splits_root=splits_root,
+    )
+
+    build_features_exit_code = main(
+        [
+            "strict-open",
+            "build-features",
+            "--config",
+            str(config_path),
+            "--harmonized-dir",
+            str(harmonized_root),
+            "--splits-dir",
+            str(splits_root),
+            "--manifest-dir",
+            str(manifests_root),
+            "--output-dir",
+            str(features_root),
+        ]
+    )
+    assert build_features_exit_code == 0
+    capsys.readouterr()
+
+    build_targets_exit_code = main(
+        [
+            "strict-open",
+            "build-targets",
+            "--config",
+            str(config_path),
+            "--features-dir",
+            str(features_root),
+            "--harmonized-dir",
+            str(harmonized_root),
+            "--splits-dir",
+            str(splits_root),
+            "--manifest-dir",
+            str(manifests_root),
+            "--output-dir",
+            str(targets_root),
+        ]
+    )
+    assert build_targets_exit_code == 0
     capsys.readouterr()

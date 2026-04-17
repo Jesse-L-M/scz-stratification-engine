@@ -17,6 +17,8 @@ def test_default_path_helpers_resolve_under_repo_root() -> None:
     assert paths.splits_root == repo_root / "data" / "processed" / "strict_open" / "splits"
     assert paths.features_root == repo_root / "data" / "processed" / "strict_open" / "features"
     assert paths.targets_root == repo_root / "data" / "processed" / "strict_open" / "targets"
+    assert paths.models_root == repo_root / "data" / "processed" / "strict_open" / "models"
+    assert paths.reports_root == repo_root / "data" / "processed" / "strict_open" / "reports"
     assert paths.examples_root == repo_root / "examples" / "strict_open_v0"
     assert paths.config_path == repo_root / "config" / "strict_open_v0.toml"
     assert paths.source_raw_root("tcp") == repo_root / "data" / "raw" / "strict_open" / "tcp"
@@ -25,6 +27,8 @@ def test_default_path_helpers_resolve_under_repo_root() -> None:
     assert paths.default_split_path() == repo_root / "data" / "processed" / "strict_open" / "splits" / "split_assignments.csv"
     assert paths.default_feature_path() == repo_root / "data" / "processed" / "strict_open" / "features" / "visit_features.csv"
     assert paths.default_target_path() == repo_root / "data" / "processed" / "strict_open" / "targets" / "derived_targets.csv"
+    assert paths.default_model_path() == repo_root / "data" / "processed" / "strict_open" / "models" / "baselines" / "baseline_predictions.csv"
+    assert paths.default_report_path() == repo_root / "data" / "processed" / "strict_open" / "reports" / "baseline_summary.json"
 
 
 def test_explicit_repo_root_keeps_paths_deterministic() -> None:
@@ -41,6 +45,8 @@ def test_explicit_repo_root_keeps_paths_deterministic() -> None:
         "splits": repo_root / "data" / "processed" / "strict_open" / "splits",
         "features": repo_root / "data" / "processed" / "strict_open" / "features",
         "targets": repo_root / "data" / "processed" / "strict_open" / "targets",
+        "models": repo_root / "data" / "processed" / "strict_open" / "models",
+        "reports": repo_root / "data" / "processed" / "strict_open" / "reports",
         "examples": repo_root / "examples" / "strict_open_v0",
     }
     assert paths.default_manifest_path() == repo_root / "data" / "processed" / "strict_open" / "manifests" / "run_manifest.json"
@@ -49,3 +55,5 @@ def test_explicit_repo_root_keeps_paths_deterministic() -> None:
     assert paths.default_split_path("split_manifest.json") == repo_root / "data" / "processed" / "strict_open" / "splits" / "split_manifest.json"
     assert paths.default_feature_path("feature_manifest.json") == repo_root / "data" / "processed" / "strict_open" / "features" / "feature_manifest.json"
     assert paths.default_target_path("target_manifest.json") == repo_root / "data" / "processed" / "strict_open" / "targets" / "target_manifest.json"
+    assert paths.default_model_path("baselines/baseline_registry.json") == repo_root / "data" / "processed" / "strict_open" / "models" / "baselines" / "baseline_registry.json"
+    assert paths.default_report_path("baseline_summary.md") == repo_root / "data" / "processed" / "strict_open" / "reports" / "baseline_summary.md"
