@@ -1,570 +1,401 @@
-# strict-open v0 PR Roadmap
+# Psychosis Benchmark Pivot Roadmap
 
-This roadmap is for `strict-open v0` only.
+This document replaces the prior `strict-open v0` roadmap as the recommended
+mainline plan for this repo.
 
-It does not assume gated data, HCP-YA, sponsor-grade enrichment, treatment-response modeling, or any commercial claim. It uses a parallel `strict_open/` namespace and keeps `ds005237 / TCP` as the default core dataset.
+`strict_open/` should be treated as an exploratory spike and reusable
+infrastructure source, not the scientific center of the project.
 
-## Assumptions
+## Bottom Line
 
-- Python `src/` layout
-- `pytest` for tests
-- one CLI entrypoint such as `scz-audit strict-open ...`
-- `PyTorch` for core modeling
-- `MONAI` for MRI ingestion, transforms, and imaging-model utilities
-- `CUDA`-friendly training and inference path
-- containerized GPU runtime as part of the execution path
-- Allen Human Brain Atlas and Open Targets are biology-context / evidence-card layers, not core predictive machinery
-- product and scientific claims stay vendor-neutral, while the execution layer is explicitly NVIDIA-friendly
-- default installs stay light until the model PR, with heavyweight runtime dependencies added as optional groups or training-only dependencies
-- `TensorRT` / `Dynamo` and `BioNeMo` are future-evaluation items, not `strict-open v0` dependencies
-- strict-open commands should converge on a shared config file and run-manifest format early, before baselines or model training
+The repo should no longer optimize for a single-cohort schizophrenia
+`stable_cognitive_burden_proxy` or a trait/state model trained against synthetic
+targets.
 
-## PR Sequence
+The mainline project should instead answer this question:
 
-### PR1: Add strict-open v0 charter and claim-boundary docs
+> Which representation of psychosis heterogeneity reproduces across independent
+> datasets and improves prediction of intervention-relevant outcomes:
+> diagnosis, dimensions, trajectories, or clusters?
+
+## New Project Frame
+
+### Primary Goal
+
+Build a reproducible multi-cohort benchmark for psychosis heterogeneity
+representations using real outcomes and explicit external-validation rules.
+
+### What This Repo Should Now Be
+
+- a patient- and cohort-level benchmarking engine
+- a harmonization and evaluation framework across psychosis datasets
+- a place to compare diagnosis, dimensions, trajectories, and simple clusters
+- a place to test whether biomarkers add value only after low-tech clinical
+  representations are established
+
+### What This Repo Should Not Be
+
+- a subtype-discovery repo
+- a biomarker-first repo
+- a target-prioritization repo
+- a single-cohort schizophrenia audit engine used as the main scientific claim
+- a model-first project looking for a question to justify it
+
+## What To Preserve From `strict_open`
+
+Keep and adapt:
+
+- source adapter pattern
+- provenance and run manifests
+- harmonization layer separation from source-specific ingest
+- frozen split contracts
+- explicit leakage rules
+- baseline-first evaluation discipline
+- go / no-go gates
+
+Do not preserve as mainline scientific assumptions:
+
+- `stable_cognitive_burden_proxy`
+- `global_cognition_dev` as a core endpoint
+- `state_noise_score` as the main target
+- a trait/state neural model as the default centerpiece
+- MRI-first framing
+- TCP-only framing
+
+## New Namespace Direction
+
+The recommended mainline namespace is a new one, such as:
+
+- `benchmark/`
+- `psychosis_benchmark/`
+
+`strict_open/` can remain in the repo as archived exploratory work until useful
+infrastructure is extracted or copied forward.
+
+## Canonical Scientific Scope
+
+### Main Comparison Families
+
+The first benchmark should compare:
+
+1. diagnosis-only representations
+2. symptom-dimension representations
+3. simple longitudinal or early-course representations
+4. simple cluster representations where supportable
+
+### Outcome Priorities
+
+Use real outcomes only. Prefer, in order:
+
+1. one-year nonremission
+2. persistent negative symptoms
+3. poor functional outcome
+4. relapse or hospitalization proxies if the better outcomes are unavailable
+
+### Modality Rule
+
+Imaging, genetics, and other biomarkers should enter only as later ablations.
+
+The project should first establish whether diagnosis, dimensions, and
+trajectory-aware representations already explain most of the useful signal.
+
+## Replacement PR Sequence
+
+### PR0: Roadmap Reset
 
 **Purpose**
 
-Lock the product framing before code exists.
-
-**Why This PR Comes Now**
-
-If the claim boundary is fuzzy at the start, later PRs will quietly drift into gated-data assumptions or sponsor language.
+Reset the thesis before landing more code tied to the old targets.
 
 **Files / Directories To Add Or Modify**
 
 - `README.md`
-- `docs/strict_open_claim.md`
-- `docs/strict_open_scope.md`
-- `docs/strict_open_sources.md`
-- `docs/strict_open_execution_stack.md`
-- `pyproject.toml`
-- test and CI config files as needed for a minimal repo bootstrap
-
-**Tests To Add**
-
-- `tests/test_docs_presence.py`
-
-**CLI Commands Or Workflows Affected**
-
-- none yet
+- `docs/strict_open_pr_roadmap.md`
+- `docs/benchmark_claim.md`
+- `docs/dataset_matrix.md`
+- `docs/target_outcomes.md`
 
 **Expected Outputs / Artifacts**
 
-- written claim boundary for `strict-open v0`
-- written non-goals
-- default source list anchored on `ds005237 / TCP`
-- written execution-stack note covering `PyTorch`, `MONAI`, `CUDA`, containerized GPU runtime, and future-only evaluation of `TensorRT` / `Dynamo` / `BioNeMo`
+- explicit statement that `strict_open` is exploratory
+- explicit mainline benchmark question
+- dataset inventory template
+- real-outcome contract
 
 **Acceptance Criteria**
 
-- docs explicitly frame this as a public cohort stability and noise audit engine with a strict-open public-feasibility boundary
-- docs explicitly exclude gated-data claims and sponsor-grade positioning
-- docs state that Allen and Open Targets are interpretation layers, not core model drivers
-- docs state that product/spec choices are vendor-neutral while implementation is GPU-native and NVIDIA-friendly
-- `pyproject.toml` stays minimal and does not force heavyweight training dependencies into the default install
-- repo has enough bootstrap structure for later PRs to add tests cleanly
+- repo no longer claims that the mainline question is cognitive stability or
+  trial-noise estimation
+- docs explicitly prioritize multi-cohort benchmarking over single-cohort proxy
+  targets
+- real outcomes are defined before new modeling PRs land
 
 **Non-Goals**
 
-- no `strict_open/` package yet
-- no CLI surface
-- no ingest or model code
-- no HCP-YA or gated-data references in the core path
-- no forced use of irrelevant NVIDIA tools
+- no new modeling code
+- no new target definitions
+- no new biomarkers
 
-### PR2: Add strict_open package skeleton, config, schema, path contract, and CLI stubs
+### PR1: Extract Reusable Infrastructure Into The New Namespace
 
 **Purpose**
 
-Create the parallel namespace, canonical table definitions, shared config and run-manifest plumbing, and output directory contract.
-
-**Why This PR Comes Now**
-
-Every later implementation slice depends on a stable package root and a stable place for artifacts to land.
+Preserve the useful engineering substrate without preserving the old scientific
+objective.
 
 **Files / Directories To Add Or Modify**
 
-- `src/scz_audit_engine/__init__.py`
+- `src/scz_audit_engine/benchmark/__init__.py`
+- `src/scz_audit_engine/benchmark/paths.py`
+- `src/scz_audit_engine/benchmark/provenance.py`
+- `src/scz_audit_engine/benchmark/run_manifest.py`
 - `src/scz_audit_engine/cli.py`
-- `src/scz_audit_engine/strict_open/__init__.py`
-- `src/scz_audit_engine/strict_open/schema.py`
-- `src/scz_audit_engine/strict_open/paths.py`
-- `src/scz_audit_engine/strict_open/run_manifest.py`
-- `config/strict_open_v0.toml`
-- `docker/Dockerfile.gpu`
-- `docker/README.md`
-- `data/raw/strict_open/README.md`
-- `data/processed/strict_open/README.md`
-- `data/curated/strict_open/README.md`
-- `data/processed/strict_open/manifests/README.md`
-- `examples/strict_open_v0/README.md`
-
-**Tests To Add**
-
-- `tests/strict_open/test_schema.py`
-- `tests/strict_open/test_paths.py`
-- `tests/strict_open/test_cli.py`
-- `tests/strict_open/test_run_manifest.py`
-
-**CLI Commands Or Workflows Affected**
-
-- `scz-audit strict-open ingest`
-- `scz-audit strict-open audit`
-- `scz-audit strict-open harmonize`
-- `scz-audit strict-open define-splits`
-- `scz-audit strict-open build-features`
-- `scz-audit strict-open build-targets`
-- `scz-audit strict-open train-baselines`
-- `scz-audit strict-open train`
-- `scz-audit strict-open eval`
-- `scz-audit strict-open report`
-
-These can be stubs in this PR.
+- `config/benchmark_v0.toml`
 
 **Expected Outputs / Artifacts**
 
-- package skeleton
-- canonical schema definitions
-- directory contract for raw, processed, curated, example, and report outputs
-- base config file for `strict-open v0`
-- shared run-manifest contract covering dataset source/version, command used, git SHA, seed, output paths, and timestamps
-- documented GPU container contract for local and CI execution
+- new benchmark namespace
+- benchmark config
+- benchmark path contract
+- benchmark CLI group
 
 **Acceptance Criteria**
 
-- `strict_open/` exists as a parallel namespace
-- canonical tables are defined for `subjects`, `visits`, `cognition_scores`, `symptom_behavior_scores`, `mri_features`, `derived_targets`, and `biology_priors`
-- CLI help works for the `strict-open` command group
-- a default `config/strict_open_v0.toml` exists and is usable across later commands
-- all declared outputs resolve under `strict_open` paths
-- a shared run-manifest writer exists for later PRs to use
-- GPU container files exist without forcing model or ingest implementation into this PR
-- heavyweight runtime dependencies remain optional or absent from the default install
+- the new namespace exists without carrying old target semantics
+- manifests, paths, and provenance are reusable from day one
+- `strict_open` remains isolated rather than mixed into the new path
 
 **Non-Goals**
 
-- no ingest logic
-- no harmonization logic
-- no features or targets
-- no model training
-- no `BioNeMo`, `Holoscan`, `Isaac`, `Parabricks`, or inference-optimization dependencies
-- no environment yak-shaving beyond a minimal GPU container contract
+- no cohort ingest yet
+- no benchmark schema yet
+- no scores or targets yet
 
-### PR3: Add TCP raw ingest, provenance, and audit profile outputs
+### PR2: Dataset Registry And Access Reality Check
 
 **Purpose**
 
-Load `ds005237 / TCP` into raw storage and produce audit outputs that show what is actually available.
-
-**Why This PR Comes Now**
-
-The data audit should shape the canonical implementation, not be backfilled after the model exists.
+Decide what question the available data can actually answer.
 
 **Files / Directories To Add Or Modify**
 
-- `src/scz_audit_engine/strict_open/sources/__init__.py`
-- `src/scz_audit_engine/strict_open/sources/base.py`
-- `src/scz_audit_engine/strict_open/sources/tcp_ds005237.py`
-- `src/scz_audit_engine/strict_open/audit.py`
-- `src/scz_audit_engine/strict_open/provenance.py`
-- `tests/fixtures/tcp_raw/` fixtures as needed
-
-**Tests To Add**
-
-- `tests/strict_open/test_sources.py`
-- `tests/strict_open/test_audit.py`
-- `tests/strict_open/test_provenance.py`
-
-**CLI Commands Or Workflows Affected**
-
-- `scz-audit strict-open ingest --source tcp`
-- `scz-audit strict-open audit`
+- `docs/dataset_matrix.md`
+- `data/curated/benchmark/dataset_registry.csv`
+- source adapters for at least two candidate public cohorts
 
 **Expected Outputs / Artifacts**
 
-- raw TCP extracts under `data/raw/strict_open/tcp/`
-- audit outputs under `data/processed/strict_open/profiles/`
-- provenance artifacts under `data/processed/strict_open/manifests/`
-- profile tables or summaries for subject counts, diagnosis breakdown, repeat-visit availability, cognition inventory, symptom inventory, MRI/QC inventory, and missingness
-- source manifest with dataset accession or version, file hashes where possible, ingest timestamp, and command metadata
-- raw-to-processed provenance map that later PRs can extend rather than reinvent
+- a concrete cohort registry with:
+  - access level
+  - diagnosis coverage
+  - symptom scales
+  - cognition coverage
+  - functioning coverage
+  - longitudinal coverage
+  - treatment variables
+  - outcome availability
+  - modality availability
 
 **Acceptance Criteria**
 
-- TCP ingest runs without touching any gated data path
-- audit output is machine-readable and reproducible
-- ingest and audit runs emit a shared run manifest and source manifest
-- missingness and repeat-visit availability are visible enough to guide the next PRs
+- at least two candidate cohorts are audited
+- the repo states clearly which real outcomes are currently benchmarkable
+- the project can make a go / no-go call on multi-cohort benchmarking
 
 **Non-Goals**
 
-- no harmonization
-- no Allen or Open Targets integration
-- no additional public cohorts yet
 - no modeling
-- no NVIDIA-specific modeling dependencies yet beyond the documented runtime direction
+- no clusters
+- no biomarker claims
 
-### PR4: Add harmonization layer, canonical tables, and split protocol
-
-**Purpose**
-
-Convert TCP raw extracts into the canonical subject/visit-centered schema and freeze the evaluation split rules before any baseline training.
-
-**Why This PR Comes Now**
-
-Features, targets, and evaluation will all rot if harmonization is ad hoc or if train, validation, and test handling is not frozen before baselines.
-
-**Files / Directories To Add Or Modify**
-
-- `src/scz_audit_engine/strict_open/harmonize.py`
-- `src/scz_audit_engine/strict_open/splits.py`
-- `docs/strict_open_eval_protocol.md`
-- optional mapping helpers such as `src/scz_audit_engine/strict_open/mappings/tcp.py`
-
-**Tests To Add**
-
-- `tests/strict_open/test_harmonize.py`
-- `tests/strict_open/test_splits.py`
-
-**CLI Commands Or Workflows Affected**
-
-- `scz-audit strict-open harmonize`
-- `scz-audit strict-open define-splits`
-
-**Expected Outputs / Artifacts**
-
-- canonical tables under `data/processed/strict_open/harmonized/`
-- deterministic IDs and provenance-preserving mappings
-- split assignments and split manifests under `data/processed/strict_open/splits/`
-- written evaluation protocol for subject-level splits, site-aware evaluation, train/validation/test definitions, and repeat-visit handling
-
-**Acceptance Criteria**
-
-- canonical `subjects`, `visits`, `cognition_scores`, `symptom_behavior_scores`, and `mri_features` tables are emitted
-- missing values and unmapped fields are handled explicitly
-- source adapters stay dumb and harmonization stays separate
-- subject-level splits are frozen before baselines
-- site-aware evaluation rules are explicit
-- repeat visits are grouped in a way that prevents leakage across train, validation, and test
-
-**Non-Goals**
-
-- no derived features
-- no soft target
-- no baseline training
-
-### PR5: Add derived features and public-only soft target construction
+### PR3: Canonical Benchmark Schema
 
 **Purpose**
 
-Turn canonical tables into model-ready features and define the `stable_cognitive_burden_proxy`.
+Define tables around the actual question rather than around proxy targets.
 
-**Why This PR Comes Now**
+**Canonical Tables Should Include**
 
-Baselines and trait/state modeling should train on the same feature and target contract that later evaluation will inspect.
-
-**Files / Directories To Add Or Modify**
-
-- `src/scz_audit_engine/strict_open/features.py`
-- `src/scz_audit_engine/strict_open/targets.py`
-
-**Tests To Add**
-
-- `tests/strict_open/test_features.py`
-- `tests/strict_open/test_targets.py`
-
-**CLI Commands Or Workflows Affected**
-
-- `scz-audit strict-open build-features`
-- `scz-audit strict-open build-targets`
-
-**Expected Outputs / Artifacts**
-
-- feature tables under `data/processed/strict_open/features/`
-- derived target outputs with `global_cognition_dev`, `state_noise_score`, and `stable_cognitive_burden_proxy`, where the proxy is used to contrast against state noise and estimate the patient's stable baseline-like signal
+- `subjects`
+- `visits`
+- `diagnoses`
+- `symptom_scores`
+- `cognition_scores`
+- `functioning_scores`
+- `treatment_exposures`
+- `outcomes`
+- `modality_features`
+- `split_assignments`
 
 **Acceptance Criteria**
 
-- features include cognition domain summaries, symptom composites, state-noise proxies, missingness indicators, and compact MRI summaries
-- the soft target is probabilistic, not categorical
-- the target uses symptom/function proxies only where available
-- `stable_cognitive_burden_proxy` is framed as a stable baseline-like estimate rather than a claim about a true baseline
-- feature and target outputs are keyed to the frozen split contract rather than redefining train, validation, and test behavior ad hoc
-- no treatment history or gated longitudinal assumptions leak into the target
+- schema supports real outcomes explicitly
+- schema supports cross-cohort harmonization
+- proxy targets are not required by the core contract
 
-**Non-Goals**
-
-- no hard clinical label
-- no sponsor-style enrichment logic
-- no model training yet
-- no split-rule changes in this PR
-
-### PR6: Add baselines and baseline evaluation
+### PR4: Harmonization And Evaluation Protocol
 
 **Purpose**
 
-Set the performance floor and make it obvious whether the core idea is dead early.
-
-**Why This PR Comes Now**
-
-If simple baselines are confounded or useless, there is no reason to hide that behind a more complex trait/state model.
+Freeze the rules before comparisons begin.
 
 **Files / Directories To Add Or Modify**
 
-- `src/scz_audit_engine/strict_open/baselines.py`
-- `src/scz_audit_engine/strict_open/baseline_eval.py`
+- cohort harmonizers
+- `docs/benchmark_eval_protocol.md`
+- split-definition logic
 
-**Tests To Add**
+**Evaluation Rules Must Cover**
 
-- `tests/strict_open/test_baselines.py`
-
-**CLI Commands Or Workflows Affected**
-
-- `scz-audit strict-open train-baselines`
-
-**Expected Outputs / Artifacts**
-
-- baseline models under `data/processed/strict_open/models/baselines/`
-- baseline summary report under `data/processed/strict_open/reports/`
+- subject-level leakage prevention
+- external-validation policy
+- cross-site caveats
+- repeat-visit handling
+- outcome-window definitions
+- cohort-specific mapping caveats
 
 **Acceptance Criteria**
 
-- includes cognition-only, symptom-only, MRI-only, simple multimodal, and snapshot latent baselines
-- baseline report is reproducible and easy to compare later against the trait/state model
-- baseline outputs are tied to the frozen split manifest and run manifest
-- obvious confounds are surfaced instead of hand-waved
+- at least two cohorts can be harmonized into the same schema
+- splits are frozen before benchmarking
+- outcome definitions are explicit and reproducible
 
-**Non-Goals**
-
-- no neural trait/state model yet
-- no biology-context layer
-
-### PR7: Add trait/state model and training loop
+### PR5: Representation Builders
 
 **Purpose**
 
-Implement the first model that explicitly separates stable signal from visit-level noise and emits confidence.
+Turn harmonized data into comparable representation families.
 
-**Why This PR Comes Now**
+**Initial Families**
 
-Only after baseline behavior is known does it make sense to pay the complexity cost of a trait/state model.
-
-**Files / Directories To Add Or Modify**
-
-- `pyproject.toml`
-- `src/scz_audit_engine/strict_open/model.py`
-- `src/scz_audit_engine/strict_open/train.py`
-- `src/scz_audit_engine/strict_open/losses.py`
-- `src/scz_audit_engine/strict_open/imaging.py`
-
-**Tests To Add**
-
-- `tests/strict_open/test_model.py`
-
-**CLI Commands Or Workflows Affected**
-
-- `scz-audit strict-open train`
-
-**Expected Outputs / Artifacts**
-
-- checkpoints and training outputs under `data/processed/strict_open/models/trait_state/`
-- persisted predictions, latent outputs, and confidence outputs
-- PyTorch training path and MONAI-backed MRI preprocessing or utilities
+- diagnosis-only
+- symptom dimensions
+- simple baseline clinical representation
+- simple trajectory-aware summaries where repeated data exist
+- simple clusters only as a comparator
 
 **Acceptance Criteria**
 
-- training runs end to end on the strict-open feature contract
-- model emits `z_trait`, `z_state`, a prediction, and a confidence output
-- MRI branch is implemented with `MONAI` where it helps, without contorting the broader architecture
-- training path is `CUDA`-capable when GPU is available and remains runnable on CPU for tests
-- heavyweight runtime dependencies land here as optional extras or training-only dependencies, not as an unconditional default install
-- architecture stays small and readable
+- each family is implemented with clear provenance
+- each family can be evaluated on the same outcomes
+- clusters are not privileged over dimensions or trajectories
 
-**Non-Goals**
-
-- no claim of success yet
-- no biology-context integration into the training loop
-- no extra public datasets merged into the core path
-- no `BioNeMo`, `TensorRT`, or `Dynamo` dependency in `strict-open v0`
-
-### PR8: Add evaluation suite and explicit go / no-go gate
+### PR6: Baseline Benchmark V0
 
 **Purpose**
 
-Measure whether the model is actually doing the thing the project claims.
+Answer the main question with the simplest honest benchmark.
 
-**Why This PR Comes Now**
+**Compare**
 
-This is the first real decision point. Training that merely runs is not evidence.
+- diagnosis
+- dimensions
+- early-course or trajectory-aware summaries where possible
+- simple clusters
 
-**Files / Directories To Add Or Modify**
+**Evaluate**
 
-- `src/scz_audit_engine/strict_open/eval.py`
-- `src/scz_audit_engine/strict_open/metrics.py`
-
-**Tests To Add**
-
-- `tests/strict_open/test_eval.py`
-
-**CLI Commands Or Workflows Affected**
-
-- `scz-audit strict-open eval`
-
-**Expected Outputs / Artifacts**
-
-- evaluation reports under `data/processed/strict_open/reports/`
-- stability, calibration, site-leakage, and missing-modality summaries
+- prediction of real outcomes
+- calibration
+- cohort transfer
+- subgroup coverage
+- failure cases
 
 **Acceptance Criteria**
 
-- evaluation explicitly reports whether trait stability beats snapshot baselines
-- calibration and abstention behavior are measured directly
-- site leakage is measured directly
-- missing-modality robustness is measured directly
-- evaluation checks whether the model can confidently flag noisy or ambiguous visits that would otherwise contaminate a trial endpoint
-- evaluation is run against the frozen subject-level split and site-aware protocol
-- report ends in a clear go / no-go decision
+- the repo can state which representation families reproduce across datasets
+- the repo can state which ones improve prediction over simple baselines
+- the report ends in a real go / no-go conclusion
 
-**Non-Goals**
-
-- no new model features hidden inside evaluation
-- no outreach or packaging docs yet
-
-### PR9: Add biology context and evidence-card layer
+### PR7: Trajectory Extension
 
 **Purpose**
 
-Attach biology-context outputs to the model result without turning them into predictive claims.
+Go deeper only if longitudinal data quality justifies it.
 
-**Why This PR Comes Now**
+**Focus**
 
-Interpretation belongs after the predictive core is proven to be at least directionally sane.
-
-**Files / Directories To Add Or Modify**
-
-- `src/scz_audit_engine/strict_open/sources/allen.py`
-- `src/scz_audit_engine/strict_open/sources/opentargets_public.py`
-- `src/scz_audit_engine/strict_open/biology.py`
-
-**Tests To Add**
-
-- `tests/strict_open/test_biology.py`
-
-**CLI Commands Or Workflows Affected**
-
-- `scz-audit strict-open build-biology`
-
-**Expected Outputs / Artifacts**
-
-- biology-context artifacts under `data/raw/strict_open/biology/`
-- evidence-card outputs under `data/processed/strict_open/reports/biology_context/`
+- persistent negative symptoms
+- functional non-recovery
+- early poor-outcome trajectories
 
 **Acceptance Criteria**
 
-- evidence card is traceable back to public sources
-- Allen and Open Targets stay outside the core predictive machinery
-- output language is clearly interpretive, not causal
+- trajectory work is only pursued if repeated-measures coverage is sufficient
+- longitudinal models are compared against simpler non-longitudinal baselines
 
-**Non-Goals**
-
-- no retraining the model around biology priors
-- no mechanism claims
-
-### PR10: Add reporting artifact and access / outreach packet docs
+### PR8: Biomarker / Modality Ablations
 
 **Purpose**
 
-Package the technical work into a `Cohort Integrity Report` and the docs that explain why PIs and sponsors need this audit to de-risk trial readouts and what closed data unlocks next.
+Make biomarkers earn their place.
 
-**Why This PR Comes Now**
+**Scope**
 
-The report should reflect a finished `strict-open v0` evaluation state, not a moving target.
-
-**Files / Directories To Add Or Modify**
-
-- `src/scz_audit_engine/strict_open/reporting.py`
-- `docs/strict_open_results.md`
-- `docs/strict_open_closed_data_unlocks.md`
-- `docs/strict_open_access_packet.md`
-- `examples/strict_open_v0/input_sample.json`
-
-**Tests To Add**
-
-- `tests/strict_open/test_reporting.py`
-
-**CLI Commands Or Workflows Affected**
-
-- `scz-audit strict-open report`
-
-**Expected Outputs / Artifacts**
-
-- one clean `Cohort Integrity Report` generated by `scz-audit strict-open report`, with cohort-level state-noise contamination, site-leakage warnings, individual patient stability tiering, abstain flags, and short biology-context evidence cards
-- docs that explain why public data is insufficient, why PIs and sponsors need this audit to de-risk trial readouts, and what exact closed data would unlock next
+- imaging
+- genetics
+- other modalities available in the harmonized cohorts
 
 **Acceptance Criteria**
 
-- the example report is generated from the reporting command rather than hand-authored markdown that can drift
-- the generated report is understandable in about one minute
-- docs make a narrow, credible case for why PIs and sponsors need this audit to de-risk trial readouts and what exact closed data would unlock next
-- all language stays inside `strict-open v0` boundaries
+- biomarkers are evaluated only as incremental value-add
+- reporting explicitly states whether they improve on clinical
+  representations
 
-**Non-Goals**
+### PR9: Decision Report
 
-- no sponsor-grade or commercial claims
-- no gated-data integration
-- no private-partner workflows
+**Purpose**
 
-## Recommended First PR To Open Immediately
+Emit the decision the project exists to make.
 
-Open `PR1: Add strict-open v0 charter and claim-boundary docs`.
+**Final Report Must Answer**
 
-Reason: this repo is effectively blank. The highest-leverage first move is to freeze the wording, the non-goals, the default data assumptions, and the execution-stack stance before any package structure or CLI surface is added.
+1. what reproduces
+2. what predicts useful outcomes
+3. what fails to generalize
+4. whether biomarkers add anything
+5. what the next research move should be
 
-## Main Failure Modes And Pause Gates
+## Guidance For Existing Work
 
-### After PR3
+### `strict_open` Work That Is Safe To Keep
 
-Pause if `ds005237 / TCP` is too thin to support the canonical tables without heroic assumptions.
+- ingest
+- audit
+- provenance
+- harmonization scaffolding
+- split scaffolding
 
-Do not rescue the plan by immediately pulling in HCP-YA or gated data.
+### `strict_open` Work That Should Not Guide The Mainline
 
-### After PR5
+- target construction around `stable_cognitive_burden_proxy`
+- baseline families designed around the old soft targets
+- the trait/state model plan
+- biology-context outputs as a near-term focus
 
-Pause if the soft target is mostly site, scanner, missingness, or other state noise.
+## Guidance For The Pending Baseline PR
 
-Also pause if the available symptom or function proxies are too thin to justify the proxy at all.
+Do not merge the pending baseline PR unchanged if it is tied to:
 
-### After PR6
+- `global_cognition_dev`
+- `state_noise_score`
+- `stable_cognitive_burden_proxy`
 
-Pause if the baselines only learn confounds or there is no signal worth separating into `trait` and `state`.
+That branch can still be mined later for:
 
-### After PR8
+- split-contract validation logic
+- report-generation patterns
+- support-gap accounting
+- manifest discipline
 
-Pause or kill `strict-open v0` if:
+## Immediate Next Step
 
-- trait stability does not beat snapshot baselines
-- calibration and abstention are not sane
-- site leakage remains high
-- missing-modality robustness falls apart
+Open a roadmap-reset PR first.
 
-If PR8 looks promising, the next optional step after this roadmap is a second truly public cohort for robustness testing.
+That PR should:
 
-If PR8 is weak, do not expand cohort scope just to rescue the story.
-
-### After PR9 Or PR10
-
-Trim or rewrite anything that starts sounding causal, sponsor-ready, or commercial.
-
-## Parallelization Notes
-
-Most of this should stay serial.
-
-Useful exceptions:
-
-- PR9 can be developed after canonical identifiers are stable, but should merge only after PR8
-- PR10 docs can be drafted early, but should merge only after PR8 and ideally after PR9
-- GPU container work in PR2 can be prepared in parallel with early doc drafting, but should stay minimal and not balloon into environment yak-shaving
-- optional second-cohort work should only begin after a strong PR8 result and should not run in parallel with the core 10-PR path
-
-Everything else should merge in order. The goal is not speed through parallel scaffolding. The goal is a sequence of small PRs that each prove something real.
+1. update `README.md`
+2. land this roadmap
+3. add a benchmark claim doc
+4. add a dataset matrix doc
+5. stop the repo from implicitly optimizing for the old thesis
