@@ -21,6 +21,10 @@ class BenchmarkPaths:
     repo_root: Path
 
     @property
+    def dataset_registry_path(self) -> Path:
+        return self.curated_root / "dataset_registry.csv"
+
+    @property
     def raw_root(self) -> Path:
         return self.repo_root / "data" / "raw" / "benchmark"
 
@@ -37,6 +41,10 @@ class BenchmarkPaths:
         return self.processed_root / "manifests"
 
     @property
+    def reports_root(self) -> Path:
+        return self.processed_root / "reports"
+
+    @property
     def examples_root(self) -> Path:
         return self.repo_root / "examples" / "benchmark_v0"
 
@@ -48,10 +56,12 @@ class BenchmarkPaths:
         """Return the canonical benchmark roots keyed by logical name."""
 
         return {
+            "dataset_registry": self.dataset_registry_path,
             "raw": self.raw_root,
             "processed": self.processed_root,
             "curated": self.curated_root,
             "manifests": self.manifests_root,
+            "reports": self.reports_root,
             "examples": self.examples_root,
         }
 
@@ -59,6 +69,11 @@ class BenchmarkPaths:
         """Return the default destination for a benchmark run manifest."""
 
         return self.manifests_root / filename
+
+    def default_report_path(self, filename: str = "dataset_audit.json") -> Path:
+        """Return the default destination for a benchmark report artifact."""
+
+        return self.reports_root / filename
 
 
 def benchmark_paths(repo_root: str | Path | None = None) -> BenchmarkPaths:

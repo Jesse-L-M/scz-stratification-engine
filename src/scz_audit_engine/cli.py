@@ -10,6 +10,7 @@ from pathlib import Path
 import tomllib
 
 from . import __version__
+from .benchmark import benchmark_paths, run_benchmark_dataset_audit
 from .strict_open import (
     build_source_manifest,
     build_run_manifest,
@@ -81,7 +82,7 @@ def _build_benchmark_stub_handler(command_name: str) -> Callable[[argparse.Names
     return handler
 
 
-def _load_strict_open_config(config_path: str | Path) -> dict[str, object]:
+def _load_toml_config(config_path: str | Path) -> dict[str, object]:
     with Path(config_path).open("rb") as handle:
         return tomllib.load(handle)
 
@@ -163,6 +164,67 @@ def _build_invoked_command(command_name: str, args: argparse.Namespace) -> list[
     return command
 
 
+def _build_benchmark_invoked_command(command_name: str, args: argparse.Namespace) -> list[str]:
+    command = ["scz-audit", "benchmark", command_name]
+    config_path = getattr(args, "config", None)
+    config_explicit = bool(getattr(args, "_config_explicit", False))
+    if config_path is not None and (config_explicit or config_path != DEFAULT_BENCHMARK_CONFIG_PATH):
+        _append_flag(command, "--config", str(config_path))
+
+    if command_name == "audit-datasets":
+        _append_flag(command, "--registry-path", getattr(args, "registry_path", None))
+        _append_flag(command, "--reports-dir", getattr(args, "reports_dir", None))
+        _append_flag(command, "--manifest-dir", getattr(args, "manifest_dir", None))
+    return command
+
+
+def _build_benchmark_audit_datasets_handler() -> Callable[[argparse.Namespace], int]:
+    def handler(args: argparse.Namespace) -> int:
+        path_contract = benchmark_paths()
+        repo_root = path_contract.repo_root
+        config_path = _resolve_path(args.config, repo_root=repo_root, fallback=path_contract.config_path)
+        config = _load_toml_config(config_path)
+        paths_config = config.get("paths", {})
+        if not isinstance(paths_config, dict):
+            paths_config = {}
+
+        registry_fallback = _resolve_path(
+            config.get("dataset_registry_path"),
+            repo_root=repo_root,
+            fallback=path_contract.dataset_registry_path,
+        )
+        reports_root = _resolve_path(
+            paths_config.get("reports_root"),
+            repo_root=repo_root,
+            fallback=path_contract.reports_root,
+        )
+        manifests_root = _resolve_path(
+            paths_config.get("manifests_root"),
+            repo_root=repo_root,
+            fallback=path_contract.manifests_root,
+        )
+        registry_path = Path(args.registry_path).resolve() if args.registry_path else registry_fallback
+        if args.reports_dir:
+            reports_root = Path(args.reports_dir).resolve()
+        if args.manifest_dir:
+            manifests_root = Path(args.manifest_dir).resolve()
+
+        seed = int(config.get("seed", 1729))
+        git_sha = resolve_git_sha(repo_root)
+        artifacts = run_benchmark_dataset_audit(
+            registry_path=registry_path,
+            reports_root=reports_root,
+            manifests_root=manifests_root,
+            command=_build_benchmark_invoked_command("audit-datasets", args),
+            git_sha=git_sha,
+            seed=seed,
+        )
+        print(json.dumps(artifacts.to_summary(), indent=2, sort_keys=True))
+        return 0
+
+    return handler
+
+
 def _build_ingest_handler() -> Callable[[argparse.Namespace], int]:
     def handler(args: argparse.Namespace) -> int:
         if args.source != DEFAULT_TCP_SOURCE:
@@ -172,7 +234,7 @@ def _build_ingest_handler() -> Callable[[argparse.Namespace], int]:
         path_contract = strict_open_paths()
         repo_root = path_contract.repo_root
         config_path = _resolve_path(args.config, repo_root=repo_root, fallback=path_contract.config_path)
-        config = _load_strict_open_config(config_path)
+        config = _load_toml_config(config_path)
         paths_config = config.get("paths", {})
         if not isinstance(paths_config, dict):
             paths_config = {}
@@ -247,7 +309,7 @@ def _build_audit_handler() -> Callable[[argparse.Namespace], int]:
         path_contract = strict_open_paths()
         repo_root = path_contract.repo_root
         config_path = _resolve_path(args.config, repo_root=repo_root, fallback=path_contract.config_path)
-        config = _load_strict_open_config(config_path)
+        config = _load_toml_config(config_path)
         paths_config = config.get("paths", {})
         if not isinstance(paths_config, dict):
             paths_config = {}
@@ -298,7 +360,7 @@ def _build_harmonize_handler() -> Callable[[argparse.Namespace], int]:
         path_contract = strict_open_paths()
         repo_root = path_contract.repo_root
         config_path = _resolve_path(args.config, repo_root=repo_root, fallback=path_contract.config_path)
-        config = _load_strict_open_config(config_path)
+        config = _load_toml_config(config_path)
         paths_config = config.get("paths", {})
         if not isinstance(paths_config, dict):
             paths_config = {}
@@ -349,7 +411,7 @@ def _build_define_splits_handler() -> Callable[[argparse.Namespace], int]:
         path_contract = strict_open_paths()
         repo_root = path_contract.repo_root
         config_path = _resolve_path(args.config, repo_root=repo_root, fallback=path_contract.config_path)
-        config = _load_strict_open_config(config_path)
+        config = _load_toml_config(config_path)
         paths_config = config.get("paths", {})
         if not isinstance(paths_config, dict):
             paths_config = {}
@@ -407,7 +469,7 @@ def _build_build_features_handler() -> Callable[[argparse.Namespace], int]:
         path_contract = strict_open_paths()
         repo_root = path_contract.repo_root
         config_path = _resolve_path(args.config, repo_root=repo_root, fallback=path_contract.config_path)
-        config = _load_strict_open_config(config_path)
+        config = _load_toml_config(config_path)
         paths_config = config.get("paths", {})
         if not isinstance(paths_config, dict):
             paths_config = {}
@@ -464,7 +526,7 @@ def _build_build_targets_handler() -> Callable[[argparse.Namespace], int]:
         path_contract = strict_open_paths()
         repo_root = path_contract.repo_root
         config_path = _resolve_path(args.config, repo_root=repo_root, fallback=path_contract.config_path)
-        config = _load_strict_open_config(config_path)
+        config = _load_toml_config(config_path)
         paths_config = config.get("paths", {})
         if not isinstance(paths_config, dict):
             paths_config = {}
@@ -555,8 +617,8 @@ def build_parser() -> argparse.ArgumentParser:
     for command_name in BENCHMARK_COMMANDS:
         command_parser = benchmark_subparsers.add_parser(
             command_name,
-            help=f"Stub command for benchmark {command_name}.",
-            description=f"Stub command for benchmark {command_name}.",
+            help=f"Command for benchmark {command_name}.",
+            description=f"Command for benchmark {command_name}.",
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         command_parser.add_argument(
@@ -564,7 +626,22 @@ def build_parser() -> argparse.ArgumentParser:
             default=DEFAULT_BENCHMARK_CONFIG_PATH,
             help="Path to the benchmark v0 config file.",
         )
-        command_parser.set_defaults(handler=_build_benchmark_stub_handler(command_name))
+        if command_name == "audit-datasets":
+            command_parser.add_argument(
+                "--registry-path",
+                help="Destination path for the checked-in benchmark dataset registry CSV.",
+            )
+            command_parser.add_argument(
+                "--reports-dir",
+                help="Destination directory for dataset-audit report artifacts.",
+            )
+            command_parser.add_argument(
+                "--manifest-dir",
+                help="Destination directory for benchmark run manifests.",
+            )
+            command_parser.set_defaults(handler=_build_benchmark_audit_datasets_handler())
+        else:
+            command_parser.set_defaults(handler=_build_benchmark_stub_handler(command_name))
 
     strict_open_parser = subparsers.add_parser(
         "strict-open",

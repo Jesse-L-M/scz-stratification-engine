@@ -1,5 +1,5 @@
-# PR1 scaffolding leaves the dataset registry undefined until PR2 introduces it.
-dataset_registry_path = ""
+# PR2 introduces a checked-in dataset registry and dataset-audit report outputs.
+dataset_registry_path = "data/curated/benchmark/dataset_registry.csv"
 seed = 1729
 
 [paths]
@@ -7,5 +7,6 @@ raw_root = "data/raw/benchmark"
 processed_root = "data/processed/benchmark"
 curated_root = "data/curated/benchmark"
 manifests_root = "data/processed/benchmark/manifests"
+reports_root = "data/processed/benchmark/reports"
 examples_root = "examples/benchmark_v0"
 default_manifest_path = "data/processed/benchmark/manifests/run_manifest.json"

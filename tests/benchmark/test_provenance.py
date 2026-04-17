@@ -1,6 +1,6 @@
 import json
 
-from scz_audit_engine.benchmark.provenance import file_sha256, write_json_artifact
+from scz_audit_engine.benchmark.provenance import file_sha256, write_json_artifact, write_text_artifact
 
 
 def test_file_sha256_matches_known_payload(tmp_path) -> None:
@@ -18,3 +18,12 @@ def test_write_json_artifact_serializes_sorted_json(tmp_path) -> None:
     assert written_path == destination
     assert json.loads(destination.read_text(encoding="utf-8")) == {"a": {"value": 2}, "z": 1}
     assert destination.read_text(encoding="utf-8").splitlines()[1].strip().startswith('"a"')
+
+
+def test_write_text_artifact_normalizes_trailing_newline(tmp_path) -> None:
+    destination = tmp_path / "reports" / "dataset_audit.md"
+
+    written_path = write_text_artifact("# Report", destination)
+
+    assert written_path == destination
+    assert destination.read_text(encoding="utf-8") == "# Report\n"

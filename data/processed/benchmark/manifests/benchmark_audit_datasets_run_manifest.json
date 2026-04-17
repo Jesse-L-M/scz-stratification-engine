@@ -1,0 +1,18 @@
+{
+  "command": [
+    "scz-audit",
+    "benchmark",
+    "audit-datasets"
+  ],
+  "dataset": {
+    "source": "benchmark-registry"
+  },
+  "git_sha": "304e6b3",
+  "output_paths": {
+    "dataset_registry": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/edinburgh/data/curated/benchmark/dataset_registry.csv",
+    "json_report": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/edinburgh/data/processed/benchmark/reports/dataset_audit.json",
+    "markdown_report": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/edinburgh/data/processed/benchmark/reports/dataset_audit.md"
+  },
+  "seed": 1729,
+  "timestamp": "2026-04-17T17:00:17.360879Z"
+}

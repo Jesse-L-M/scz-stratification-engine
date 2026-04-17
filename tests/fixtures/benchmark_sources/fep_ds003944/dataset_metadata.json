@@ -1,0 +1,33 @@
+{
+  "dataset": {
+    "id": "ds003944",
+    "name": "EEG: First Episode Psychosis vs. Control Resting Task 1",
+    "metadata": {
+      "species": "Human",
+      "studyDesign": "",
+      "studyDomain": "",
+      "modalities": [
+        "eeg"
+      ],
+      "ages": [
+        15,
+        21,
+        22
+      ]
+    },
+    "latestSnapshot": {
+      "tag": "1.0.1",
+      "description": {
+        "Name": "EEG: First Episode Psychosis vs. Control Resting Task 1",
+        "DatasetDOI": "doi:10.18112/openneuro.ds003944.v1.0.1",
+        "License": "CC0",
+        "Authors": [
+          "Example Author"
+        ],
+        "ReferencesAndLinks": [
+          "https://openneuro.org/datasets/ds003944"
+        ]
+      }
+    }
+  }
+}
