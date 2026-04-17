@@ -13,7 +13,9 @@ from . import __version__
 from .strict_open import (
     build_source_manifest,
     build_run_manifest,
+    run_strict_open_feature_build,
     run_strict_open_split_definition,
+    run_strict_open_target_build,
     run_tcp_harmonization,
     run_tcp_audit,
     strict_open_paths,
@@ -94,7 +96,8 @@ def _append_flag(command: list[str], flag: str, value: str | None) -> None:
 def _build_invoked_command(command_name: str, args: argparse.Namespace) -> list[str]:
     command = ["scz-audit", "strict-open", command_name]
     config_path = getattr(args, "config", None)
-    if config_path is not None and config_path != DEFAULT_CONFIG_PATH:
+    config_explicit = bool(getattr(args, "_config_explicit", False))
+    if config_path is not None and (config_explicit or config_path != DEFAULT_CONFIG_PATH):
         _append_flag(command, "--config", str(config_path))
 
     if command_name == "ingest":
@@ -118,6 +121,21 @@ def _build_invoked_command(command_name: str, args: argparse.Namespace) -> list[
 
     if command_name == "define-splits":
         _append_flag(command, "--harmonized-dir", getattr(args, "harmonized_dir", None))
+        _append_flag(command, "--manifest-dir", getattr(args, "manifest_dir", None))
+        _append_flag(command, "--output-dir", getattr(args, "output_dir", None))
+        return command
+
+    if command_name == "build-features":
+        _append_flag(command, "--harmonized-dir", getattr(args, "harmonized_dir", None))
+        _append_flag(command, "--splits-dir", getattr(args, "splits_dir", None))
+        _append_flag(command, "--manifest-dir", getattr(args, "manifest_dir", None))
+        _append_flag(command, "--output-dir", getattr(args, "output_dir", None))
+        return command
+
+    if command_name == "build-targets":
+        _append_flag(command, "--features-dir", getattr(args, "features_dir", None))
+        _append_flag(command, "--harmonized-dir", getattr(args, "harmonized_dir", None))
+        _append_flag(command, "--splits-dir", getattr(args, "splits_dir", None))
         _append_flag(command, "--manifest-dir", getattr(args, "manifest_dir", None))
         _append_flag(command, "--output-dir", getattr(args, "output_dir", None))
         return command
@@ -364,6 +382,128 @@ def _build_define_splits_handler() -> Callable[[argparse.Namespace], int]:
     return handler
 
 
+def _build_build_features_handler() -> Callable[[argparse.Namespace], int]:
+    def handler(args: argparse.Namespace) -> int:
+        path_contract = strict_open_paths()
+        repo_root = path_contract.repo_root
+        config_path = _resolve_path(args.config, repo_root=repo_root, fallback=path_contract.config_path)
+        config = _load_strict_open_config(config_path)
+        paths_config = config.get("paths", {})
+        if not isinstance(paths_config, dict):
+            paths_config = {}
+
+        manifests_root = _resolve_path(
+            paths_config.get("manifests_root"),
+            repo_root=repo_root,
+            fallback=path_contract.manifests_root,
+        )
+        harmonized_root = _resolve_path(
+            paths_config.get("harmonized_root"),
+            repo_root=repo_root,
+            fallback=path_contract.harmonized_root,
+        )
+        splits_root = _resolve_path(
+            paths_config.get("splits_root"),
+            repo_root=repo_root,
+            fallback=path_contract.splits_root,
+        )
+        features_root = _resolve_path(
+            paths_config.get("features_root"),
+            repo_root=repo_root,
+            fallback=path_contract.features_root,
+        )
+        if args.harmonized_dir:
+            harmonized_root = Path(args.harmonized_dir).resolve()
+        if args.splits_dir:
+            splits_root = Path(args.splits_dir).resolve()
+        if args.manifest_dir:
+            manifests_root = Path(args.manifest_dir).resolve()
+        if args.output_dir:
+            features_root = Path(args.output_dir).resolve()
+
+        seed = int(config.get("seed", 1729))
+        git_sha = resolve_git_sha(repo_root)
+        command = _build_invoked_command("build-features", args)
+        results = run_strict_open_feature_build(
+            harmonized_root=harmonized_root,
+            splits_root=splits_root,
+            manifests_root=manifests_root,
+            features_root=features_root,
+            command=command,
+            git_sha=git_sha,
+            seed=seed,
+        )
+        print(json.dumps(results, indent=2, sort_keys=True))
+        return 0
+
+    return handler
+
+
+def _build_build_targets_handler() -> Callable[[argparse.Namespace], int]:
+    def handler(args: argparse.Namespace) -> int:
+        path_contract = strict_open_paths()
+        repo_root = path_contract.repo_root
+        config_path = _resolve_path(args.config, repo_root=repo_root, fallback=path_contract.config_path)
+        config = _load_strict_open_config(config_path)
+        paths_config = config.get("paths", {})
+        if not isinstance(paths_config, dict):
+            paths_config = {}
+
+        manifests_root = _resolve_path(
+            paths_config.get("manifests_root"),
+            repo_root=repo_root,
+            fallback=path_contract.manifests_root,
+        )
+        harmonized_root = _resolve_path(
+            paths_config.get("harmonized_root"),
+            repo_root=repo_root,
+            fallback=path_contract.harmonized_root,
+        )
+        splits_root = _resolve_path(
+            paths_config.get("splits_root"),
+            repo_root=repo_root,
+            fallback=path_contract.splits_root,
+        )
+        features_root = _resolve_path(
+            paths_config.get("features_root"),
+            repo_root=repo_root,
+            fallback=path_contract.features_root,
+        )
+        targets_root = _resolve_path(
+            paths_config.get("targets_root"),
+            repo_root=repo_root,
+            fallback=path_contract.targets_root,
+        )
+        if args.features_dir:
+            features_root = Path(args.features_dir).resolve()
+        if args.harmonized_dir:
+            harmonized_root = Path(args.harmonized_dir).resolve()
+        if args.splits_dir:
+            splits_root = Path(args.splits_dir).resolve()
+        if args.manifest_dir:
+            manifests_root = Path(args.manifest_dir).resolve()
+        if args.output_dir:
+            targets_root = Path(args.output_dir).resolve()
+
+        seed = int(config.get("seed", 1729))
+        git_sha = resolve_git_sha(repo_root)
+        command = _build_invoked_command("build-targets", args)
+        results = run_strict_open_target_build(
+            features_root=features_root,
+            harmonized_root=harmonized_root,
+            splits_root=splits_root,
+            manifests_root=manifests_root,
+            targets_root=targets_root,
+            command=command,
+            git_sha=git_sha,
+            seed=seed,
+        )
+        print(json.dumps(results, indent=2, sort_keys=True))
+        return 0
+
+    return handler
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Create the top-level CLI parser."""
 
@@ -464,6 +604,46 @@ def build_parser() -> argparse.ArgumentParser:
                 help="Destination directory for split outputs.",
             )
             command_parser.set_defaults(handler=_build_define_splits_handler())
+        elif command_name == "build-features":
+            command_parser.add_argument(
+                "--harmonized-dir",
+                help="Directory containing harmonized strict-open tables.",
+            )
+            command_parser.add_argument(
+                "--splits-dir",
+                help="Directory containing frozen strict-open split assignments.",
+            )
+            command_parser.add_argument(
+                "--manifest-dir",
+                help="Destination directory for run manifests.",
+            )
+            command_parser.add_argument(
+                "--output-dir",
+                help="Destination directory for feature outputs.",
+            )
+            command_parser.set_defaults(handler=_build_build_features_handler())
+        elif command_name == "build-targets":
+            command_parser.add_argument(
+                "--features-dir",
+                help="Directory containing strict-open feature outputs.",
+            )
+            command_parser.add_argument(
+                "--harmonized-dir",
+                help="Directory containing harmonized strict-open tables.",
+            )
+            command_parser.add_argument(
+                "--splits-dir",
+                help="Directory containing frozen strict-open split assignments.",
+            )
+            command_parser.add_argument(
+                "--manifest-dir",
+                help="Destination directory for run manifests.",
+            )
+            command_parser.add_argument(
+                "--output-dir",
+                help="Destination directory for derived target outputs.",
+            )
+            command_parser.set_defaults(handler=_build_build_targets_handler())
         else:
             command_parser.set_defaults(handler=_build_stub_handler(command_name))
 
@@ -474,7 +654,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     """Run the CLI and return an exit code."""
 
     parser = build_parser()
-    args = parser.parse_args(list(argv) if argv is not None else None)
+    argv_list = list(argv) if argv is not None else None
+    args = parser.parse_args(argv_list)
+    tokens = argv_list or []
+    args._config_explicit = any(
+        token == "--config" or token.startswith("--config=")
+        for token in tokens
+    )
     handler: Callable[[argparse.Namespace], int] = args.handler
     return handler(args)
 
