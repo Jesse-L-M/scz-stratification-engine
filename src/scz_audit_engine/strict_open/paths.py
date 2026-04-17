@@ -41,6 +41,14 @@ class StrictOpenPaths:
         return self.processed_root / "profiles"
 
     @property
+    def harmonized_root(self) -> Path:
+        return self.processed_root / "harmonized"
+
+    @property
+    def splits_root(self) -> Path:
+        return self.processed_root / "splits"
+
+    @property
     def examples_root(self) -> Path:
         return self.repo_root / "examples" / "strict_open_v0"
 
@@ -57,6 +65,8 @@ class StrictOpenPaths:
             "curated": self.curated_root,
             "manifests": self.manifests_root,
             "profiles": self.profiles_root,
+            "harmonized": self.harmonized_root,
+            "splits": self.splits_root,
             "examples": self.examples_root,
         }
 
@@ -74,6 +84,16 @@ class StrictOpenPaths:
         """Return the default destination for a strict-open audit profile."""
 
         return self.profiles_root / filename
+
+    def default_harmonized_path(self, filename: str = "subjects.csv") -> Path:
+        """Return the default destination for a harmonized strict-open artifact."""
+
+        return self.harmonized_root / filename
+
+    def default_split_path(self, filename: str = "split_assignments.csv") -> Path:
+        """Return the default destination for a split artifact."""
+
+        return self.splits_root / filename
 
 
 def strict_open_paths(repo_root: str | Path | None = None) -> StrictOpenPaths:

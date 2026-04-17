@@ -7,8 +7,15 @@ processed_root = "data/processed/strict_open"
 curated_root = "data/curated/strict_open"
 manifests_root = "data/processed/strict_open/manifests"
 profiles_root = "data/processed/strict_open/profiles"
+harmonized_root = "data/processed/strict_open/harmonized"
+splits_root = "data/processed/strict_open/splits"
 examples_root = "examples/strict_open_v0"
 default_manifest_path = "data/processed/strict_open/manifests/run_manifest.json"
+
+[splits]
+train_fraction = 0.6
+validation_fraction = 0.2
+test_fraction = 0.2
 
 [sources.tcp]
 dataset_version = "1.1.3"
