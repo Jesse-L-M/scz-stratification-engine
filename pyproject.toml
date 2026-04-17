@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "scz-audit-engine"
 version = "0.0.0"
-description = "Docs/bootstrap for the strict-open v0 cognitive stability and trial-noise audit engine."
+description = "Scaffolding for the benchmark mainline and the exploratory strict-open audit engine."
 readme = "README.md"
 requires-python = ">=3.11"
 

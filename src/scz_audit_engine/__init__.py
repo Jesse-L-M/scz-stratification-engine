@@ -1,4 +1,4 @@
-"""Top-level package for the strict-open audit engine bootstrap."""
+"""Top-level package for the benchmark mainline and exploratory namespaces."""
 
 from importlib.metadata import PackageNotFoundError, version
 

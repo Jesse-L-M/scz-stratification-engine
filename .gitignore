@@ -1,0 +1,3 @@
+# Python bytecode caches should never show up in the worktree.
+__pycache__/
+*.py[cod]
