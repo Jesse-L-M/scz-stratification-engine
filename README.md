@@ -27,10 +27,14 @@ Current source-of-truth docs:
 Current code scaffold:
 
 - `src/scz_audit_engine/benchmark/`: benchmark namespace for repo-relative
-  paths, provenance helpers, and run manifests
-- `config/benchmark_v0.toml`: benchmark config scaffold for shared path
-  contracts and defaults
-- `scz-audit benchmark --help`: stub CLI lane for the future benchmark flow
+  paths, provenance helpers, dataset registry contracts, and dataset-audit
+  source adapters
+- `config/benchmark_v0.toml`: benchmark config for shared path contracts and
+  defaults
+- `scz-audit benchmark audit-datasets`: writes the benchmark dataset registry,
+  audit reports, and run manifest from audited cohort metadata
+- `data/curated/benchmark/dataset_registry.csv`: checked-in benchmark cohort
+  registry for the current v0 scope
 
 Practical note:
 

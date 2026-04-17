@@ -48,4 +48,14 @@ def write_json_artifact(payload: dict[str, Any], destination: str | Path) -> Pat
     return output_path
 
 
-__all__ = ["file_sha256", "resolve_git_sha", "write_json_artifact"]
+def write_text_artifact(payload: str, destination: str | Path) -> Path:
+    """Write a UTF-8 text artifact to disk and return the resolved path."""
+
+    output_path = Path(destination)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    normalized = payload if payload.endswith("\n") else f"{payload}\n"
+    output_path.write_text(normalized, encoding="utf-8")
+    return output_path
+
+
+__all__ = ["file_sha256", "resolve_git_sha", "write_json_artifact", "write_text_artifact"]
