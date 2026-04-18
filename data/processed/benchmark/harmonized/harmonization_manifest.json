@@ -1,0 +1,138 @@
+{
+  "claim_boundary_statement": "Benchmark harmonization operationalizes the current narrow-go line only. It does not upgrade the repo to full external validation or prospective benchmarking.",
+  "cohort_caveats": {
+    "fep-ds003944": [
+      "fep-ds003944 remains a concurrent-only public cohort; no prospective outcome window is claimed.",
+      "Psychosis labels are strong enough for the current narrow benchmark lane, but subtype equivalence remains out of scope."
+    ],
+    "tcp-ds005237": [
+      "tcp-ds005237 remains concurrent-only in public form; no prospective outcome window is claimed.",
+      "Public diagnosis granularity remains Patient versus GenPop only, so the cohort stays explicitly limited."
+    ]
+  },
+  "cohort_support": {
+    "fep-ds003944": {
+      "benchmark_v0_eligibility": "eligible",
+      "concurrent_endpoint_only": true,
+      "outcome_temporal_validity": "concurrent_only",
+      "representation_comparison_support": "strong"
+    },
+    "tcp-ds005237": {
+      "benchmark_v0_eligibility": "limited",
+      "concurrent_endpoint_only": true,
+      "outcome_temporal_validity": "concurrent_only",
+      "representation_comparison_support": "limited"
+    }
+  },
+  "cohorts_harmonized": [
+    "tcp-ds005237",
+    "fep-ds003944"
+  ],
+  "command": [
+    "scz-audit",
+    "benchmark",
+    "harmonize"
+  ],
+  "current_limitations": [
+    "Outcome rows remain concurrent-only where the public cohorts are concurrent-only.",
+    "tcp-ds005237 stays explicitly limited because public labels remain broad Patient versus GenPop.",
+    "Representation builders and benchmark models remain intentionally deferred."
+  ],
+  "generated_at": "2026-04-18T18:04:12.644792Z",
+  "git_sha": "129ffd6",
+  "harmonized_root": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized",
+  "input_cohort_roots": {
+    "fep-ds003944": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/raw/benchmark/fep-ds003944",
+    "tcp-ds005237": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/raw/benchmark/tcp-ds005237"
+  },
+  "missing_expected_cohorts": [],
+  "output_paths": {
+    "cognition_scores": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/cognition_scores.csv",
+    "diagnoses": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/diagnoses.csv",
+    "functioning_scores": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/functioning_scores.csv",
+    "harmonization_manifest": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/harmonization_manifest.json",
+    "modality_features": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/modality_features.csv",
+    "outcomes": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/outcomes.csv",
+    "split_assignments": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/split_assignments.csv",
+    "split_manifest": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/manifests/benchmark_split_manifest.json",
+    "subjects": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/subjects.csv",
+    "symptom_scores": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/symptom_scores.csv",
+    "treatment_exposures": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/treatment_exposures.csv",
+    "visits": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/visits.csv"
+  },
+  "raw_root": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/raw/benchmark",
+  "row_counts_by_table": {
+    "cognition_scores": 6,
+    "diagnoses": 7,
+    "functioning_scores": 8,
+    "modality_features": 0,
+    "outcomes": 8,
+    "split_assignments": 7,
+    "subjects": 7,
+    "symptom_scores": 10,
+    "treatment_exposures": 2,
+    "visits": 7
+  },
+  "row_counts_by_table_and_cohort": {
+    "cognition_scores": {
+      "fep-ds003944": 6,
+      "tcp-ds005237": 0
+    },
+    "diagnoses": {
+      "fep-ds003944": 3,
+      "tcp-ds005237": 4
+    },
+    "functioning_scores": {
+      "fep-ds003944": 4,
+      "tcp-ds005237": 4
+    },
+    "modality_features": {
+      "fep-ds003944": 0,
+      "tcp-ds005237": 0
+    },
+    "outcomes": {
+      "fep-ds003944": 4,
+      "tcp-ds005237": 4
+    },
+    "split_assignments": {
+      "fep-ds003944": 3,
+      "tcp-ds005237": 4
+    },
+    "subjects": {
+      "fep-ds003944": 3,
+      "tcp-ds005237": 4
+    },
+    "symptom_scores": {
+      "fep-ds003944": 6,
+      "tcp-ds005237": 4
+    },
+    "treatment_exposures": {
+      "fep-ds003944": 2,
+      "tcp-ds005237": 0
+    },
+    "visits": {
+      "fep-ds003944": 3,
+      "tcp-ds005237": 4
+    }
+  },
+  "schema_version": "benchmark_v0",
+  "seed": 1729,
+  "unsupported_fields_summary": {
+    "fep-ds003944": {
+      "modality_features": [
+        "No staged subject-level EEG files were present in the current root."
+      ]
+    },
+    "tcp-ds005237": {
+      "cognition_scores": [
+        "No local cognition tables are staged in the current public TCP root; cognition support remains unstated in harmonized rows."
+      ],
+      "modality_features": [
+        "No staged subject-level MRI or fMRI files were present in the current root."
+      ],
+      "treatment_exposures": [
+        "No staged medication exposure table is present in the current public TCP root."
+      ]
+    }
+  }
+}

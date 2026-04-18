@@ -1,5 +1,6 @@
 """Benchmark scaffolding contracts and helpers."""
 
+from .harmonize import run_benchmark_harmonization
 from .dataset_audit import run_benchmark_dataset_audit
 from .dataset_registry import (
     ACCESS_LEVELS,
@@ -29,6 +30,13 @@ from .schema import (
     benchmark_schema,
 )
 from .schema_artifacts import run_benchmark_define_schema
+from .splits import (
+    ASSIGNMENT_NOTE,
+    DEFAULT_SPLIT_FRACTIONS,
+    SPLIT_ORDER,
+    SPLIT_PROTOCOL_VERSION,
+    write_benchmark_split_artifacts,
+)
 
 __all__ = [
     "ACCESS_LEVELS",
@@ -41,11 +49,15 @@ __all__ = [
     "BenchmarkDecision",
     "DatasetReference",
     "DatasetRegistryEntry",
+    "DEFAULT_SPLIT_FRACTIONS",
     "LOCAL_STATUSES",
     "OUTCOME_FAMILIES",
     "OUTCOME_TEMPORAL_VALIDITY_STATES",
     "REPRESENTATION_COMPARISON_SUPPORT_STATES",
     "RunManifest",
+    "ASSIGNMENT_NOTE",
+    "SPLIT_ORDER",
+    "SPLIT_PROTOCOL_VERSION",
     "benchmark_paths",
     "build_full_external_validation_support",
     "build_outcome_support",
@@ -57,9 +69,11 @@ __all__ = [
     "resolve_git_sha",
     "run_benchmark_dataset_audit",
     "run_benchmark_define_schema",
+    "run_benchmark_harmonization",
     "SCHEMA_VERSION",
     "TableContract",
     "write_dataset_registry",
+    "write_benchmark_split_artifacts",
     "write_json_artifact",
     "write_text_artifact",
     "write_run_manifest",

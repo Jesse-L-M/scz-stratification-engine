@@ -17,7 +17,7 @@
 | `treatment_exposures` | One row per treatment exposure record for one subject at one visit. | Treatment exposure rows that keep medication or intervention context explicit. |
 | `outcomes` | One row per benchmark outcome definition for one subject at one visit. | Outcome rows that keep predictor timing, outcome timing, and prospective versus concurrent validity explicit. |
 | `modality_features` | One row per modality feature for one subject at one visit. | Feature rows emitted from one modality without assuming cross-cohort harmonization yet. |
-| `split_assignments` | One row per subject assignment to one benchmark split protocol. | Future split-assignment rows that can carry leakage controls without generating splits yet. |
+| `split_assignments` | One row per subject assignment to one benchmark split protocol. | Frozen split-assignment rows that carry leakage controls for the current benchmark lane. |
 
 ## `subjects`
 
@@ -84,7 +84,7 @@
 
 ## `split_assignments`
 
-- Purpose: Future split-assignment rows that can carry leakage controls without generating splits yet.
+- Purpose: Frozen split-assignment rows that carry leakage controls for the current benchmark lane.
 - Row grain: One row per subject assignment to one benchmark split protocol.
 - Required columns: `cohort_id`, `subject_id`, `split_name`, `split_level`, `split_protocol_version`, `leakage_group_id`
 - Optional columns: `fold_index`, `split_label`, `assignment_note`

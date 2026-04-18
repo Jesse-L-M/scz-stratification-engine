@@ -10,7 +10,12 @@ from pathlib import Path
 import tomllib
 
 from . import __version__
-from .benchmark import benchmark_paths, run_benchmark_dataset_audit, run_benchmark_define_schema
+from .benchmark import (
+    benchmark_paths,
+    run_benchmark_dataset_audit,
+    run_benchmark_define_schema,
+    run_benchmark_harmonization,
+)
 from .strict_open import (
     build_source_manifest,
     build_run_manifest,
@@ -180,6 +185,12 @@ def _build_benchmark_invoked_command(command_name: str, args: argparse.Namespace
     if command_name == "define-schema":
         _append_flag(command, "--output-dir", getattr(args, "output_dir", None))
         _append_flag(command, "--manifest-dir", getattr(args, "manifest_dir", None))
+        return command
+
+    if command_name == "harmonize":
+        _append_flag(command, "--raw-root", getattr(args, "raw_root", None))
+        _append_flag(command, "--output-dir", getattr(args, "output_dir", None))
+        _append_flag(command, "--manifest-dir", getattr(args, "manifest_dir", None))
     return command
 
 
@@ -263,6 +274,55 @@ def _build_benchmark_define_schema_handler() -> Callable[[argparse.Namespace], i
             manifests_root=manifests_root,
             repo_root=repo_root,
             command=_build_benchmark_invoked_command("define-schema", args),
+            git_sha=git_sha,
+            seed=seed,
+        )
+        print(json.dumps(artifacts.to_summary(), indent=2, sort_keys=True))
+        return 0
+
+    return handler
+
+
+def _build_benchmark_harmonize_handler() -> Callable[[argparse.Namespace], int]:
+    def handler(args: argparse.Namespace) -> int:
+        path_contract = benchmark_paths()
+        repo_root = path_contract.repo_root
+        config_path = _resolve_path(args.config, repo_root=repo_root, fallback=path_contract.config_path)
+        config = _load_toml_config(config_path)
+        paths_config = config.get("paths", {})
+        if not isinstance(paths_config, dict):
+            paths_config = {}
+
+        raw_root = _resolve_path(
+            paths_config.get("raw_root"),
+            repo_root=repo_root,
+            fallback=path_contract.raw_root,
+        )
+        harmonized_root = _resolve_path(
+            paths_config.get("harmonized_root"),
+            repo_root=repo_root,
+            fallback=path_contract.harmonized_root,
+        )
+        manifests_root = _resolve_path(
+            paths_config.get("manifests_root"),
+            repo_root=repo_root,
+            fallback=path_contract.manifests_root,
+        )
+        if args.raw_root:
+            raw_root = Path(args.raw_root).resolve()
+        if args.output_dir:
+            harmonized_root = Path(args.output_dir).resolve()
+        if args.manifest_dir:
+            manifests_root = Path(args.manifest_dir).resolve()
+
+        seed = int(config.get("seed", 1729))
+        git_sha = resolve_git_sha(repo_root)
+        artifacts = run_benchmark_harmonization(
+            raw_root=raw_root,
+            harmonized_root=harmonized_root,
+            manifests_root=manifests_root,
+            repo_root=repo_root,
+            command=_build_benchmark_invoked_command("harmonize", args),
             git_sha=git_sha,
             seed=seed,
         )
@@ -650,7 +710,7 @@ def build_parser() -> argparse.ArgumentParser:
     benchmark_parser = subparsers.add_parser(
         "benchmark",
         help="Mainline benchmark commands.",
-        description="Commands for the benchmark dataset and outcome feasibility gate.",
+        description="Commands for the benchmark feasibility gate, schema, and harmonization contract.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     benchmark_parser.add_argument(
@@ -697,6 +757,20 @@ def build_parser() -> argparse.ArgumentParser:
                 help="Destination directory for benchmark run manifests.",
             )
             command_parser.set_defaults(handler=_build_benchmark_define_schema_handler())
+        elif command_name == "harmonize":
+            command_parser.add_argument(
+                "--raw-root",
+                help="Root containing staged benchmark cohort directories or fixture roots.",
+            )
+            command_parser.add_argument(
+                "--output-dir",
+                help="Destination directory for harmonized benchmark tables.",
+            )
+            command_parser.add_argument(
+                "--manifest-dir",
+                help="Destination directory for benchmark run manifests.",
+            )
+            command_parser.set_defaults(handler=_build_benchmark_harmonize_handler())
         else:
             command_parser.set_defaults(handler=_build_benchmark_stub_handler(command_name))
 

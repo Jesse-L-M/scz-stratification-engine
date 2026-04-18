@@ -49,6 +49,10 @@ class BenchmarkPaths:
         return self.processed_root / "reports"
 
     @property
+    def harmonized_root(self) -> Path:
+        return self.processed_root / "harmonized"
+
+    @property
     def examples_root(self) -> Path:
         return self.repo_root / "examples" / "benchmark_v0"
 
@@ -67,6 +71,7 @@ class BenchmarkPaths:
             "schema": self.schema_root,
             "manifests": self.manifests_root,
             "reports": self.reports_root,
+            "harmonized": self.harmonized_root,
             "examples": self.examples_root,
         }
 
@@ -79,6 +84,11 @@ class BenchmarkPaths:
         """Return the default destination for a benchmark report artifact."""
 
         return self.reports_root / filename
+
+    def default_harmonized_path(self, filename: str = "subjects.csv") -> Path:
+        """Return the default destination for a harmonized benchmark artifact."""
+
+        return self.harmonized_root / filename
 
 
 def benchmark_paths(repo_root: str | Path | None = None) -> BenchmarkPaths:

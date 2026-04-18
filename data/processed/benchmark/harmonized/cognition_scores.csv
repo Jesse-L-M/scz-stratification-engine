@@ -1,0 +1,7 @@
+cohort_id,subject_id,visit_id,instrument,domain,measure,score,score_direction,mapping_caveat,score_unit,task_name,source_score_label
+fep-ds003944,fep-ds003944:sub-1448,fep-ds003944:sub-1448:baseline,MATRICS,global_cognition,composite_score,52,higher_better,MATRICS composite is passed through from the public staged phenotype table.,,,matrics_composite
+fep-ds003944,fep-ds003944:sub-1448,fep-ds003944:sub-1448:baseline,WASI,general_intellectual_ability,full_scale_iq,110,higher_better,WASI full-scale IQ is retained as staged without cross-cohort renorming.,,,wasi_fsiq
+fep-ds003944,fep-ds003944:sub-1824,fep-ds003944:sub-1824:baseline,MATRICS,global_cognition,composite_score,41,higher_better,MATRICS composite is passed through from the public staged phenotype table.,,,matrics_composite
+fep-ds003944,fep-ds003944:sub-1824,fep-ds003944:sub-1824:baseline,WASI,general_intellectual_ability,full_scale_iq,96,higher_better,WASI full-scale IQ is retained as staged without cross-cohort renorming.,,,wasi_fsiq
+fep-ds003944,fep-ds003944:sub-1983,fep-ds003944:sub-1983:baseline,MATRICS,global_cognition,composite_score,38,higher_better,MATRICS composite is passed through from the public staged phenotype table.,,,matrics_composite
+fep-ds003944,fep-ds003944:sub-1983,fep-ds003944:sub-1983:baseline,WASI,general_intellectual_ability,full_scale_iq,92,higher_better,WASI full-scale IQ is retained as staged without cross-cohort renorming.,,,wasi_fsiq

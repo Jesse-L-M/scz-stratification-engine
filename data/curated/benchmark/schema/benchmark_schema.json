@@ -219,7 +219,7 @@
         "split_label",
         "assignment_note"
       ],
-      "purpose": "Future split-assignment rows that can carry leakage controls without generating splits yet.",
+      "purpose": "Frozen split-assignment rows that carry leakage controls for the current benchmark lane.",
       "required_columns": [
         "cohort_id",
         "subject_id",

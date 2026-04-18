@@ -328,7 +328,7 @@ CANONICAL_BENCHMARK_SCHEMA = BenchmarkSchema(
         ),
         TableContract(
             name="split_assignments",
-            purpose="Future split-assignment rows that can carry leakage controls without generating splits yet.",
+            purpose="Frozen split-assignment rows that carry leakage controls for the current benchmark lane.",
             row_grain="One row per subject assignment to one benchmark split protocol.",
             required_columns=(
                 "cohort_id",

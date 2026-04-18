@@ -1,0 +1,27 @@
+{
+  "command": [
+    "scz-audit",
+    "benchmark",
+    "harmonize"
+  ],
+  "dataset": {
+    "source": "benchmark"
+  },
+  "git_sha": "129ffd6",
+  "output_paths": {
+    "cognition_scores": "data/processed/benchmark/harmonized/cognition_scores.csv",
+    "diagnoses": "data/processed/benchmark/harmonized/diagnoses.csv",
+    "functioning_scores": "data/processed/benchmark/harmonized/functioning_scores.csv",
+    "harmonization_manifest": "data/processed/benchmark/harmonized/harmonization_manifest.json",
+    "modality_features": "data/processed/benchmark/harmonized/modality_features.csv",
+    "outcomes": "data/processed/benchmark/harmonized/outcomes.csv",
+    "split_assignments": "data/processed/benchmark/harmonized/split_assignments.csv",
+    "split_manifest": "data/processed/benchmark/manifests/benchmark_split_manifest.json",
+    "subjects": "data/processed/benchmark/harmonized/subjects.csv",
+    "symptom_scores": "data/processed/benchmark/harmonized/symptom_scores.csv",
+    "treatment_exposures": "data/processed/benchmark/harmonized/treatment_exposures.csv",
+    "visits": "data/processed/benchmark/harmonized/visits.csv"
+  },
+  "seed": 1729,
+  "timestamp": "2026-04-18T18:04:12.644792Z"
+}

@@ -1,0 +1,11 @@
+cohort_id,subject_id,visit_id,instrument,domain,measure,score,score_direction,is_harmonized_domain_score,mapping_caveat,score_unit,instrument_version,source_score_label
+fep-ds003944,fep-ds003944:sub-1824,fep-ds003944:sub-1824:baseline,BPRS,general_psychopathology,total_score,42,higher_worse,false,BPRS total is carried through as a same-visit symptom score from the public phenotype table.,,,bprs_total
+fep-ds003944,fep-ds003944:sub-1824,fep-ds003944:sub-1824:baseline,SANS,negative_symptoms,total_score,16,higher_worse,false,SANS total is retained as a same-visit symptom score only.,,,sans_total
+fep-ds003944,fep-ds003944:sub-1824,fep-ds003944:sub-1824:baseline,SAPS,positive_symptoms,total_score,18,higher_worse,false,SAPS total is carried through without inferring any prospective symptom endpoint.,,,saps_total
+fep-ds003944,fep-ds003944:sub-1983,fep-ds003944:sub-1983:baseline,BPRS,general_psychopathology,total_score,39,higher_worse,false,BPRS total is carried through as a same-visit symptom score from the public phenotype table.,,,bprs_total
+fep-ds003944,fep-ds003944:sub-1983,fep-ds003944:sub-1983:baseline,SANS,negative_symptoms,total_score,20,higher_worse,false,SANS total is retained as a same-visit symptom score only.,,,sans_total
+fep-ds003944,fep-ds003944:sub-1983,fep-ds003944:sub-1983:baseline,SAPS,positive_symptoms,total_score,22,higher_worse,false,SAPS total is carried through without inferring any prospective symptom endpoint.,,,saps_total
+tcp-ds005237,tcp-ds005237:sub-NDARINVTEST001,tcp-ds005237:sub-NDARINVTEST001:baseline,PANSS,psychosis_symptoms,total_score,72,higher_worse,false,PANSS total is carried through from the public staged phenotype table only.,,,panss_total
+tcp-ds005237,tcp-ds005237:sub-NDARINVTEST001,tcp-ds005237:sub-NDARINVTEST001:baseline,QIDS,depressive_symptoms,total_score,12,higher_worse,false,QIDS total is retained as a same-visit symptom score only.,,,qids_total
+tcp-ds005237,tcp-ds005237:sub-NDARINVTEST002,tcp-ds005237:sub-NDARINVTEST002:baseline,PANSS,psychosis_symptoms,total_score,65,higher_worse,false,PANSS total is carried through from the public staged phenotype table only.,,,panss_total
+tcp-ds005237,tcp-ds005237:sub-NDARINVTEST002,tcp-ds005237:sub-NDARINVTEST002:baseline,QIDS,depressive_symptoms,total_score,9,higher_worse,false,QIDS total is retained as a same-visit symptom score only.,,,qids_total
