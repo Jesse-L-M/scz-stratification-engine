@@ -7,12 +7,12 @@
   "dataset": {
     "source": "benchmark-registry"
   },
-  "git_sha": "4cfa8c1",
+  "git_sha": "bb9ebd1",
   "output_paths": {
     "dataset_registry": "data/curated/benchmark/dataset_registry.csv",
     "json_report": "data/processed/benchmark/reports/dataset_audit.json",
     "markdown_report": "data/processed/benchmark/reports/dataset_audit.md"
   },
   "seed": 1729,
-  "timestamp": "2026-04-18T13:29:06.330645Z"
+  "timestamp": "2026-04-18T14:44:51.603064Z"
 }

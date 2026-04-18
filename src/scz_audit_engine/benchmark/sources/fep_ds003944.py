@@ -64,6 +64,13 @@ class FEPDS003944BenchmarkSourceAdapter(OpenNeuroSourceAdapter):
             ),
             local_status="audited",
             benchmark_v0_eligibility="eligible",
+            representation_comparison_support="strong",
+            predictor_timepoint="scan/baseline",
+            outcome_timepoint="same_visit_functioning_assessment",
+            outcome_window="same_visit",
+            outcome_is_prospective=False,
+            concurrent_endpoint_only=True,
+            outcome_temporal_validity="concurrent_only",
             benchmarkable_outcome_families=("poor_functional_outcome",),
             provenance_urls=(
                 self.dataset_page_url,
@@ -71,8 +78,9 @@ class FEPDS003944BenchmarkSourceAdapter(OpenNeuroSourceAdapter):
                 self.participants_url,
             ),
             audit_summary=(
-                "Public first-episode psychosis EEG cohort with symptom, cognition, and functioning measures, "
-                "but no confirmed longitudinal outcome window."
+                "Public first-episode psychosis EEG cohort with symptom, cognition, and same-visit functioning "
+                "measures. It supports a narrow concurrent outcome benchmark, but not a prospective outcome "
+                "claim."
             ),
         )
 

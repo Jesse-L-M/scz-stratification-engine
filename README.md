@@ -1,45 +1,50 @@
 # scz-audit-engine
 
-`scz-audit-engine` now treats `strict_open` as exploratory infrastructure, not
-the main scientific line.
+`scz-audit-engine` is currently in the benchmark dataset and outcome feasibility
+phase.
 
-The recommended mainline direction for this repo is a multi-cohort psychosis
-benchmark that compares competing representations of heterogeneity against real,
-intervention-relevant outcomes.
+Current repo status:
 
-The main question is:
+- benchmark decision: `narrow-go`
+- supported claim level: `narrow_outcome_benchmark`
+- public support today: one benchmark-eligible cohort with a concurrent
+  `poor_functional_outcome` endpoint
+- not yet supported: full external validation, prospective outcome claims,
+  schema, harmonization, split generation, representation builders, or modeling
 
-> Which representation of psychosis heterogeneity reproduces across independent
-> datasets and improves prediction of intervention-relevant outcomes:
-> diagnosis, dimensions, trajectories, or clusters?
+`strict_open` remains in the repo as archived exploratory infrastructure. It is
+not the active scientific line.
 
 Current source-of-truth docs:
 
-- [`docs/strict_open_pr_roadmap.md`](docs/strict_open_pr_roadmap.md):
-  replacement roadmap and PR sequence
-- [`docs/benchmark_claim.md`](docs/benchmark_claim.md): explicit project claim
-  and boundaries
-- [`docs/dataset_matrix.md`](docs/dataset_matrix.md): cohort inventory contract
-- [`docs/target_outcomes.md`](docs/target_outcomes.md): real-outcome contract
+- [`docs/benchmark_claim.md`](docs/benchmark_claim.md): current project claim and
+  explicit non-claims
+- [`docs/benchmark_claim_levels.md`](docs/benchmark_claim_levels.md): ordered
+  claim ladder for feasibility gating
+- [`docs/dataset_matrix.md`](docs/dataset_matrix.md): dataset registry contract
+  and benchmark decision rules
+- [`docs/target_outcomes.md`](docs/target_outcomes.md): outcome-family and
+  temporal mapping rules
 - [`docs/benchmark_eval_protocol.md`](docs/benchmark_eval_protocol.md):
-  evaluation rules for the new mainline
+  feasibility audit protocol for `scz-audit benchmark audit-datasets`
+- [`docs/benchmark_pivot_roadmap.md`](docs/benchmark_pivot_roadmap.md):
+  canonical roadmap from feasibility hardening to later schema work
 
 Current code scaffold:
 
-- `src/scz_audit_engine/benchmark/`: benchmark namespace for repo-relative
-  paths, provenance helpers, dataset registry contracts, and dataset-audit
-  source adapters
+- `src/scz_audit_engine/benchmark/`: benchmark namespace for path contracts,
+  provenance, dataset registry logic, and source adapters
 - `config/benchmark_v0.toml`: benchmark config for shared path contracts and
   defaults
-- `scz-audit benchmark audit-datasets`: writes the benchmark dataset registry,
+- `scz-audit benchmark audit-datasets`: writes the checked-in dataset registry,
   audit reports, and run manifest from audited cohort metadata
-- `data/curated/benchmark/dataset_registry.csv`: checked-in benchmark cohort
-  registry for the current v0 scope
+- `data/curated/benchmark/dataset_registry.csv`: machine-readable cohort
+  registry with temporal outcome and claim-level fields
 
 Practical note:
 
 - `strict_open/` can still be mined for reusable ingest, provenance,
-  harmonization, and split logic.
-- pending `strict_open` baseline and proxy-target work should remain parked
-  unless and until specific plumbing is intentionally extracted into the new
-  `benchmark/` namespace.
+  harmonization, and split logic
+- old `strict_open` scientific docs are superseded and retained only as archive
+- schema, harmonization, and modeling work stay intentionally deferred until a
+  later PR after this feasibility gate

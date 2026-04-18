@@ -25,7 +25,7 @@ def test_benchmark_help_works(capsys: pytest.CaptureFixture[str]) -> None:
 
     assert excinfo.value.code == 0
     output = capsys.readouterr().out
-    assert "Mainline commands for the multi-cohort psychosis benchmark scaffold." in output
+    assert "Commands for the benchmark dataset and outcome feasibility gate." in output
     assert "run-benchmark" in output
 
 
@@ -93,9 +93,13 @@ def test_benchmark_audit_datasets_runs_end_to_end_with_fixture_adapters(
     assert exit_code == 0
     output = json.loads(capsys.readouterr().out)
     assert output["decision"] == "narrow-go"
+    assert output["claim_level"] == "narrow_outcome_benchmark"
     assert Path(output["dataset_registry"]).exists()
     assert Path(output["json_report"]).exists()
     assert Path(output["markdown_report"]).exists()
+    json_report = json.loads(Path(output["json_report"]).read_text(encoding="utf-8"))
+    assert json_report["decision"]["claim_level"] == "narrow_outcome_benchmark"
+    assert json_report["decision"]["full_external_validation_cohorts"] == []
     manifest = json.loads(Path(output["run_manifest"]).read_text(encoding="utf-8"))
     assert manifest["command"] == [
         "scz-audit",

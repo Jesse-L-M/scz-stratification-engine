@@ -1,5 +1,10 @@
 # strict-open v0 scope
 
+> Superseded.
+> This is archived exploratory documentation.
+> Active benchmark guidance lives in [`docs/benchmark_claim.md`](benchmark_claim.md)
+> and [`docs/benchmark_pivot_roadmap.md`](benchmark_pivot_roadmap.md).
+
 ## In scope now
 
 - A public cognitive stability and trial-noise audit engine for schizophrenia cohort-integrity work.

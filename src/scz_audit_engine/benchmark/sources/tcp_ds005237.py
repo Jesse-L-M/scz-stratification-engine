@@ -71,6 +71,13 @@ class TCPDS005237BenchmarkSourceAdapter(OpenNeuroSourceAdapter):
             ),
             local_status="audited",
             benchmark_v0_eligibility="limited",
+            representation_comparison_support="limited",
+            predictor_timepoint="scan/baseline",
+            outcome_timepoint="same_visit_functioning_assessment",
+            outcome_window="same_visit",
+            outcome_is_prospective=False,
+            concurrent_endpoint_only=True,
+            outcome_temporal_validity="concurrent_only",
             benchmarkable_outcome_families=("poor_functional_outcome",),
             provenance_urls=(
                 self.dataset_page_url,
@@ -78,9 +85,9 @@ class TCPDS005237BenchmarkSourceAdapter(OpenNeuroSourceAdapter):
                 self.participants_url,
             ),
             audit_summary=(
-                "Public transdiagnostic MRI cohort with functioning measures and multi-site structure, but no "
-                "confirmed public longitudinal endpoint coverage. The public label space is still too broad to "
-                "count as benchmark-v0 support for psychosis heterogeneity."
+                "Public transdiagnostic MRI cohort with same-visit functioning endpoints and multi-site "
+                "structure, but no prospectively usable public outcome window. The public label space is still "
+                "too broad to count as narrow benchmark support for psychosis heterogeneity."
             ),
         )
 

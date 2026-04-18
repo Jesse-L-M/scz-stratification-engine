@@ -1,5 +1,10 @@
 # strict-open v0 execution stack
 
+> Superseded.
+> This is archived exploratory documentation.
+> Active benchmark guidance lives in [`docs/benchmark_claim.md`](benchmark_claim.md)
+> and [`docs/benchmark_pivot_roadmap.md`](benchmark_pivot_roadmap.md).
+
 ## Product and spec posture
 
 Product and scientific claims for `strict-open v0` stay vendor-neutral, even as the build is framed narrowly around cohort stability and noise auditing.

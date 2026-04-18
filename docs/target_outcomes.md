@@ -1,10 +1,8 @@
 # Target Outcomes
 
-This repo should optimize for real, intervention-relevant outcomes.
-
-Synthetic proxy targets are out of scope for the mainline benchmark unless they
-are explicitly labeled as auxiliary QC variables rather than scientific
-endpoints.
+This repo should optimize for real, intervention-relevant outcomes, but the
+current phase is still about proving which outcome families are publicly
+supportable.
 
 ## Outcome Priority Order
 
@@ -16,31 +14,44 @@ cohorts:
 3. poor functional outcome
 4. relapse or hospitalization proxy
 
-## Outcome Definitions
+## Temporal Mapping Requirement
+
+Every cohort note and every registry row should state:
+
+1. predictor timepoint
+2. outcome timepoint
+3. outcome window
+4. whether the outcome is prospective
+5. whether the cohort is concurrent-only
+
+If the outcome is measured at the same visit as the predictors, treat it as a
+concurrent endpoint, not a prospective outcome.
+
+## Outcome Family Rules
 
 ### One-Year Nonremission
 
 Use when:
 
-- symptom and follow-up information support a one-year remission or
-  nonremission label
+- remission status can be defined at an explicit future window
+- follow-up timing is documented tightly enough to defend the label
 
 Do not use when:
 
-- remission status would have to be heavily imputed
-- follow-up windows are too inconsistent to defend the label
+- remission would have to be inferred from one acute cross-sectional assessment
+- follow-up timing is missing or too inconsistent
 
 ### Persistent Negative Symptoms
 
 Use when:
 
-- negative-symptom measures exist at repeated visits
-- persistence can be defined from the available timeline
+- negative-symptom measures exist across repeated visits
+- persistence is defined from an explicit public timeline
 
 Do not use when:
 
-- negative symptoms are only weakly captured
-- the available signal is dominated by one acute cross-sectional measure
+- negative symptoms are only available at one visit
+- persistence would be guessed from a same-visit severity score
 
 ### Poor Functional Outcome
 
@@ -48,45 +59,35 @@ Use when:
 
 - functioning, social, educational, occupational, or recovery-relevant measures
   exist
-- the threshold for poor outcome can be written explicitly
+- the registry can say whether the endpoint is same-visit or future-looking
 
 Do not use when:
 
 - functioning is only described narratively
-- the outcome is just a loose proxy for symptom severity
+- a same-visit score is later described as a prospective endpoint
 
 ### Relapse Or Hospitalization Proxy
 
-Use only if the better outcomes are unavailable.
+Use only if the better outcomes are unavailable and the relapse window is still
+written explicitly.
 
-This is an acceptable fallback, not the preferred headline outcome.
+## Current Public Posture
 
-## Mainline Rules
+The current public cohorts only support the third-ranked family, and they only
+support it as a concurrent endpoint:
 
-- each benchmark run must declare exactly which outcome is primary
-- outcomes must be cohort-mapped explicitly, not assumed equivalent by name
-- the repo must record known mapping caveats for each cohort
-- if an outcome is only supportable in one cohort, that limitation must be
-  stated in the final report
+- current supportable family: `poor_functional_outcome`
+- current temporal status: `concurrent_only`
+- current prospective support: none
 
-## What Not To Use As Mainline Targets
+That is enough for a narrow feasibility claim, not a prospective benchmark
+claim.
 
-- `stable_cognitive_burden_proxy`
-- `global_cognition_dev`
-- `state_noise_score`
-- unsupervised cluster membership as its own endpoint
+## Cohort Note Template
 
-Those may appear later only as:
+Before benchmark modeling begins, each selected cohort note should state:
 
-- QC variables
-- coverage diagnostics
-- auxiliary covariates
-
-## Deliverable Requirement
-
-Before benchmark modeling begins, each selected cohort should have a short
-cohort-specific note that states:
-
-1. which primary outcome is available
-2. how it is defined locally
-3. what assumptions or caveats remain
+1. exact outcome family currently supportable
+2. whether the endpoint is concurrent or prospective
+3. what the local outcome window is
+4. what assumptions or caveats remain
