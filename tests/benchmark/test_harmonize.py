@@ -66,6 +66,11 @@ def test_benchmark_harmonize_emits_all_canonical_tables_and_manifest(tmp_path) -
         "modality_features": {"fep-ds003944": 0, "tcp-ds005237": 0},
         "split_assignments": {"fep-ds003944": 3, "tcp-ds005237": 4},
     }
+    assert "generated_at" not in manifest
+    assert "git_sha" not in manifest
+    assert "command" not in manifest
+    assert manifest["output_paths"]["subjects"] == "subjects.csv"
+    assert manifest["output_paths"]["split_manifest"] == "benchmark_split_manifest.json"
     assert "tcp-ds005237 stays explicitly limited" in " ".join(manifest["current_limitations"])
     assert "current narrow-go line only" in manifest["claim_boundary_statement"]
 
@@ -209,7 +214,47 @@ def test_benchmark_harmonize_discovers_wrapped_dataset_metadata_payloads(tmp_pat
 
     assert results.cohort_ids == ("tcp-ds005237", "fep-ds003944")
     manifest = json.loads((tmp_path / "harmonized" / "harmonization_manifest.json").read_text(encoding="utf-8"))
-    assert manifest["input_cohort_roots"]["fep-ds003944"].endswith("/fep-ds003944")
+    assert manifest["input_cohort_roots"]["fep-ds003944"] == "fep-ds003944"
+
+
+def test_benchmark_harmonization_manifest_is_location_independent_and_deterministic(tmp_path) -> None:
+    first_raw_root = tmp_path / "first-raw"
+    second_raw_root = tmp_path / "second-raw"
+    shutil.copytree(FIXTURE_ROOT / "fep_ds003944", first_raw_root / "fep-ds003944")
+    shutil.copytree(FIXTURE_ROOT / "tcp_ds005237", first_raw_root / "tcp-ds005237")
+    shutil.copytree(FIXTURE_ROOT / "fep_ds003944", second_raw_root / "fep-ds003944")
+    shutil.copytree(FIXTURE_ROOT / "tcp_ds005237", second_raw_root / "tcp-ds005237")
+
+    first = run_benchmark_harmonization(
+        raw_root=first_raw_root,
+        harmonized_root=tmp_path / "first-harmonized",
+        manifests_root=tmp_path / "first-manifests",
+        repo_root=Path(__file__).resolve().parents[2],
+        command=["scz-audit", "benchmark", "harmonize", "--raw-root", str(first_raw_root)],
+        git_sha="abc1234",
+        seed=1729,
+    )
+    second = run_benchmark_harmonization(
+        raw_root=second_raw_root,
+        harmonized_root=tmp_path / "second-harmonized",
+        manifests_root=tmp_path / "second-manifests",
+        repo_root=Path(__file__).resolve().parents[2],
+        command=["scz-audit", "benchmark", "harmonize", "--raw-root", str(second_raw_root)],
+        git_sha="deadbeef",
+        seed=1729,
+    )
+
+    first_manifest_text = first.harmonization_manifest_path.read_text(encoding="utf-8")
+    second_manifest_text = second.harmonization_manifest_path.read_text(encoding="utf-8")
+
+    assert first_manifest_text == second_manifest_text
+    assert str(tmp_path) not in first_manifest_text
+
+    first_split_manifest = json.loads(first.split_manifest_path.read_text(encoding="utf-8"))
+    second_split_manifest = json.loads(second.split_manifest_path.read_text(encoding="utf-8"))
+    assert first_split_manifest == second_split_manifest
+    assert "git_sha" not in first_split_manifest
+    assert "command" not in first_split_manifest
 
 
 def _csv_header(path: Path) -> list[str]:

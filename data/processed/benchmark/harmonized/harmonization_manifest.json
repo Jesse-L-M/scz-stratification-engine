@@ -28,39 +28,30 @@
     "tcp-ds005237",
     "fep-ds003944"
   ],
-  "command": [
-    "scz-audit",
-    "benchmark",
-    "harmonize"
-  ],
   "current_limitations": [
     "Outcome rows remain concurrent-only where the public cohorts are concurrent-only.",
     "tcp-ds005237 stays explicitly limited because public labels remain broad Patient versus GenPop.",
     "Representation builders and benchmark models remain intentionally deferred."
   ],
-  "generated_at": "2026-04-18T18:04:12.644792Z",
-  "git_sha": "129ffd6",
-  "harmonized_root": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized",
   "input_cohort_roots": {
-    "fep-ds003944": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/raw/benchmark/fep-ds003944",
-    "tcp-ds005237": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/raw/benchmark/tcp-ds005237"
+    "fep-ds003944": "fep-ds003944",
+    "tcp-ds005237": "tcp-ds005237"
   },
   "missing_expected_cohorts": [],
   "output_paths": {
-    "cognition_scores": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/cognition_scores.csv",
-    "diagnoses": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/diagnoses.csv",
-    "functioning_scores": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/functioning_scores.csv",
-    "harmonization_manifest": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/harmonization_manifest.json",
-    "modality_features": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/modality_features.csv",
-    "outcomes": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/outcomes.csv",
-    "split_assignments": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/split_assignments.csv",
-    "split_manifest": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/manifests/benchmark_split_manifest.json",
-    "subjects": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/subjects.csv",
-    "symptom_scores": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/symptom_scores.csv",
-    "treatment_exposures": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/treatment_exposures.csv",
-    "visits": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/processed/benchmark/harmonized/visits.csv"
+    "cognition_scores": "cognition_scores.csv",
+    "diagnoses": "diagnoses.csv",
+    "functioning_scores": "functioning_scores.csv",
+    "harmonization_manifest": "harmonization_manifest.json",
+    "modality_features": "modality_features.csv",
+    "outcomes": "outcomes.csv",
+    "split_assignments": "split_assignments.csv",
+    "split_manifest": "benchmark_split_manifest.json",
+    "subjects": "subjects.csv",
+    "symptom_scores": "symptom_scores.csv",
+    "treatment_exposures": "treatment_exposures.csv",
+    "visits": "visits.csv"
   },
-  "raw_root": "/Users/jessemerrigan/conductor/workspaces/scz-stratification-engine/munich-v4/data/raw/benchmark",
   "row_counts_by_table": {
     "cognition_scores": 6,
     "diagnoses": 7,

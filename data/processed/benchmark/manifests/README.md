@@ -1,5 +1,8 @@
 # processed/benchmark/manifests
 
-Store benchmark run manifests and related provenance JSON artifacts here.
+Store stable benchmark manifest artifacts here.
 
-These files should capture dataset references, commands, seeds, timestamps, and output locations.
+Checked-in files under this directory should remain deterministic across reruns.
+Runtime-only benchmark `*_run_manifest.json` files are still written during
+command execution, but they are intentionally untracked so timestamps, git SHA,
+and invocation-specific output paths do not churn the repo.

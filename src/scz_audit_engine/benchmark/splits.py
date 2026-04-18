@@ -108,8 +108,6 @@ def write_benchmark_split_artifacts(
         for row in subjects
     }
     manifest = {
-        "command": list(command),
-        "git_sha": git_sha,
         "seed": seed,
         "split_protocol_version": SPLIT_PROTOCOL_VERSION,
         "split_method": (

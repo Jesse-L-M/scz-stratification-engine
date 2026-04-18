@@ -1,10 +1,5 @@
 {
   "claim_boundary_statement": "These frozen splits stay within the current narrow benchmark lane and do not constitute a full external-validation claim.",
-  "command": [
-    "scz-audit",
-    "benchmark",
-    "harmonize"
-  ],
   "counts_by_split": {
     "test": 2,
     "train": 3,
@@ -65,7 +60,6 @@
       "single_site_public_accession": 1
     }
   },
-  "git_sha": "129ffd6",
   "label_support_policy": "Within each cohort, subjects with benchmark outcome rows are ordered ahead of unlabeled subjects so the training split receives labeled rows whenever the cohort exposes any labels at all.",
   "seed": 1729,
   "split_method": "Deterministic within-cohort subject-level assignment. Subjects are ordered by cohort, then interleaved across diagnosis groups within each cohort using a seed-stable subject hash before fixed train/validation/test quotas are applied.",

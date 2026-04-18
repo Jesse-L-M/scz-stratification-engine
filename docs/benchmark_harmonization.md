@@ -19,7 +19,10 @@ That command writes canonical CSV tables under
 
 - `harmonization_manifest.json`
 - `data/processed/benchmark/manifests/benchmark_split_manifest.json`
-- `data/processed/benchmark/manifests/benchmark_harmonize_run_manifest.json`
+
+Runtime `benchmark_harmonize_run_manifest.json` files may still be emitted
+during command execution, but they are treated as untracked run provenance
+rather than canonical checked-in artifacts.
 
 The staged OpenNeuro snapshot JSON can be stored either in a flattened local
 shape or in the raw GraphQL wrapper shape. For `fep-ds003944`, the harmonizer
@@ -30,6 +33,10 @@ contract only accepts staged total columns (`saps_total`, `sans_total`) and
 does not derive totals from raw item grids. When a staged root includes
 `root_files.json`, its snapshot tag and description remain authoritative over
 any stale `latestSnapshot` fields saved inside `dataset_metadata.json`.
+
+The checked-in harmonization summary is also deterministic by design: it omits
+timestamps, git SHA, and absolute machine-local paths, and records stable
+artifact references rather than invocation-specific output locations.
 
 ## How This Preserves `narrow-go`
 

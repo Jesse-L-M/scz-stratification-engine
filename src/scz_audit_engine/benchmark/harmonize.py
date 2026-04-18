@@ -148,22 +148,23 @@ def run_benchmark_harmonization(
             destination,
         )
 
-    output_paths = {table_name: str(path) for table_name, path in table_paths.items()}
+    stable_output_paths = {
+        table_name: _stable_output_reference(path, anchor=harmonized_path)
+        for table_name, path in table_paths.items()
+    }
     harmonization_manifest_payload = {
-        "generated_at": generated_at,
-        "command": list(command),
-        "git_sha": git_sha,
         "seed": seed,
         "schema_version": schema.version,
-        "raw_root": str(raw_path),
-        "harmonized_root": str(harmonized_path),
-        "input_cohort_roots": input_cohort_roots,
+        "input_cohort_roots": {
+            cohort_id: _stable_input_root_reference(Path(root), raw_root=raw_path)
+            for cohort_id, root in input_cohort_roots.items()
+        },
         "cohorts_harmonized": [bundle.cohort_id for bundle in cohort_bundles],
         "missing_expected_cohorts": sorted(missing_expected_cohorts),
         "output_paths": {
-            **output_paths,
-            "harmonization_manifest": str(harmonized_path / HARMONIZATION_MANIFEST_NAME),
-            "split_manifest": str(split_artifacts.manifest_path),
+            **stable_output_paths,
+            "harmonization_manifest": HARMONIZATION_MANIFEST_NAME,
+            "split_manifest": _stable_output_reference(split_artifacts.manifest_path, anchor=manifests_path),
         },
         "row_counts_by_table": row_counts,
         "row_counts_by_table_and_cohort": row_counts_by_table_and_cohort,
@@ -230,6 +231,20 @@ def _write_csv_table(
 
 def _sort_rows(rows: list[dict[str, str]], columns: tuple[str, ...]) -> list[dict[str, str]]:
     return sorted(rows, key=lambda row: tuple(row.get(column, "") for column in columns))
+
+
+def _stable_output_reference(path: Path, *, anchor: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(anchor.resolve()))
+    except ValueError:
+        return path.name
+
+
+def _stable_input_root_reference(path: Path, *, raw_root: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(raw_root.resolve()))
+    except ValueError:
+        return path.name
 
 
 def _resolve_adapter_root(raw_root: Path, adapter: object) -> Path | None:

@@ -1,3 +1,6 @@
 # Python bytecode caches should never show up in the worktree.
 __pycache__/
 *.py[cod]
+
+# Benchmark run manifests are runtime provenance, not canonical checked-in artifacts.
+data/processed/benchmark/manifests/*_run_manifest.json

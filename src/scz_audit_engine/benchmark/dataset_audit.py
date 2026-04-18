@@ -54,13 +54,10 @@ class DatasetAuditArtifacts:
 def _render_markdown_report(
     entries: tuple[DatasetRegistryEntry, ...],
     decision: BenchmarkDecision,
-    *,
-    generated_at: str,
 ) -> str:
     lines = [
         "# Benchmark Dataset Audit",
         "",
-        f"- Generated at: `{generated_at}`",
         f"- Current benchmark decision: `{decision.state}`",
         f"- Current claim level supported: `{decision.claim_level}`",
         f"- Decision explanation: {decision.explanation}",
@@ -156,11 +153,8 @@ def _render_markdown_report(
 def _build_json_report(
     entries: tuple[DatasetRegistryEntry, ...],
     decision: BenchmarkDecision,
-    *,
-    generated_at: str,
 ) -> dict[str, Any]:
     return {
-        "generated_at": generated_at,
         "decision": decision.to_dict(),
         "outcome_family_support": {
             family: {
@@ -206,11 +200,11 @@ def run_benchmark_dataset_audit(
     manifests_dir = Path(manifests_root)
 
     json_report_path = write_json_artifact(
-        _build_json_report(entries, decision, generated_at=generated_at),
+        _build_json_report(entries, decision),
         reports_dir / JSON_REPORT_NAME,
     )
     markdown_report_path = write_text_artifact(
-        _render_markdown_report(entries, decision, generated_at=generated_at),
+        _render_markdown_report(entries, decision),
         reports_dir / MARKDOWN_REPORT_NAME,
     )
     manifest_path = write_run_manifest(
