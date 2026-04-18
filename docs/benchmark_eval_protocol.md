@@ -11,7 +11,9 @@ Use:
 
 - `scz-audit benchmark audit-datasets`
 
-Do not add new benchmark commands in this phase.
+This protocol remains the feasibility input to the separate schema phase. The
+schema PR adds `scz-audit benchmark define-schema`, but no other benchmark
+commands should move forward here.
 
 ## Required Audit Outputs
 

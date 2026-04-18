@@ -26,6 +26,7 @@ def test_benchmark_help_works(capsys: pytest.CaptureFixture[str]) -> None:
     assert excinfo.value.code == 0
     output = capsys.readouterr().out
     assert "Commands for the benchmark dataset and outcome feasibility gate." in output
+    assert "define-schema" in output
     assert "run-benchmark" in output
 
 
@@ -43,7 +44,11 @@ def test_benchmark_subcommand_help_is_registered(
 
 @pytest.mark.parametrize(
     "command_name",
-    tuple(command_name for command_name in BENCHMARK_COMMANDS if command_name != "audit-datasets"),
+    tuple(
+        command_name
+        for command_name in BENCHMARK_COMMANDS
+        if command_name not in {"audit-datasets", "define-schema"}
+    ),
 )
 def test_benchmark_stub_commands_exit_with_not_implemented_message(
     command_name: str,
@@ -112,6 +117,106 @@ def test_benchmark_audit_datasets_runs_end_to_end_with_fixture_adapters(
         "--manifest-dir",
         str(manifests_dir),
     ]
+
+
+def test_benchmark_define_schema_runs_and_writes_artifacts(
+    tmp_path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    schema_dir = tmp_path / "schema"
+    manifests_dir = tmp_path / "manifests"
+
+    exit_code = main(
+        [
+            "benchmark",
+            "define-schema",
+            "--output-dir",
+            str(schema_dir),
+            "--manifest-dir",
+            str(manifests_dir),
+        ]
+    )
+
+    assert exit_code == 0
+    output = json.loads(capsys.readouterr().out)
+    assert output["schema_version"] == "benchmark_v0"
+    assert output["tables"] == [
+        "subjects",
+        "visits",
+        "diagnoses",
+        "symptom_scores",
+        "cognition_scores",
+        "functioning_scores",
+        "treatment_exposures",
+        "outcomes",
+        "modality_features",
+        "split_assignments",
+    ]
+    assert Path(output["json_schema"]).exists()
+    assert Path(output["markdown_schema"]).exists()
+    assert Path(output["run_manifest"]).exists()
+
+    json_schema = json.loads(Path(output["json_schema"]).read_text(encoding="utf-8"))
+    assert json_schema["schema_version"] == "benchmark_v0"
+    assert json_schema["table_names"] == output["tables"]
+    assert "generated_at" not in json_schema
+    assert "outcomes" in json_schema["table_names"]
+    markdown_schema = Path(output["markdown_schema"]).read_text(encoding="utf-8")
+    assert "Generated at:" not in markdown_schema
+
+    manifest = json.loads(Path(output["run_manifest"]).read_text(encoding="utf-8"))
+    assert manifest["command"] == [
+        "scz-audit",
+        "benchmark",
+        "define-schema",
+        "--output-dir",
+        str(schema_dir),
+        "--manifest-dir",
+        str(manifests_dir),
+    ]
+    assert manifest["output_paths"] == {
+        "json_schema": str(schema_dir / "benchmark_schema.json"),
+        "markdown_schema": str(schema_dir / "benchmark_schema.md"),
+    }
+
+
+def test_benchmark_define_schema_is_deterministic_for_schema_artifacts(
+    tmp_path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    schema_dir = tmp_path / "schema"
+    manifests_dir = tmp_path / "manifests"
+
+    first_exit_code = main(
+        [
+            "benchmark",
+            "define-schema",
+            "--output-dir",
+            str(schema_dir),
+            "--manifest-dir",
+            str(manifests_dir),
+        ]
+    )
+    assert first_exit_code == 0
+    capsys.readouterr()
+    first_json = (schema_dir / "benchmark_schema.json").read_text(encoding="utf-8")
+    first_markdown = (schema_dir / "benchmark_schema.md").read_text(encoding="utf-8")
+
+    second_exit_code = main(
+        [
+            "benchmark",
+            "define-schema",
+            "--output-dir",
+            str(schema_dir),
+            "--manifest-dir",
+            str(manifests_dir),
+        ]
+    )
+    assert second_exit_code == 0
+    capsys.readouterr()
+
+    assert (schema_dir / "benchmark_schema.json").read_text(encoding="utf-8") == first_json
+    assert (schema_dir / "benchmark_schema.md").read_text(encoding="utf-8") == first_markdown
 
 
 def test_strict_open_help_still_works(capsys: pytest.CaptureFixture[str]) -> None:

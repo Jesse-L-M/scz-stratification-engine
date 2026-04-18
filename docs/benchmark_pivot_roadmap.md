@@ -6,11 +6,10 @@ The old `strict_open` roadmap is archived. New work should follow this file.
 
 ## Current Phase
 
-Current phase: benchmark dataset and outcome feasibility hardening.
+Current phase: benchmark schema.
 
 Current stop line:
 
-- do not pull schema forward
 - do not pull harmonization forward
 - do not pull representation builders forward
 - do not pull modeling forward
@@ -35,6 +34,7 @@ Current stop line:
 - current benchmark decision: `narrow-go`
 - current claim level: `narrow_outcome_benchmark`
 - current public support is concurrent-only
+- canonical benchmark tables can now be defined and emitted as schema artifacts
 - full external validation remains intentionally out of scope until another
   eligible cohort exists
 

@@ -12,6 +12,7 @@ def test_default_path_helpers_resolve_under_repo_root() -> None:
     assert paths.raw_root == repo_root / "data" / "raw" / "benchmark"
     assert paths.processed_root == repo_root / "data" / "processed" / "benchmark"
     assert paths.curated_root == repo_root / "data" / "curated" / "benchmark"
+    assert paths.schema_root == repo_root / "data" / "curated" / "benchmark" / "schema"
     assert paths.manifests_root == repo_root / "data" / "processed" / "benchmark" / "manifests"
     assert paths.reports_root == repo_root / "data" / "processed" / "benchmark" / "reports"
     assert paths.examples_root == repo_root / "examples" / "benchmark_v0"
@@ -29,6 +30,7 @@ def test_explicit_repo_root_keeps_paths_deterministic() -> None:
         "raw": repo_root / "data" / "raw" / "benchmark",
         "processed": repo_root / "data" / "processed" / "benchmark",
         "curated": repo_root / "data" / "curated" / "benchmark",
+        "schema": repo_root / "data" / "curated" / "benchmark" / "schema",
         "manifests": repo_root / "data" / "processed" / "benchmark" / "manifests",
         "reports": repo_root / "data" / "processed" / "benchmark" / "reports",
         "examples": repo_root / "examples" / "benchmark_v0",

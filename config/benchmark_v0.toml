@@ -6,6 +6,7 @@ seed = 1729
 raw_root = "data/raw/benchmark"
 processed_root = "data/processed/benchmark"
 curated_root = "data/curated/benchmark"
+schema_root = "data/curated/benchmark/schema"
 manifests_root = "data/processed/benchmark/manifests"
 reports_root = "data/processed/benchmark/reports"
 examples_root = "examples/benchmark_v0"

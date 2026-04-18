@@ -1,0 +1,17 @@
+{
+  "command": [
+    "scz-audit",
+    "benchmark",
+    "define-schema"
+  ],
+  "dataset": {
+    "source": "benchmark-schema"
+  },
+  "git_sha": "977db10",
+  "output_paths": {
+    "json_schema": "data/curated/benchmark/schema/benchmark_schema.json",
+    "markdown_schema": "data/curated/benchmark/schema/benchmark_schema.md"
+  },
+  "seed": 1729,
+  "timestamp": "2026-04-18T15:58:40.032442Z"
+}
