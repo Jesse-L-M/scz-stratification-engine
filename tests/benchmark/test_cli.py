@@ -92,7 +92,7 @@ def test_benchmark_audit_datasets_runs_end_to_end_with_fixture_adapters(
 
     assert exit_code == 0
     output = json.loads(capsys.readouterr().out)
-    assert output["decision"] == "go"
+    assert output["decision"] == "narrow-go"
     assert Path(output["dataset_registry"]).exists()
     assert Path(output["json_report"]).exists()
     assert Path(output["markdown_report"]).exists()

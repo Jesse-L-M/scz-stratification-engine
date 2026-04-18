@@ -42,6 +42,23 @@ def test_write_run_manifest_serializes_json(tmp_path) -> None:
     assert json.loads(destination.read_text(encoding="utf-8")) == manifest.to_dict()
 
 
+def test_run_manifest_normalizes_repo_relative_output_paths(tmp_path) -> None:
+    report_path = tmp_path / "data/processed/benchmark/reports/dataset_audit.json"
+    manifest = build_run_manifest(
+        dataset_source="openneuro",
+        command=["scz-audit", "benchmark", "audit-datasets"],
+        git_sha="abc1234",
+        seed=1729,
+        output_paths={"report": report_path},
+        repo_root=tmp_path,
+        timestamp="2026-04-17T12:00:00Z",
+    )
+
+    assert manifest.to_dict()["output_paths"] == {
+        "report": "data/processed/benchmark/reports/dataset_audit.json"
+    }
+
+
 def test_run_manifest_requires_a_dataset_source_or_cohort_identifier() -> None:
     with pytest.raises(ValueError, match="source or cohort identifier"):
         build_run_manifest(
