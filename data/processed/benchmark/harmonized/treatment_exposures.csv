@@ -1,0 +1,3 @@
+cohort_id,subject_id,visit_id,treatment_type,treatment_name,exposure_value,exposure_unit,exposure_window,is_current_exposure,mapping_caveat,source_treatment_label,exposure_route,adherence_note
+fep-ds003944,fep-ds003944:sub-1824,fep-ds003944:sub-1824:baseline,antipsychotic_medication,chlorpromazine_equivalent,350,mg/day,same_visit,true,Medication exposure is the public same-visit phenotype release only.,chlorpromazine_equivalent_mg_day,,
+fep-ds003944,fep-ds003944:sub-1983,fep-ds003944:sub-1983:baseline,antipsychotic_medication,chlorpromazine_equivalent,420,mg/day,same_visit,true,Medication exposure is the public same-visit phenotype release only.,chlorpromazine_equivalent_mg_day,,

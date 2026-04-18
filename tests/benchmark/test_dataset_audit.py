@@ -146,3 +146,47 @@ def test_json_report_exposes_claim_level_and_temporal_fields(tmp_path) -> None:
     assert by_id["weak-label-cohort"]["benchmark_v0_eligibility"] == "limited"
     assert by_id["weak-label-cohort"]["counts_toward_narrow_benchmark_support"] is False
     assert by_id["weak-label-cohort"]["representation_comparison_support"] == "limited"
+
+
+def test_dataset_audit_reports_are_deterministic_and_omit_generated_timestamps(tmp_path) -> None:
+    entries = (
+        _entry("public-cohort", ("poor_functional_outcome",)),
+        _entry(
+            "weak-label-cohort",
+            ("poor_functional_outcome",),
+            benchmark_v0_eligibility="limited",
+            representation_comparison_support="limited",
+        ),
+    )
+    adapters = tuple(_FixtureAdapter(entry) for entry in entries)
+
+    first = run_benchmark_dataset_audit(
+        registry_path=tmp_path / "first" / "dataset_registry.csv",
+        reports_root=tmp_path / "first" / "reports",
+        manifests_root=tmp_path / "first" / "manifests",
+        repo_root=None,
+        command=["scz-audit", "benchmark", "audit-datasets"],
+        git_sha="deadbeef",
+        seed=1729,
+        adapters=adapters,
+    )
+    second = run_benchmark_dataset_audit(
+        registry_path=tmp_path / "second" / "dataset_registry.csv",
+        reports_root=tmp_path / "second" / "reports",
+        manifests_root=tmp_path / "second" / "manifests",
+        repo_root=None,
+        command=["scz-audit", "benchmark", "audit-datasets"],
+        git_sha="cafebabe",
+        seed=1729,
+        adapters=adapters,
+    )
+
+    first_json = json.loads(first.json_report_path.read_text(encoding="utf-8"))
+    second_json = json.loads(second.json_report_path.read_text(encoding="utf-8"))
+    assert first_json == second_json
+    assert "generated_at" not in first_json
+
+    first_markdown = first.markdown_report_path.read_text(encoding="utf-8")
+    second_markdown = second.markdown_report_path.read_text(encoding="utf-8")
+    assert first_markdown == second_markdown
+    assert "Generated at:" not in first_markdown

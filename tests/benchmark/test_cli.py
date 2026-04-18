@@ -25,7 +25,8 @@ def test_benchmark_help_works(capsys: pytest.CaptureFixture[str]) -> None:
 
     assert excinfo.value.code == 0
     output = capsys.readouterr().out
-    assert "Commands for the benchmark dataset and outcome feasibility gate." in output
+    assert "benchmark feasibility gate" in output
+    assert "harmonization" in output
     assert "define-schema" in output
     assert "run-benchmark" in output
 
@@ -47,7 +48,7 @@ def test_benchmark_subcommand_help_is_registered(
     tuple(
         command_name
         for command_name in BENCHMARK_COMMANDS
-        if command_name not in {"audit-datasets", "define-schema"}
+        if command_name not in {"audit-datasets", "define-schema", "harmonize"}
     ),
 )
 def test_benchmark_stub_commands_exit_with_not_implemented_message(
@@ -217,6 +218,52 @@ def test_benchmark_define_schema_is_deterministic_for_schema_artifacts(
 
     assert (schema_dir / "benchmark_schema.json").read_text(encoding="utf-8") == first_json
     assert (schema_dir / "benchmark_schema.md").read_text(encoding="utf-8") == first_markdown
+
+
+def test_benchmark_harmonize_runs_and_writes_split_contracts(
+    tmp_path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    harmonized_dir = tmp_path / "harmonized"
+    manifests_dir = tmp_path / "manifests"
+
+    exit_code = main(
+        [
+            "benchmark",
+            "harmonize",
+            "--raw-root",
+            str(FIXTURE_ROOT),
+            "--output-dir",
+            str(harmonized_dir),
+            "--manifest-dir",
+            str(manifests_dir),
+        ]
+    )
+
+    assert exit_code == 0
+    output = json.loads(capsys.readouterr().out)
+    assert output["cohorts_harmonized"] == ["tcp-ds005237", "fep-ds003944"]
+    assert output["row_counts"]["split_assignments"] == 7
+    assert Path(output["subjects"]).exists()
+    assert Path(output["outcomes"]).exists()
+    assert Path(output["split_assignments"]).exists()
+    assert Path(output["harmonization_manifest"]).exists()
+    assert Path(output["split_manifest"]).exists()
+    assert Path(output["run_manifest"]).exists()
+
+    manifest = json.loads(Path(output["run_manifest"]).read_text(encoding="utf-8"))
+    assert manifest["command"] == [
+        "scz-audit",
+        "benchmark",
+        "harmonize",
+        "--raw-root",
+        str(FIXTURE_ROOT),
+        "--output-dir",
+        str(harmonized_dir),
+        "--manifest-dir",
+        str(manifests_dir),
+    ]
+    assert manifest["output_paths"]["split_assignments"] == str(harmonized_dir / "split_assignments.csv")
 
 
 def test_strict_open_help_still_works(capsys: pytest.CaptureFixture[str]) -> None:

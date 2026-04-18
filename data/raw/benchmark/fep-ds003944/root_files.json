@@ -1,0 +1,32 @@
+{
+  "files": [
+    {
+      "id": "readme",
+      "filename": "README",
+      "size": 500,
+      "directory": false,
+      "annexed": null
+    },
+    {
+      "id": "participants",
+      "filename": "participants.tsv",
+      "size": 90,
+      "directory": false,
+      "annexed": null
+    },
+    {
+      "id": "phenotype-tree",
+      "filename": "phenotype",
+      "size": 0,
+      "directory": true,
+      "annexed": null
+    },
+    {
+      "id": "subject-tree",
+      "filename": "sub-1448",
+      "size": 0,
+      "directory": true,
+      "annexed": null
+    }
+  ]
+}

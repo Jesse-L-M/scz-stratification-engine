@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 from urllib import error, request
@@ -25,6 +25,18 @@ class OpenNeuroSnapshotBundle:
     participants_tsv: str | None
 
 
+@dataclass(frozen=True, slots=True)
+class CohortHarmonizationBundle:
+    """Source-aligned harmonized rows plus cohort caveats."""
+
+    cohort_id: str
+    input_root: Path
+    audit_entry: DatasetRegistryEntry
+    tables: dict[str, tuple[dict[str, str], ...]]
+    caveats: tuple[str, ...] = ()
+    unsupported_fields: dict[str, tuple[str, ...]] = field(default_factory=dict)
+
+
 class SourceAdapter(ABC):
     """Small abstraction for metadata-only benchmark source auditing."""
 
@@ -35,7 +47,17 @@ class SourceAdapter(ABC):
         """Normalize audited source metadata into a registry entry."""
 
 
-class OpenNeuroSourceAdapter(SourceAdapter):
+class HarmonizableSourceAdapter(SourceAdapter):
+    """Benchmark source adapter that can emit canonical cohort rows."""
+
+    candidate_root_names: tuple[str, ...]
+
+    @abstractmethod
+    def harmonize(self, cohort_root: str | Path) -> CohortHarmonizationBundle:
+        """Read a local cohort root and emit canonical row bundles."""
+
+
+class OpenNeuroSourceAdapter(HarmonizableSourceAdapter):
     """Common loader for OpenNeuro metadata snapshots."""
 
     dataset_accession: str
@@ -165,19 +187,47 @@ class OpenNeuroSourceAdapter(SourceAdapter):
     @staticmethod
     def _load_snapshot_bundle_from_disk(snapshot_root: Path) -> OpenNeuroSnapshotBundle:
         dataset_payload = json.loads((snapshot_root / "dataset_metadata.json").read_text(encoding="utf-8"))
-        root_files_payload = json.loads((snapshot_root / "root_files.json").read_text(encoding="utf-8"))
-        phenotype_files_payload = json.loads((snapshot_root / "phenotype_files.json").read_text(encoding="utf-8"))
+        root_files_path = snapshot_root / "root_files.json"
+        phenotype_files_path = snapshot_root / "phenotype_files.json"
 
-        dataset = _extract_graphql_object(dataset_payload, "dataset")
-        root_files = tuple(_extract_graphql_object(root_files_payload, "files"))
-        phenotype_files = tuple(_extract_graphql_object(phenotype_files_payload, "files"))
+        root_snapshot = None
+        if root_files_path.exists():
+            root_files_payload = json.loads(root_files_path.read_text(encoding="utf-8"))
+            root_snapshot = _extract_snapshot_object(root_files_payload)
+            root_files = tuple(_extract_files_payload(root_files_payload))
+        else:
+            root_files = ()
+
+        if phenotype_files_path.exists():
+            phenotype_files_payload = json.loads(phenotype_files_path.read_text(encoding="utf-8"))
+            phenotype_files = tuple(_coerce_phenotype_filenames(_extract_files_payload(phenotype_files_payload)))
+        else:
+            phenotype_dir = snapshot_root / "phenotype"
+            phenotype_files = tuple(
+                sorted(
+                    str(path.relative_to(phenotype_dir))
+                    for path in phenotype_dir.rglob("*")
+                    if path.is_file()
+                )
+            )
+        dataset = _normalize_dataset_payload(
+            _extract_graphql_object(dataset_payload, "dataset"),
+            snapshot_payload=root_snapshot,
+        )
         participants_path = snapshot_root / "participants.tsv"
         participants_tsv = participants_path.read_text(encoding="utf-8") if participants_path.exists() else None
+        readme_text = ""
+        for readme_name in ("README.txt", "README"):
+            readme_path = snapshot_root / readme_name
+            if not readme_path.exists():
+                continue
+            readme_text = readme_path.read_text(encoding="utf-8")
+            break
         return OpenNeuroSnapshotBundle(
             dataset=dataset,
             root_files=root_files,
             phenotype_files=phenotype_files,
-            readme_text=(snapshot_root / "README.txt").read_text(encoding="utf-8"),
+            readme_text=readme_text,
             participants_tsv=participants_tsv,
         )
 
@@ -189,6 +239,75 @@ def _extract_graphql_object(payload: dict[str, Any], key: str) -> Any:
     if isinstance(data, dict) and key in data:
         return data[key]
     raise KeyError(f"expected GraphQL object '{key}' in payload")
+
+
+def _extract_snapshot_object(payload: dict[str, Any]) -> dict[str, Any] | None:
+    if "snapshot" in payload and isinstance(payload["snapshot"], dict):
+        return payload["snapshot"]
+    data = payload.get("data")
+    if isinstance(data, dict) and isinstance(data.get("snapshot"), dict):
+        return data["snapshot"]
+    return None
+
+
+def _extract_files_payload(payload: dict[str, Any]) -> list[Any]:
+    if "files" in payload and isinstance(payload["files"], list):
+        return payload["files"]
+    snapshot = _extract_snapshot_object(payload)
+    if isinstance(snapshot, dict) and isinstance(snapshot.get("files"), list):
+        return snapshot["files"]
+    raise KeyError("expected GraphQL object 'files' in payload")
+
+
+def _coerce_phenotype_filenames(items: list[Any]) -> tuple[str, ...]:
+    filenames: list[str] = []
+    for item in items:
+        if isinstance(item, str):
+            filename = item.strip()
+            if filename:
+                filenames.append(filename)
+            continue
+        if not isinstance(item, dict):
+            continue
+        if item.get("directory"):
+            continue
+        filename = str(item.get("filename", "")).strip()
+        if filename:
+            filenames.append(filename)
+    return tuple(sorted(filenames))
+
+
+def _normalize_dataset_payload(
+    dataset_payload: dict[str, Any],
+    *,
+    snapshot_payload: dict[str, Any] | None,
+) -> dict[str, Any]:
+    dataset = dict(dataset_payload)
+    latest_snapshot = dataset.get("latestSnapshot")
+    if not isinstance(latest_snapshot, dict):
+        latest_snapshot = {}
+    description = latest_snapshot.get("description")
+    if not isinstance(description, dict):
+        description = {}
+
+    if isinstance(snapshot_payload, dict):
+        if snapshot_payload.get("tag"):
+            latest_snapshot["tag"] = snapshot_payload["tag"]
+        snapshot_description = snapshot_payload.get("description")
+        if isinstance(snapshot_description, dict):
+            merged_description = dict(description)
+            merged_description.update(snapshot_description)
+            description = merged_description
+
+    if "Name" not in description:
+        dataset_name = str(dataset.get("name", "")).strip()
+        if dataset_name:
+            description["Name"] = dataset_name
+
+    latest_snapshot.setdefault("tag", "")
+    latest_snapshot["description"] = description
+    dataset["latestSnapshot"] = latest_snapshot
+    return dataset
 
 
 def _graphql_query(query: str, variables: dict[str, Any]) -> dict[str, Any]:
@@ -227,6 +346,8 @@ def _fetch_text(url: str, *, required: bool = True) -> str | None:
 
 
 __all__ = [
+    "CohortHarmonizationBundle",
+    "HarmonizableSourceAdapter",
     "OPENNEURO_GRAPHQL_URL",
     "OpenNeuroSnapshotBundle",
     "OpenNeuroSourceAdapter",

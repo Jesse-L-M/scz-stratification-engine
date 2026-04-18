@@ -1,6 +1,5 @@
 # Benchmark Dataset Audit
 
-- Generated at: `2026-04-18T15:22:36.988901Z`
 - Current benchmark decision: `narrow-go`
 - Current claim level supported: `narrow_outcome_benchmark`
 - Decision explanation: Only one public benchmark-eligible cohort currently counts toward narrow benchmark support for poor_functional_outcome. Cohorts with weaker public label granularity remain outside the claim count: tcp-ds005237. Current public endpoint support is concurrent-only, so the repo remains narrow-go without a prospective claim.

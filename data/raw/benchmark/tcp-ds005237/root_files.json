@@ -1,0 +1,32 @@
+{
+  "files": [
+    {
+      "id": "readme",
+      "filename": "README",
+      "size": 800,
+      "directory": false,
+      "annexed": null
+    },
+    {
+      "id": "participants",
+      "filename": "participants.tsv",
+      "size": 120,
+      "directory": false,
+      "annexed": null
+    },
+    {
+      "id": "phenotype-tree",
+      "filename": "phenotype",
+      "size": 0,
+      "directory": true,
+      "annexed": null
+    },
+    {
+      "id": "subject-tree",
+      "filename": "sub-NDARINVTEST001",
+      "size": 0,
+      "directory": true,
+      "annexed": null
+    }
+  ]
+}

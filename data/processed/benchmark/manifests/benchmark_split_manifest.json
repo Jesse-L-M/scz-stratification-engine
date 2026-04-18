@@ -1,0 +1,78 @@
+{
+  "claim_boundary_statement": "These frozen splits stay within the current narrow benchmark lane and do not constitute a full external-validation claim.",
+  "counts_by_split": {
+    "test": 2,
+    "train": 3,
+    "validation": 2
+  },
+  "counts_by_split_and_cohort": {
+    "test": {
+      "fep-ds003944": 1,
+      "tcp-ds005237": 1
+    },
+    "train": {
+      "fep-ds003944": 1,
+      "tcp-ds005237": 2
+    },
+    "validation": {
+      "fep-ds003944": 1,
+      "tcp-ds005237": 1
+    }
+  },
+  "counts_by_split_and_diagnosis_group": {
+    "test": {
+      "control": 1,
+      "general_population_control": 1
+    },
+    "train": {
+      "broad_psychiatric_patient": 1,
+      "general_population_control": 1,
+      "psychosis": 1
+    },
+    "validation": {
+      "broad_psychiatric_patient": 1,
+      "psychosis": 1
+    }
+  },
+  "counts_by_split_and_outcome_support": {
+    "test": {
+      "no_outcome": 2
+    },
+    "train": {
+      "has_outcome": 2,
+      "no_outcome": 1
+    },
+    "validation": {
+      "has_outcome": 2
+    }
+  },
+  "counts_by_split_and_site": {
+    "test": {
+      "1": 1,
+      "single_site_public_accession": 1
+    },
+    "train": {
+      "2": 2,
+      "single_site_public_accession": 1
+    },
+    "validation": {
+      "1": 1,
+      "single_site_public_accession": 1
+    }
+  },
+  "label_support_policy": "Within each cohort, subjects with benchmark outcome rows are ordered ahead of unlabeled subjects so the training split receives labeled rows whenever the cohort exposes any labels at all.",
+  "seed": 1729,
+  "split_method": "Deterministic within-cohort subject-level assignment. Subjects are ordered by cohort, then interleaved across diagnosis groups within each cohort using a seed-stable subject hash before fixed train/validation/test quotas are applied.",
+  "split_protocol_version": "benchmark_within_cohort_subject_v1",
+  "split_ratios": {
+    "test": 0.2,
+    "train": 0.6,
+    "validation": 0.2
+  },
+  "visit_counts_by_split": {
+    "test": 2,
+    "train": 3,
+    "validation": 2
+  },
+  "visit_leakage_policy": "All visits for a subject inherit that subject's split assignment; no visit-level reassignment is allowed."
+}
