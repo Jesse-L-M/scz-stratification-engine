@@ -1,5 +1,10 @@
 # strict-open v0 claim
 
+> Superseded.
+> This is archived exploratory documentation.
+> Active benchmark guidance lives in [`docs/benchmark_claim.md`](benchmark_claim.md)
+> and [`docs/benchmark_pivot_roadmap.md`](benchmark_pivot_roadmap.md).
+
 ## Core claim
 
 `strict-open v0` is a public cognitive stability and trial-noise audit engine for estimating stable baseline-like cognitive burden versus transient state noise from fully public schizophrenia-relevant data.

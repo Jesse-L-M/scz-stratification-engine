@@ -1,92 +1,62 @@
 # Benchmark Evaluation Protocol
 
-This document defines the minimum evaluation rules for the new mainline
-benchmark.
+This document defines the current feasibility protocol for the benchmark line.
 
-The repo should not claim to have answered the representation question unless it
-meets these rules.
+The active question in this PR is not which model wins. The active question is
+what claim the available public cohorts can honestly support.
 
-## Main Question
+## Command In Scope
 
-Which representation of psychosis heterogeneity reproduces across independent
-datasets and improves prediction of intervention-relevant outcomes:
-diagnosis, dimensions, trajectories, or clusters?
+Use:
 
-## Evaluation Priorities
+- `scz-audit benchmark audit-datasets`
 
-The benchmark should evaluate:
+Do not add new benchmark commands in this phase.
 
-1. reproducibility of representation structure
-2. outcome-prediction value
-3. transport across cohorts
-4. calibration and coverage
-5. failure modes
+## Required Audit Outputs
 
-## Required Representation Families
+The dataset audit should emit:
 
-The first benchmark should include:
+1. current benchmark decision
+2. current supported claim level
+3. cohort-level temporal outcome metadata
+4. outcome-family support grouped by:
+   - narrow benchmark support
+   - full external-validation support
+   - prospective support
+5. concurrent-only vs prospectively usable cohort lists
+6. limiting factors that keep the repo conservative
 
-- diagnosis-only
-- symptom-dimension
-- simple baseline clinical
-- trajectory-aware where repeated measures exist
+## Claim-Boundary Rules
 
-Clusters are optional in V0 and should be included only if they can be
-implemented honestly and compared fairly.
+- same-visit endpoints must be labeled `concurrent_only`
+- concurrent support must not be described as a prospective outcome benchmark
+- one eligible cohort can justify only `narrow_outcome_benchmark`
+- two eligible cohorts supporting the same family are required for
+  `full_external_validation`
+- prospective outcome claims require prospective public endpoints, not just
+  repeated visits
 
-## Required Baselines
+## Current Conservative Reading
 
-At least one intentionally simple baseline must be present:
+The current public outcome picture should remain:
 
-- diagnosis-only baseline
-- low-tech clinical baseline from symptoms and available non-imaging features
+- benchmark decision: `narrow-go`
+- claim level: `narrow_outcome_benchmark`
+- current outcome family support: `poor_functional_outcome`
+- temporal validity: concurrent-only
 
-More complex representations must beat these, not just each other.
+The repo should continue to say no full external-validation claim yet.
 
-## Validation Rules
+## Deferred Until Later PRs
 
-### Split Rules
+This protocol intentionally does not pull forward:
 
-- split at the subject level
-- prevent leakage across repeated visits
-- freeze the split contract before model comparison
+- benchmark schema work
+- harmonization
+- split generation
+- representation builders
+- model comparison
+- biomarker-heavy benchmarking
 
-### Cross-Cohort Rules
-
-- prefer train-on-one / test-on-another evaluation whenever feasible
-- if only one cohort is usable, reduce the claim accordingly
-- do not present within-cohort validation as if it were external validation
-
-### Site Rules
-
-- report site composition where applicable
-- state when site holdout is impossible or statistically weak
-- treat site confounding as a first-class failure mode
-
-## Outcome Rules
-
-- every result table must name the exact primary outcome
-- outcome mapping differences across cohorts must be reported
-- no synthetic target may serve as the primary benchmark endpoint
-
-## Reporting Rules
-
-Every benchmark report should answer:
-
-1. which representation families were evaluated
-2. which outcomes were used
-3. which cohorts were used for train, validation, and test
-4. what generalized and what failed
-5. whether any added modality improved on low-tech clinical baselines
-
-## Explicit Non-Claims
-
-The benchmark does not by itself justify:
-
-- discovery of true disease subtypes
-- biomarker clinical utility
-- target prioritization
-- mechanism certainty
-
-It only justifies claims about comparative benchmark performance under the
-available data and evaluation rules.
+Those belong only after this feasibility gate is settled.

@@ -1,5 +1,10 @@
 # strict-open v0 sources
 
+> Superseded.
+> This is archived exploratory documentation.
+> Active benchmark guidance lives in [`docs/benchmark_claim.md`](benchmark_claim.md)
+> and [`docs/benchmark_pivot_roadmap.md`](benchmark_pivot_roadmap.md).
+
 ## Core dataset
 
 - `ds005237 / TCP` is the default core dataset for `strict-open v0`.

@@ -604,7 +604,7 @@ def build_parser() -> argparse.ArgumentParser:
     benchmark_parser = subparsers.add_parser(
         "benchmark",
         help="Mainline benchmark commands.",
-        description="Mainline commands for the multi-cohort psychosis benchmark scaffold.",
+        description="Commands for the benchmark dataset and outcome feasibility gate.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     benchmark_parser.add_argument(

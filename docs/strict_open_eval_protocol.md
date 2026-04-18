@@ -1,5 +1,10 @@
 # strict-open v0 Evaluation Protocol
 
+> Superseded.
+> This is archived exploratory documentation.
+> Active benchmark guidance lives in [`docs/benchmark_eval_protocol.md`](benchmark_eval_protocol.md)
+> and [`docs/benchmark_pivot_roadmap.md`](benchmark_pivot_roadmap.md).
+
 This protocol freezes the default split and evaluation contract for `strict-open v0` before any baseline models exist.
 
 ## Scope
