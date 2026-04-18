@@ -2,8 +2,8 @@
 
 ## Current Mainline Claim
 
-This repo's active job is to harden benchmark feasibility and claim boundaries
-before schema or modeling work begins.
+This repo's active job is to preserve the benchmark feasibility boundary while
+defining the canonical benchmark schema ahead of harmonization or modeling.
 
 Current repo status:
 
@@ -11,6 +11,8 @@ Current repo status:
 - supported claim level: `narrow_outcome_benchmark`
 - current public support: one benchmark-eligible cohort with a concurrent
   `poor_functional_outcome` endpoint
+- schema status: canonical benchmark tables are now defined in code and emitted
+  as benchmark artifacts
 
 ## What The Repo Can Claim Right Now
 
@@ -18,6 +20,8 @@ Current repo status:
   outcomes
 - the registry and reports can state the current claim level explicitly
 - one public cohort currently supports a narrow, concurrent outcome benchmark
+- the benchmark namespace can define canonical schema artifacts without implying
+  harmonization or stronger claims
 - `tcp-ds005237` remains useful metadata and comparison context, but not full
   narrow-support claim evidence
 
@@ -25,7 +29,6 @@ Current repo status:
 
 - full external validation
 - a prospective outcome benchmark
-- schema readiness
 - harmonized cross-cohort tables
 - representation benchmarking results
 - biomarker value
@@ -35,6 +38,7 @@ Current repo status:
 
 - keep the benchmark decision conservative and machine-readable
 - treat temporal outcome validity as structured metadata, not prose only
+- keep diagnosis granularity and mapping caveats explicit in schema contracts
 - keep cohort notes operational
 - keep old `strict_open` scientific docs visibly archived
 
@@ -44,5 +48,5 @@ Current repo status:
   as the current project framing
 - treat old `strict_open` scientific docs as superseded unless explicitly reused
   as infrastructure reference
-- do not pull schema, harmonization, representation, or modeling work forward in
-  this PR line
+- do not pull harmonization, representation, or modeling work forward in this
+  PR line

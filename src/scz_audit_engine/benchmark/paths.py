@@ -37,6 +37,10 @@ class BenchmarkPaths:
         return self.repo_root / "data" / "curated" / "benchmark"
 
     @property
+    def schema_root(self) -> Path:
+        return self.curated_root / "schema"
+
+    @property
     def manifests_root(self) -> Path:
         return self.processed_root / "manifests"
 
@@ -60,6 +64,7 @@ class BenchmarkPaths:
             "raw": self.raw_root,
             "processed": self.processed_root,
             "curated": self.curated_root,
+            "schema": self.schema_root,
             "manifests": self.manifests_root,
             "reports": self.reports_root,
             "examples": self.examples_root,
