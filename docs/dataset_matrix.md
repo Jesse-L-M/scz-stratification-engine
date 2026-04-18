@@ -28,15 +28,20 @@ Maintain a checked-in dataset registry with at least these fields:
 | `sample_size_note` | rough usable size |
 | `known_limitations` | what would weaken external validation |
 | `local_status` | `candidate`, `audited`, `harmonized`, or `deferred` |
+| `benchmark_v0_eligibility` | `eligible`, `limited`, or `ineligible` for the current mainline benchmark question |
 
 ## Minimum Criteria For Inclusion In Benchmark V0
 
 A cohort is eligible for the first benchmark only if it has:
 
 1. subject-level identifiers
-2. diagnosis or group labels
+2. diagnosis or group labels with enough psychosis-relevant granularity to support the intended representation comparison
 3. symptom measurements that can be mapped into a common contract
 4. at least one real outcome of interest
+
+Public audited cohorts with only broad labels such as `Patient vs GenPop` can stay in
+the registry as useful audited candidates, but they should be marked `limited` and
+must not count toward a cross-cohort `go` claim.
 
 Prefer cohorts that also have:
 
@@ -60,7 +65,7 @@ Do not prioritize a cohort just because it has imaging.
 Before major modeling work starts, the registry should support one of these
 statements:
 
-- `go`: at least two cohorts support a real cross-cohort benchmark
+- `go`: at least two cohorts marked `benchmark_v0_eligibility=eligible` support a real cross-cohort benchmark
 - `narrow-go`: only one strong cohort exists, so the scope must narrow and the
   external-validation claim must be reduced
 - `no-go`: available public data cannot support the benchmark honestly

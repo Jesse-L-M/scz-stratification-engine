@@ -3,6 +3,7 @@
 from .dataset_audit import run_benchmark_dataset_audit
 from .dataset_registry import (
     ACCESS_LEVELS,
+    BENCHMARK_V0_ELIGIBILITY_STATES,
     LOCAL_STATUSES,
     OUTCOME_FAMILIES,
     BenchmarkDecision,
@@ -18,6 +19,7 @@ from .run_manifest import DatasetReference, RunManifest, build_run_manifest, wri
 
 __all__ = [
     "ACCESS_LEVELS",
+    "BENCHMARK_V0_ELIGIBILITY_STATES",
     "BenchmarkPaths",
     "BenchmarkDecision",
     "DatasetReference",

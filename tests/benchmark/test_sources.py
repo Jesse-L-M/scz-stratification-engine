@@ -19,6 +19,7 @@ def test_tcp_adapter_normalizes_fixture_snapshot_without_subject_level_leakage()
 
     assert entry.dataset_id == "tcp-ds005237"
     assert entry.access_level == "public"
+    assert entry.benchmark_v0_eligibility == "limited"
     assert entry.benchmarkable_outcome_families == ("poor_functional_outcome",)
     assert "LIFE-RIFT" in entry.functioning_scales
     assert "sub-" not in json.dumps(entry.to_dict())
@@ -31,6 +32,7 @@ def test_fep_adapter_normalizes_fixture_snapshot_without_subject_level_leakage()
 
     assert entry.dataset_id == "fep-ds003944"
     assert entry.population_scope == "first-episode psychosis case-control cohort"
+    assert entry.benchmark_v0_eligibility == "eligible"
     assert "SAPS" in entry.symptom_scales
     assert entry.benchmarkable_outcome_families == ("poor_functional_outcome",)
     assert "sub-" not in json.dumps(entry.to_dict())

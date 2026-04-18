@@ -70,6 +70,7 @@ class TCPDS005237BenchmarkSourceAdapter(OpenNeuroSourceAdapter):
                 "document longitudinal follow-up needed for remission, persistence, or relapse endpoints."
             ),
             local_status="audited",
+            benchmark_v0_eligibility="limited",
             benchmarkable_outcome_families=("poor_functional_outcome",),
             provenance_urls=(
                 self.dataset_page_url,
@@ -78,7 +79,8 @@ class TCPDS005237BenchmarkSourceAdapter(OpenNeuroSourceAdapter):
             ),
             audit_summary=(
                 "Public transdiagnostic MRI cohort with functioning measures and multi-site structure, but no "
-                "confirmed public longitudinal endpoint coverage."
+                "confirmed public longitudinal endpoint coverage. The public label space is still too broad to "
+                "count as benchmark-v0 support for psychosis heterogeneity."
             ),
         )
 

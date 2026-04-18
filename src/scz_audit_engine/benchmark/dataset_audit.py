@@ -61,7 +61,7 @@ def _render_markdown_report(
         "",
         "## Outcome Family Support",
         "",
-        "| Outcome family | Public benchmark-eligible cohorts |",
+        "| Outcome family | Benchmark-v0 eligible cohorts counting toward `go` |",
         "| --- | --- |",
     ]
     for family in OUTCOME_FAMILIES:
@@ -74,20 +74,29 @@ def _render_markdown_report(
             "",
             "## Audited Cohorts",
             "",
-            "| Dataset | Access | Population | Benchmarkable outcome families |",
-            "| --- | --- | --- | --- |",
+            "| Dataset | Access | Local status | Benchmark v0 eligibility | Counts toward `go` | Population | Benchmarkable outcome families |",
+            "| --- | --- | --- | --- | --- | --- | --- |",
         ]
     )
     for entry in entries:
         families = ", ".join(entry.benchmarkable_outcome_families) or "none"
         lines.append(
-            f"| `{entry.dataset_id}` | `{entry.access_level}` | {entry.population_scope} | {families} |"
+            "| "
+            f"`{entry.dataset_id}` | `{entry.access_level}` | `{entry.local_status}` | "
+            f"`{entry.benchmark_v0_eligibility}` | "
+            f"`{'yes' if entry.counts_toward_cross_cohort_go else 'no'}` | "
+            f"{entry.population_scope} | {families} |"
         )
 
     lines.extend(["", "## Cohort Notes", ""])
     for entry in entries:
         lines.append(f"### `{entry.dataset_id}`")
         lines.append(f"- Label: {entry.dataset_label}")
+        lines.append(f"- Local status: {entry.local_status}")
+        lines.append(f"- Benchmark v0 eligibility: {entry.benchmark_v0_eligibility}")
+        lines.append(
+            f"- Counts toward cross-cohort `go`: {'yes' if entry.counts_toward_cross_cohort_go else 'no'}"
+        )
         lines.append(f"- Diagnosis coverage: {entry.diagnosis_coverage}")
         lines.append(
             f"- Functioning scales: {', '.join(entry.functioning_scales) or 'none confirmed'}"
@@ -126,6 +135,7 @@ def run_benchmark_dataset_audit(
     registry_path: str | Path,
     reports_root: str | Path,
     manifests_root: str | Path,
+    repo_root: str | Path | None,
     command: list[str] | tuple[str, ...],
     git_sha: str | None,
     seed: int,
@@ -154,6 +164,7 @@ def run_benchmark_dataset_audit(
             command=command,
             git_sha=git_sha,
             seed=seed,
+            repo_root=repo_root,
             output_paths={
                 "dataset_registry": registry_output_path,
                 "json_report": json_report_path,

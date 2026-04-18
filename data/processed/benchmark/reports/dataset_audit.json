@@ -2,7 +2,8 @@
   "audited_cohorts": [
     {
       "access_level": "public",
-      "audit_summary": "Public transdiagnostic MRI cohort with functioning measures and multi-site structure, but no confirmed public longitudinal endpoint coverage.",
+      "audit_summary": "Public transdiagnostic MRI cohort with functioning measures and multi-site structure, but no confirmed public longitudinal endpoint coverage. The public label space is still too broad to count as benchmark-v0 support for psychosis heterogeneity.",
+      "benchmark_v0_eligibility": "limited",
       "benchmarkable_outcome_families": [
         "poor_functional_outcome"
       ],
@@ -13,6 +14,7 @@
         "Stroop",
         "Hammer"
       ],
+      "counts_toward_cross_cohort_go": false,
       "dataset_id": "tcp-ds005237",
       "dataset_label": "Transdiagnostic Connectome Project",
       "diagnosis_coverage": "Broad psychiatric illness vs healthy comparison; README cites affective or psychotic illness history, but public participants.tsv only exposes Patient vs GenPop groups.",
@@ -51,6 +53,7 @@
     {
       "access_level": "public",
       "audit_summary": "Public first-episode psychosis EEG cohort with symptom, cognition, and functioning measures, but no confirmed longitudinal outcome window.",
+      "benchmark_v0_eligibility": "eligible",
       "benchmarkable_outcome_families": [
         "poor_functional_outcome"
       ],
@@ -58,6 +61,7 @@
         "MATRICS",
         "WASI"
       ],
+      "counts_toward_cross_cohort_go": true,
       "dataset_id": "fep-ds003944",
       "dataset_label": "EEG: First Episode Psychosis vs. Control Resting Task 1",
       "diagnosis_coverage": "participants.tsv lists 50 Psychosis and 32 Control participants.",
@@ -91,22 +95,21 @@
     }
   ],
   "decision": {
-    "explanation": "At least two public benchmark-eligible cohorts support a real benchmark outcome family. Current cross-cohort support exists for poor_functional_outcome.",
+    "explanation": "Only one public benchmark-eligible cohort supports each currently benchmarkable outcome family, so benchmark v0 must narrow scope and reduce any external-validation claim.",
     "recommended_outcome_families": [
       "poor_functional_outcome"
     ],
-    "state": "go",
+    "state": "narrow-go",
     "support_by_outcome_family": {
       "one_year_nonremission": [],
       "persistent_negative_symptoms": [],
       "poor_functional_outcome": [
-        "tcp-ds005237",
         "fep-ds003944"
       ],
       "relapse_hospitalization_proxy": []
     }
   },
-  "generated_at": "2026-04-17T17:00:17.360879Z",
+  "generated_at": "2026-04-18T13:29:06.330645Z",
   "outcome_family_support": {
     "one_year_nonremission": {
       "cohorts": [],
@@ -118,10 +121,9 @@
     },
     "poor_functional_outcome": {
       "cohorts": [
-        "tcp-ds005237",
         "fep-ds003944"
       ],
-      "count": 2
+      "count": 1
     },
     "relapse_hospitalization_proxy": {
       "cohorts": [],

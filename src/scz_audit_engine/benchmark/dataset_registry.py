@@ -15,6 +15,7 @@ OUTCOME_FAMILIES = (
 )
 ACCESS_LEVELS = ("public", "controlled", "gated")
 LOCAL_STATUSES = ("candidate", "audited", "harmonized", "deferred")
+BENCHMARK_V0_ELIGIBILITY_STATES = ("eligible", "limited", "ineligible")
 BENCHMARK_ELIGIBLE_ACCESS_LEVELS = ("public",)
 BENCHMARK_ELIGIBLE_LOCAL_STATUSES = ("audited", "harmonized")
 REQUIRED_REGISTRY_COLUMNS = (
@@ -34,6 +35,7 @@ REQUIRED_REGISTRY_COLUMNS = (
     "sample_size_note",
     "known_limitations",
     "local_status",
+    "benchmark_v0_eligibility",
 )
 OPTIONAL_REGISTRY_COLUMNS = (
     "benchmarkable_outcome_families",
@@ -71,6 +73,7 @@ class DatasetRegistryEntry:
     sample_size_note: str
     known_limitations: str
     local_status: str = "audited"
+    benchmark_v0_eligibility: str = "ineligible"
     benchmarkable_outcome_families: tuple[str, ...] = ()
     provenance_urls: tuple[str, ...] = ()
     audit_summary: str = ""
@@ -95,6 +98,11 @@ class DatasetRegistryEntry:
             raise ValueError(f"access_level must be one of {ACCESS_LEVELS}")
         if self.local_status not in LOCAL_STATUSES:
             raise ValueError(f"local_status must be one of {LOCAL_STATUSES}")
+        if self.benchmark_v0_eligibility not in BENCHMARK_V0_ELIGIBILITY_STATES:
+            raise ValueError(
+                "benchmark_v0_eligibility must be one of "
+                f"{BENCHMARK_V0_ELIGIBILITY_STATES}"
+            )
         invalid_outcomes = tuple(
             outcome
             for outcome in self.benchmarkable_outcome_families
@@ -102,6 +110,23 @@ class DatasetRegistryEntry:
         )
         if invalid_outcomes:
             raise ValueError(f"unsupported outcome families: {invalid_outcomes}")
+        if self.benchmark_v0_eligibility in {"eligible", "limited"}:
+            if self.access_level not in BENCHMARK_ELIGIBLE_ACCESS_LEVELS:
+                raise ValueError(
+                    "benchmark_v0_eligibility can only be eligible or limited for public cohorts"
+                )
+            if self.local_status not in BENCHMARK_ELIGIBLE_LOCAL_STATUSES:
+                raise ValueError(
+                    "benchmark_v0_eligibility can only be eligible or limited for audited or harmonized cohorts"
+                )
+            if not self.benchmarkable_outcome_families:
+                raise ValueError(
+                    "benchmark_v0_eligibility can only be eligible or limited when benchmarkable outcomes exist"
+                )
+
+    @property
+    def counts_toward_cross_cohort_go(self) -> bool:
+        return self.benchmark_v0_eligibility == "eligible"
 
     def to_csv_row(self) -> dict[str, str]:
         return {
@@ -121,6 +146,7 @@ class DatasetRegistryEntry:
             "sample_size_note": self.sample_size_note,
             "known_limitations": self.known_limitations,
             "local_status": self.local_status,
+            "benchmark_v0_eligibility": self.benchmark_v0_eligibility,
             "benchmarkable_outcome_families": _join_multi_value_field(self.benchmarkable_outcome_families),
             "provenance_urls": _join_multi_value_field(self.provenance_urls),
             "audit_summary": self.audit_summary,
@@ -148,6 +174,8 @@ class DatasetRegistryEntry:
             sample_size_note=row["sample_size_note"].strip(),
             known_limitations=row["known_limitations"].strip(),
             local_status=row.get("local_status", "audited").strip() or "audited",
+            benchmark_v0_eligibility=row.get("benchmark_v0_eligibility", "ineligible").strip()
+            or "ineligible",
             benchmarkable_outcome_families=_split_multi_value_field(
                 row.get("benchmarkable_outcome_families", "")
             ),
@@ -164,6 +192,8 @@ class DatasetRegistryEntry:
             "functioning_scales": list(self.functioning_scales),
             "treatment_variables": list(self.treatment_variables),
             "modality_availability": list(self.modality_availability),
+            "benchmark_v0_eligibility": self.benchmark_v0_eligibility,
+            "counts_toward_cross_cohort_go": self.counts_toward_cross_cohort_go,
             "benchmarkable_outcome_families": list(self.benchmarkable_outcome_families),
             "provenance_urls": list(self.provenance_urls),
         }
@@ -194,9 +224,7 @@ def build_outcome_support(
 ) -> dict[str, tuple[str, ...]]:
     support: dict[str, list[str]] = {family: [] for family in OUTCOME_FAMILIES}
     for entry in entries:
-        if entry.local_status not in BENCHMARK_ELIGIBLE_LOCAL_STATUSES:
-            continue
-        if entry.access_level not in BENCHMARK_ELIGIBLE_ACCESS_LEVELS:
+        if not entry.counts_toward_cross_cohort_go:
             continue
         for family in entry.benchmarkable_outcome_families:
             support[family].append(entry.dataset_id)
@@ -256,7 +284,11 @@ def write_dataset_registry(
     output_path = Path(destination)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(REGISTRY_COLUMNS))
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=list(REGISTRY_COLUMNS),
+            lineterminator="\n",
+        )
         writer.writeheader()
         for entry in entries:
             writer.writerow(entry.to_csv_row())
@@ -265,6 +297,7 @@ def write_dataset_registry(
 
 __all__ = [
     "ACCESS_LEVELS",
+    "BENCHMARK_V0_ELIGIBILITY_STATES",
     "BenchmarkDecision",
     "DatasetRegistryEntry",
     "LOCAL_STATUSES",

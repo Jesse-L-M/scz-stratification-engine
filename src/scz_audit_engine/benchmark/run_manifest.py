@@ -16,6 +16,16 @@ def utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
+def _normalize_output_path(path: str | Path, *, repo_root: str | Path | None) -> str:
+    candidate = Path(path)
+    if repo_root is None or not candidate.is_absolute():
+        return str(candidate)
+    try:
+        return str(candidate.resolve().relative_to(Path(repo_root).resolve()))
+    except ValueError:
+        return str(candidate)
+
+
 @dataclass(frozen=True, slots=True)
 class DatasetReference:
     """Dataset reference for a benchmark run."""
@@ -66,11 +76,15 @@ def build_run_manifest(
     output_paths: dict[str, str | Path],
     dataset_source: str | None = None,
     cohort_identifier: str | None = None,
+    repo_root: str | Path | None = None,
     timestamp: str | None = None,
 ) -> RunManifest:
     """Create a benchmark run manifest from plain Python values."""
 
-    normalized_output_paths = {name: str(path) for name, path in output_paths.items()}
+    normalized_output_paths = {
+        name: _normalize_output_path(path, repo_root=repo_root)
+        for name, path in output_paths.items()
+    }
     dataset = DatasetReference(source=dataset_source, cohort=cohort_identifier)
     return RunManifest(
         dataset=dataset,

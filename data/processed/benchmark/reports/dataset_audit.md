@@ -1,29 +1,32 @@
 # Benchmark Dataset Audit
 
-- Generated at: `2026-04-17T17:00:17.360879Z`
-- Recommended decision: `go`
-- Explanation: At least two public benchmark-eligible cohorts support a real benchmark outcome family. Current cross-cohort support exists for poor_functional_outcome.
+- Generated at: `2026-04-18T13:29:06.330645Z`
+- Recommended decision: `narrow-go`
+- Explanation: Only one public benchmark-eligible cohort supports each currently benchmarkable outcome family, so benchmark v0 must narrow scope and reduce any external-validation claim.
 
 ## Outcome Family Support
 
-| Outcome family | Public benchmark-eligible cohorts |
+| Outcome family | Benchmark-v0 eligible cohorts counting toward `go` |
 | --- | --- |
 | `one_year_nonremission` | none |
 | `persistent_negative_symptoms` | none |
-| `poor_functional_outcome` | tcp-ds005237, fep-ds003944 |
+| `poor_functional_outcome` | fep-ds003944 |
 | `relapse_hospitalization_proxy` | none |
 
 ## Audited Cohorts
 
-| Dataset | Access | Population | Benchmarkable outcome families |
-| --- | --- | --- | --- |
-| `tcp-ds005237` | `public` | transdiagnostic psychiatry cohort with affective or psychotic illness history | poor_functional_outcome |
-| `fep-ds003944` | `public` | first-episode psychosis case-control cohort | poor_functional_outcome |
+| Dataset | Access | Local status | Benchmark v0 eligibility | Counts toward `go` | Population | Benchmarkable outcome families |
+| --- | --- | --- | --- | --- | --- | --- |
+| `tcp-ds005237` | `public` | `audited` | `limited` | `no` | transdiagnostic psychiatry cohort with affective or psychotic illness history | poor_functional_outcome |
+| `fep-ds003944` | `public` | `audited` | `eligible` | `yes` | first-episode psychosis case-control cohort | poor_functional_outcome |
 
 ## Cohort Notes
 
 ### `tcp-ds005237`
 - Label: Transdiagnostic Connectome Project
+- Local status: audited
+- Benchmark v0 eligibility: limited
+- Counts toward cross-cohort `go`: no
 - Diagnosis coverage: Broad psychiatric illness vs healthy comparison; README cites affective or psychotic illness history, but public participants.tsv only exposes Patient vs GenPop groups.
 - Functioning scales: LIFE-RIFT, MCAS
 - Longitudinal coverage: No repeated public follow-up visits are described in the accession metadata or README.
@@ -33,6 +36,9 @@
 
 ### `fep-ds003944`
 - Label: EEG: First Episode Psychosis vs. Control Resting Task 1
+- Local status: audited
+- Benchmark v0 eligibility: eligible
+- Counts toward cross-cohort `go`: yes
 - Diagnosis coverage: participants.tsv lists 50 Psychosis and 32 Control participants.
 - Functioning scales: GAF/GAS, SFS
 - Longitudinal coverage: No repeated follow-up visits are described in the accession metadata or README.

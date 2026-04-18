@@ -63,6 +63,7 @@ class FEPDS003944BenchmarkSourceAdapter(OpenNeuroSourceAdapter):
                 "and relapse endpoints are not currently supported."
             ),
             local_status="audited",
+            benchmark_v0_eligibility="eligible",
             benchmarkable_outcome_families=("poor_functional_outcome",),
             provenance_urls=(
                 self.dataset_page_url,
