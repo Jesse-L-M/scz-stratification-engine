@@ -259,9 +259,7 @@ class DatasetRegistryEntry:
         if self.supports_cross_sectional_representation_claim:
             contributions.append("cross_sectional_representation")
         if self.counts_toward_narrow_benchmark_support:
-            contributions.extend(
-                ("narrow_outcome_benchmark", "full_external_validation")
-            )
+            contributions.append("narrow_outcome_benchmark")
         if self.counts_toward_prospective_benchmark:
             contributions.append("prospective_outcome_benchmark")
         return tuple(contributions)

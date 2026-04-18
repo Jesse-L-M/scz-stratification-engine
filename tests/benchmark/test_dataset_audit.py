@@ -86,6 +86,11 @@ def test_markdown_report_surfaces_claim_level_temporal_and_support_lists(tmp_pat
     )
     assert "| `poor_functional_outcome` | public-cohort | none | none |" in markdown
     assert (
+        "| `public-cohort` | `public` | `audited` | `eligible` | `strong` | "
+        "`concurrent_only` | `narrow_outcome_benchmark` | `yes` | poor_functional_outcome |"
+        in markdown
+    )
+    assert (
         "`weak-label-cohort` | `public` | `audited` | `limited` | `limited` | `concurrent_only` | `none`"
         in markdown
     )
@@ -133,7 +138,11 @@ def test_json_report_exposes_claim_level_and_temporal_fields(tmp_path) -> None:
     assert by_id["public-cohort"]["benchmark_v0_eligibility"] == "eligible"
     assert by_id["public-cohort"]["counts_toward_narrow_benchmark_support"] is True
     assert by_id["public-cohort"]["outcome_temporal_validity"] == "concurrent_only"
-    assert by_id["public-cohort"]["claim_level_ceiling"] == "full_external_validation"
+    assert by_id["public-cohort"]["claim_level_ceiling"] == "narrow_outcome_benchmark"
+    assert by_id["public-cohort"]["claim_level_contributions"] == [
+        "cross_sectional_representation",
+        "narrow_outcome_benchmark",
+    ]
     assert by_id["weak-label-cohort"]["benchmark_v0_eligibility"] == "limited"
     assert by_id["weak-label-cohort"]["counts_toward_narrow_benchmark_support"] is False
     assert by_id["weak-label-cohort"]["representation_comparison_support"] == "limited"

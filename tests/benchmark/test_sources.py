@@ -41,8 +41,8 @@ def test_fep_adapter_normalizes_fixture_snapshot_without_subject_level_leakage()
     assert entry.claim_level_contributions == (
         "cross_sectional_representation",
         "narrow_outcome_benchmark",
-        "full_external_validation",
     )
+    assert entry.claim_level_ceiling == "narrow_outcome_benchmark"
     assert "SAPS" in entry.symptom_scales
     assert entry.benchmarkable_outcome_families == ("poor_functional_outcome",)
     assert "sub-" not in json.dumps(entry.to_dict())

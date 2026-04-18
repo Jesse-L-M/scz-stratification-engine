@@ -69,11 +69,10 @@
       "benchmarkable_outcome_families": [
         "poor_functional_outcome"
       ],
-      "claim_level_ceiling": "full_external_validation",
+      "claim_level_ceiling": "narrow_outcome_benchmark",
       "claim_level_contributions": [
         "cross_sectional_representation",
-        "narrow_outcome_benchmark",
-        "full_external_validation"
+        "narrow_outcome_benchmark"
       ],
       "cognition_scales": [
         "MATRICS",
@@ -166,7 +165,7 @@
       "relapse_hospitalization_proxy": []
     }
   },
-  "generated_at": "2026-04-18T14:44:51.603064Z",
+  "generated_at": "2026-04-18T15:22:36.988901Z",
   "outcome_family_support": {
     "one_year_nonremission": {
       "full_external_validation_support": {

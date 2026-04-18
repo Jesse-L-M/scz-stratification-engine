@@ -1,6 +1,6 @@
 # Benchmark Dataset Audit
 
-- Generated at: `2026-04-18T14:44:51.603064Z`
+- Generated at: `2026-04-18T15:22:36.988901Z`
 - Current benchmark decision: `narrow-go`
 - Current claim level supported: `narrow_outcome_benchmark`
 - Decision explanation: Only one public benchmark-eligible cohort currently counts toward narrow benchmark support for poor_functional_outcome. Cohorts with weaker public label granularity remain outside the claim count: tcp-ds005237. Current public endpoint support is concurrent-only, so the repo remains narrow-go without a prospective claim.
@@ -25,7 +25,7 @@
 | Dataset | Access | Local status | Benchmark v0 eligibility | Representation support | Temporal validity | Claim ceiling | Narrow support | Outcome families |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `tcp-ds005237` | `public` | `audited` | `limited` | `limited` | `concurrent_only` | `none` | `no` | poor_functional_outcome |
-| `fep-ds003944` | `public` | `audited` | `eligible` | `strong` | `concurrent_only` | `full_external_validation` | `yes` | poor_functional_outcome |
+| `fep-ds003944` | `public` | `audited` | `eligible` | `strong` | `concurrent_only` | `narrow_outcome_benchmark` | `yes` | poor_functional_outcome |
 
 ## Cohort Notes
 
@@ -61,7 +61,7 @@
 - Outcome temporal validity: concurrent_only
 - Concurrent endpoint only: yes
 - Prospectively usable: no
-- Claim level contributions: cross_sectional_representation, narrow_outcome_benchmark, full_external_validation
+- Claim level contributions: cross_sectional_representation, narrow_outcome_benchmark
 - Benchmarkable outcome families: poor_functional_outcome
 - Diagnosis coverage: participants.tsv lists 50 Psychosis and 32 Control participants.
 - Functioning scales: GAF/GAS, SFS

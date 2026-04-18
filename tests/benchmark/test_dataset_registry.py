@@ -112,8 +112,8 @@ def test_registry_rows_distinguish_concurrent_prospective_and_limited_support() 
     assert concurrent.claim_level_contributions == (
         "cross_sectional_representation",
         "narrow_outcome_benchmark",
-        "full_external_validation",
     )
+    assert concurrent.claim_level_ceiling == "narrow_outcome_benchmark"
     assert prospective.outcome_temporal_validity == "prospective"
     assert prospective.claim_level_ceiling == "prospective_outcome_benchmark"
     assert limited.representation_comparison_support == "limited"
