@@ -15,12 +15,15 @@ Use:
 - `scz-audit benchmark define-schema`
 - `scz-audit benchmark harmonize`
 - `scz-audit benchmark build-representations`
+- `scz-audit benchmark run-benchmark`
 
 `audit-datasets` remains the feasibility gate. `define-schema` freezes the
 canonical table contract. `harmonize` operationalizes only the cohorts already
 approved for benchmark-table emission. `build-representations` derives the
 current cross-sectional representation families without pulling model
-comparison forward.
+comparison forward. `run-benchmark` is the first actual cross-sectional
+representation comparison layer and must keep the repo inside the same narrow
+claim boundary.
 
 ## Required Audit Outputs
 
@@ -59,6 +62,16 @@ The representation-building phase should emit:
    family
 5. no benchmark model outputs
 
+The benchmark-execution phase should emit:
+
+1. deterministic task x family x split comparison rows
+2. an explicit task registry separating headline tasks from context-only tasks
+3. stable machine-readable and human-readable summaries
+4. explicit skipped evaluations where train support or family support is too
+   weak
+5. a post-run recommendation about whether to continue beyond the current
+   artifact layer
+
 ## Claim-Boundary Rules
 
 - `strict_open` must remain a strict category
@@ -88,6 +101,12 @@ The current audited outcome picture should remain:
   not outcome benchmarkability
 - current honest next step: cross-sectional representation benchmarking only, if
   the project continues
+- current honest post-benchmark read: no non-baseline family meaningfully beats
+  `diagnosis_anchor` on the headline tasks, and the headline holdouts that do
+  run are single-class only
+- current honest recommendation after the first benchmark PR: continue only as a
+  descriptive artifact repo rather than pulling a broader comparison/model PR
+  forward
 
 The repo should continue to say no full external-validation claim yet. This PR
 line should also continue to say no stronger public-outcome claim unless a
@@ -111,7 +130,8 @@ second eligible cohort actually appears.
 - split manifests must say explicitly that the current contract is not a full
   external-validation claim
 - representation artifacts now exist for all harmonized cohorts, but they are
-  still descriptive inputs to a later benchmark rather than benchmark results
+  still descriptive inputs plus a first conservative benchmark report, not a
+  stronger validation claim
 
 ## Deferred Until Later PRs
 

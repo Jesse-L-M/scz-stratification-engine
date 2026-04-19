@@ -1,0 +1,68 @@
+{
+  "tasks": [
+    {
+      "cohort_id": "fep-ds003944",
+      "headline_status": "headline",
+      "is_context_only": false,
+      "label_caveat": "This remains the strongest current strict-open psychosis/control task, but the frozen split contract is still concurrent-only and extremely small.",
+      "label_definition": "psychosis versus control within the public FEP cross-sectional cohort",
+      "negative_diagnosis_groups": [
+        "control"
+      ],
+      "positive_diagnosis_groups": [
+        "psychosis"
+      ],
+      "task_name": "psychosis_vs_control",
+      "task_scope": "headline_cross_sectional"
+    },
+    {
+      "cohort_id": "ucla-cnp-ds000030",
+      "headline_status": "headline",
+      "is_context_only": false,
+      "label_caveat": "This task is useful for representation comparison, but it remains transdiagnostic context rather than a stronger psychosis-specific or outcome claim.",
+      "label_definition": "schizophrenia versus pooled non-schizophrenia context labels within UCLA CNP",
+      "negative_diagnosis_groups": [
+        "control",
+        "bipolar_disorder",
+        "adhd"
+      ],
+      "positive_diagnosis_groups": [
+        "schizophrenia"
+      ],
+      "task_name": "schizophrenia_vs_non_schizophrenia_context",
+      "task_scope": "headline_cross_sectional_transdiagnostic_context"
+    },
+    {
+      "cohort_id": "ds000115",
+      "headline_status": "context_only",
+      "is_context_only": true,
+      "label_caveat": "This cohort is tiny and family-structured. It is context only and should not be treated as headline evidence for schizophrenia separability.",
+      "label_definition": "schizophrenia versus pooled sibling/control family-context labels within ds000115",
+      "negative_diagnosis_groups": [
+        "schizophrenia_sibling",
+        "control_sibling",
+        "control"
+      ],
+      "positive_diagnosis_groups": [
+        "schizophrenia"
+      ],
+      "task_name": "schizophrenia_vs_non_schizophrenia_family_context",
+      "task_scope": "context_only_family_structure"
+    },
+    {
+      "cohort_id": "tcp-ds005237",
+      "headline_status": "context_only",
+      "is_context_only": true,
+      "label_caveat": "Public TCP labels remain broad patient versus GenPop only, so this task is explicitly context only and not psychosis-specific evidence.",
+      "label_definition": "broad psychiatric patient versus general population control within TCP",
+      "negative_diagnosis_groups": [
+        "general_population_control"
+      ],
+      "positive_diagnosis_groups": [
+        "broad_psychiatric_patient"
+      ],
+      "task_name": "patient_vs_genpop_context_only",
+      "task_scope": "context_only_broad_patient_vs_genpop"
+    }
+  ]
+}
