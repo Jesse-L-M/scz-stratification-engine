@@ -458,3 +458,91 @@ def test_tcp_harmonize_records_unsupported_fields_when_total_columns_are_missing
     assert bundle.unsupported_fields["functioning_scores"] == (
         "Staged phenotype file lrift01.tsv does not expose the supported LIFE-RIFT total column (expected: lrift_total).",
     )
+
+
+def test_ucla_cnp_harmonize_emits_cross_sectional_rows_without_outcomes() -> None:
+    adapter = UCLACNPDS000030BenchmarkSourceAdapter(
+        snapshot_root=FIXTURE_ROOT / "ucla_cnp_ds000030"
+    )
+
+    bundle = adapter.harmonize(FIXTURE_ROOT / "ucla_cnp_ds000030")
+
+    assert len(bundle.tables["subjects"]) == 4
+    assert len(bundle.tables["diagnoses"]) == 4
+    assert len(bundle.tables["symptom_scores"]) == 7
+    assert len(bundle.tables["cognition_scores"]) == 28
+    assert len(bundle.tables["treatment_exposures"]) == 7
+    assert len(bundle.tables["modality_features"]) == 14
+    assert bundle.tables["functioning_scores"] == ()
+    assert bundle.tables["outcomes"] == ()
+    assert {
+        row["source_score_label"]
+        for row in bundle.tables["cognition_scores"]
+        if row["instrument"] == "WMS"
+    } == {"vr1ir_totalraw", "vr2r_totalraw", "ds_btrs"}
+    assert {row["diagnosis_group"] for row in bundle.tables["diagnoses"]} == {
+        "adhd",
+        "bipolar_disorder",
+        "control",
+        "schizophrenia",
+    }
+    assert (
+        bundle.unsupported_fields["outcomes"][0]
+        == "ucla-cnp-ds000030 remains a cross-sectional representation cohort only; no benchmarkable outcome rows are emitted."
+    )
+
+
+def test_ucla_cnp_harmonize_requires_affirmative_medication_use_flag(tmp_path) -> None:
+    source_root = FIXTURE_ROOT / "ucla_cnp_ds000030"
+    working_root = tmp_path / "ucla-cnp-ds000030"
+    shutil.copytree(source_root, working_root)
+
+    (working_root / "phenotype" / "medication.tsv").write_text(
+        "participant_id\tmed_name1\tmed_use1\tmed_dos1\tmed_name2\tmed_use2\tmed_dos2\n"
+        "sub-50005\tGeodon/ Ziprasidone\t1\t80\tECT\t0\t\n"
+        "sub-60005\tLexapro/ Escitalopram oxalate\t\t20\t\t\t\n",
+        encoding="utf-8",
+    )
+
+    bundle = UCLACNPDS000030BenchmarkSourceAdapter(snapshot_root=working_root).harmonize(working_root)
+
+    assert len(bundle.tables["treatment_exposures"]) == 1
+    assert bundle.tables["treatment_exposures"][0]["treatment_name"] == "Geodon/ Ziprasidone"
+
+
+def test_ds000115_harmonize_emits_cross_sectional_rows_without_outcomes() -> None:
+    adapter = DS000115BenchmarkSourceAdapter(snapshot_root=FIXTURE_ROOT / "ds000115")
+
+    bundle = adapter.harmonize(FIXTURE_ROOT / "ds000115")
+
+    assert len(bundle.tables["subjects"]) == 4
+    assert len(bundle.tables["diagnoses"]) == 4
+    assert len(bundle.tables["symptom_scores"]) == 12
+    assert len(bundle.tables["cognition_scores"]) == 36
+    assert bundle.tables["functioning_scores"] == ()
+    assert bundle.tables["treatment_exposures"] == ()
+    assert bundle.tables["outcomes"] == ()
+    assert bundle.tables["modality_features"] == ()
+    assert {
+        row["source_score_label"] for row in bundle.tables["cognition_scores"]
+    } == {
+        "DST_SCALE",
+        "LNS_SCALE",
+        "LOGIALMEMORY_SCALE",
+        "TRAILB",
+        "WAIS_MATRICS_SCALE",
+        "WCSTPSVE",
+        "d4prime",
+        "nback2_targ",
+        "nback2_targ_medrt",
+    }
+    assert {row["diagnosis_group"] for row in bundle.tables["diagnoses"]} == {
+        "control",
+        "control_sibling",
+        "schizophrenia",
+        "schizophrenia_sibling",
+    }
+    assert (
+        bundle.unsupported_fields["outcomes"][0]
+        == "ds000115 remains a low-weight cross-sectional representation cohort only; no benchmarkable outcome rows are emitted."
+    )

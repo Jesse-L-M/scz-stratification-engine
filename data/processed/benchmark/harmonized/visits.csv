@@ -1,4 +1,8 @@
 cohort_id,subject_id,visit_id,source_visit_id,visit_order,visit_timepoint_label,visit_age,days_from_baseline,is_baseline,visit_window_label,visit_status,visit_note
+ds000115,ds000115:sub-01,ds000115:sub-01:baseline,baseline,1,baseline,28.961,0,true,same_visit,observed,Public snapshot exposes baseline cross-sectional rows only.
+ds000115,ds000115:sub-02,ds000115:sub-02:baseline,baseline,1,baseline,26.8419,0,true,same_visit,observed,Public snapshot exposes baseline cross-sectional rows only.
+ds000115,ds000115:sub-10,ds000115:sub-10:baseline,baseline,1,baseline,24.5941,0,true,same_visit,observed,Public snapshot exposes baseline cross-sectional rows only.
+ds000115,ds000115:sub-11,ds000115:sub-11:baseline,baseline,1,baseline,27.5838,0,true,same_visit,observed,Public snapshot exposes baseline cross-sectional rows only.
 fep-ds003944,fep-ds003944:sub-1448,fep-ds003944:sub-1448:baseline,baseline,1,baseline,15.7,0,true,same_visit,observed,Public snapshot exposes baseline scan-time rows only.
 fep-ds003944,fep-ds003944:sub-1824,fep-ds003944:sub-1824:baseline,baseline,1,baseline,21.5,0,true,same_visit,observed,Public snapshot exposes baseline scan-time rows only.
 fep-ds003944,fep-ds003944:sub-1983,fep-ds003944:sub-1983:baseline,baseline,1,baseline,19.3,0,true,same_visit,observed,Public snapshot exposes baseline scan-time rows only.
@@ -6,3 +10,7 @@ tcp-ds005237,tcp-ds005237:sub-NDARINVTEST001,tcp-ds005237:sub-NDARINVTEST001:bas
 tcp-ds005237,tcp-ds005237:sub-NDARINVTEST002,tcp-ds005237:sub-NDARINVTEST002:baseline,baseline,1,baseline,29.33,0,true,same_visit,observed,Public staged root exposes baseline scan-time rows only.
 tcp-ds005237,tcp-ds005237:sub-NDARINVTEST003,tcp-ds005237:sub-NDARINVTEST003:baseline,baseline,1,baseline,31.17,0,true,same_visit,observed,Public staged root exposes baseline scan-time rows only.
 tcp-ds005237,tcp-ds005237:sub-NDARINVTEST004,tcp-ds005237:sub-NDARINVTEST004:baseline,baseline,1,baseline,64.00,0,true,same_visit,observed,Public staged root exposes baseline scan-time rows only.
+ucla-cnp-ds000030,ucla-cnp-ds000030:sub-10159,ucla-cnp-ds000030:sub-10159:baseline,baseline,1,baseline,30,0,true,same_visit,observed,Public snapshot exposes baseline cross-sectional rows only.
+ucla-cnp-ds000030,ucla-cnp-ds000030:sub-50005,ucla-cnp-ds000030:sub-50005:baseline,baseline,1,baseline,40,0,true,same_visit,observed,Public snapshot exposes baseline cross-sectional rows only.
+ucla-cnp-ds000030,ucla-cnp-ds000030:sub-60005,ucla-cnp-ds000030:sub-60005:baseline,baseline,1,baseline,50,0,true,same_visit,observed,Public snapshot exposes baseline cross-sectional rows only.
+ucla-cnp-ds000030,ucla-cnp-ds000030:sub-70002,ucla-cnp-ds000030:sub-70002:baseline,baseline,1,baseline,44,0,true,same_visit,observed,Public snapshot exposes baseline cross-sectional rows only.

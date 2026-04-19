@@ -101,6 +101,23 @@ def test_build_features_keeps_sparse_public_inputs_honest(tmp_path) -> None:
     assert feature_manifest["unavailable_feature_families"] == ["cognition", "symptom"]
 
 
+def test_build_features_writes_lf_only_csv_artifacts(tmp_path) -> None:
+    harmonized_root, manifests_root, splits_root = _prepare_harmonized_and_split_fixture(tmp_path)
+    features_root = tmp_path / "data" / "processed" / "strict_open" / "features"
+
+    results = run_strict_open_feature_build(
+        harmonized_root=harmonized_root,
+        splits_root=splits_root,
+        manifests_root=manifests_root,
+        features_root=features_root,
+        command=["scz-audit", "strict-open", "build-features"],
+        git_sha="abc1234",
+        seed=1729,
+    )
+
+    assert b"\r\n" not in Path(results["visit_features"]).read_bytes()
+
+
 def _prepare_harmonized_and_split_fixture(
     tmp_path: Path,
     *,

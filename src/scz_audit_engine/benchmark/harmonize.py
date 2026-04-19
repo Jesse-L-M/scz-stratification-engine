@@ -224,7 +224,11 @@ def _write_csv_table(
 ) -> Path:
     destination.parent.mkdir(parents=True, exist_ok=True)
     with destination.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(columns))
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=list(columns),
+            lineterminator="\n",
+        )
         writer.writeheader()
         for row in _sort_rows(rows, columns):
             writer.writerow({column: row.get(column, "") for column in columns})

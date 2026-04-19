@@ -84,10 +84,16 @@ second eligible cohort actually appears.
 - `fep-ds003944` is still the primary benchmark-eligible `strict_open` cohort
 - `tcp-ds005237` can be harmonized only conservatively and remains explicitly
   limited in public form
-- new dataset-expansion cohorts stay metadata-only in this PR line
+- `ucla-cnp-ds000030` is now harmonized as a transdiagnostic cross-sectional
+  representation cohort only
+- `ds000115` is now harmonized as a small schizophrenia/sibling/control
+  cross-sectional representation cohort only
 - outcome rows remain same-visit and concurrent-only where the public source is
   concurrent-only
-- split assignments are deterministic, subject-level, and within-cohort
+- newly added cross-sectional cohorts contribute zero outcome rows and remain
+  unmapped for predictor/outcome timing
+- split assignments are deterministic, subject-level, and within-cohort,
+  including unlabeled cross-sectional cohorts
 - split manifests must say explicitly that the current contract is not a full
   external-validation claim
 
@@ -99,6 +105,6 @@ This protocol intentionally does not pull forward:
 - model comparison
 - biomarker-heavy benchmarking
 - prospective benchmark claims
-- harmonization of the new expansion cohorts
+- representation benchmarking on the new expansion cohorts
 
 Those belong only after this feasibility gate is settled again.

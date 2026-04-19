@@ -246,8 +246,13 @@ def test_benchmark_harmonize_runs_and_writes_split_contracts(
 
     assert exit_code == 0
     output = json.loads(capsys.readouterr().out)
-    assert output["cohorts_harmonized"] == ["tcp-ds005237", "fep-ds003944"]
-    assert output["row_counts"]["split_assignments"] == 7
+    assert output["cohorts_harmonized"] == [
+        "tcp-ds005237",
+        "fep-ds003944",
+        "ucla-cnp-ds000030",
+        "ds000115",
+    ]
+    assert output["row_counts"]["split_assignments"] == 15
     assert Path(output["subjects"]).exists()
     assert Path(output["outcomes"]).exists()
     assert Path(output["split_assignments"]).exists()

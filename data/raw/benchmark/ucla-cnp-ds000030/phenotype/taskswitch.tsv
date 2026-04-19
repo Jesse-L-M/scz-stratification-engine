@@ -1,0 +1,5 @@
+participant_id	ts_accuracy	ts_costshort	ts_costlong	ts_interference
+sub-10159	0.984375	382	100.5	28.5
+sub-50005	0.96875	51	-106.5	-30.5
+sub-60005	0.9739583	255.5	-10.5	74.5
+sub-70002	0.9583333	243.5	-39	72.5

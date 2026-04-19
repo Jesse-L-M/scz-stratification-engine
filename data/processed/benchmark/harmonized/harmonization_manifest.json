@@ -1,6 +1,10 @@
 {
   "claim_boundary_statement": "Benchmark harmonization operationalizes the current narrow-go line only. It does not upgrade the repo to full external validation or prospective benchmarking.",
   "cohort_caveats": {
+    "ds000115": [
+      "ds000115 stays a small cross-sectional representation cohort; outcome rows remain empty.",
+      "Sibling rows remain explicit to preserve the family-structured public design rather than smoothing them into a stronger benchmark claim."
+    ],
     "fep-ds003944": [
       "fep-ds003944 remains a concurrent-only public cohort; no prospective outcome window is claimed.",
       "Psychosis labels are strong enough for the current narrow benchmark lane, but subtype equivalence remains out of scope."
@@ -8,9 +12,19 @@
     "tcp-ds005237": [
       "tcp-ds005237 remains concurrent-only in public form; no prospective outcome window is claimed.",
       "Public diagnosis granularity remains Patient versus GenPop only, so the cohort stays explicitly limited."
+    ],
+    "ucla-cnp-ds000030": [
+      "ucla-cnp-ds000030 stays explicitly cross-sectional in public form; no benchmarkable outcome rows are emitted.",
+      "The cohort remains transdiagnostic, so added rows improve representation coverage without strengthening the narrow outcome claim."
     ]
   },
   "cohort_support": {
+    "ds000115": {
+      "benchmark_v0_eligibility": "ineligible",
+      "concurrent_endpoint_only": false,
+      "outcome_temporal_validity": "none",
+      "representation_comparison_support": "strong"
+    },
     "fep-ds003944": {
       "benchmark_v0_eligibility": "eligible",
       "concurrent_endpoint_only": true,
@@ -22,11 +36,19 @@
       "concurrent_endpoint_only": true,
       "outcome_temporal_validity": "concurrent_only",
       "representation_comparison_support": "limited"
+    },
+    "ucla-cnp-ds000030": {
+      "benchmark_v0_eligibility": "ineligible",
+      "concurrent_endpoint_only": false,
+      "outcome_temporal_validity": "none",
+      "representation_comparison_support": "strong"
     }
   },
   "cohorts_harmonized": [
     "tcp-ds005237",
-    "fep-ds003944"
+    "fep-ds003944",
+    "ucla-cnp-ds000030",
+    "ds000115"
   ],
   "current_limitations": [
     "Outcome rows remain concurrent-only where the public cohorts are concurrent-only.",
@@ -34,8 +56,10 @@
     "Representation builders and benchmark models remain intentionally deferred."
   ],
   "input_cohort_roots": {
+    "ds000115": "ds000115",
     "fep-ds003944": "fep-ds003944",
-    "tcp-ds005237": "tcp-ds005237"
+    "tcp-ds005237": "tcp-ds005237",
+    "ucla-cnp-ds000030": "ucla-cnp-ds000030"
   },
   "missing_expected_cohorts": [],
   "output_paths": {
@@ -53,62 +77,96 @@
     "visits": "visits.csv"
   },
   "row_counts_by_table": {
-    "cognition_scores": 6,
-    "diagnoses": 7,
+    "cognition_scores": 70,
+    "diagnoses": 15,
     "functioning_scores": 8,
-    "modality_features": 0,
+    "modality_features": 14,
     "outcomes": 8,
-    "split_assignments": 7,
-    "subjects": 7,
-    "symptom_scores": 10,
-    "treatment_exposures": 2,
-    "visits": 7
+    "split_assignments": 15,
+    "subjects": 15,
+    "symptom_scores": 29,
+    "treatment_exposures": 9,
+    "visits": 15
   },
   "row_counts_by_table_and_cohort": {
     "cognition_scores": {
+      "ds000115": 36,
       "fep-ds003944": 6,
-      "tcp-ds005237": 0
+      "tcp-ds005237": 0,
+      "ucla-cnp-ds000030": 28
     },
     "diagnoses": {
+      "ds000115": 4,
       "fep-ds003944": 3,
-      "tcp-ds005237": 4
+      "tcp-ds005237": 4,
+      "ucla-cnp-ds000030": 4
     },
     "functioning_scores": {
+      "ds000115": 0,
       "fep-ds003944": 4,
-      "tcp-ds005237": 4
+      "tcp-ds005237": 4,
+      "ucla-cnp-ds000030": 0
     },
     "modality_features": {
+      "ds000115": 0,
       "fep-ds003944": 0,
-      "tcp-ds005237": 0
+      "tcp-ds005237": 0,
+      "ucla-cnp-ds000030": 14
     },
     "outcomes": {
+      "ds000115": 0,
       "fep-ds003944": 4,
-      "tcp-ds005237": 4
+      "tcp-ds005237": 4,
+      "ucla-cnp-ds000030": 0
     },
     "split_assignments": {
+      "ds000115": 4,
       "fep-ds003944": 3,
-      "tcp-ds005237": 4
+      "tcp-ds005237": 4,
+      "ucla-cnp-ds000030": 4
     },
     "subjects": {
+      "ds000115": 4,
       "fep-ds003944": 3,
-      "tcp-ds005237": 4
+      "tcp-ds005237": 4,
+      "ucla-cnp-ds000030": 4
     },
     "symptom_scores": {
+      "ds000115": 12,
       "fep-ds003944": 6,
-      "tcp-ds005237": 4
+      "tcp-ds005237": 4,
+      "ucla-cnp-ds000030": 7
     },
     "treatment_exposures": {
+      "ds000115": 0,
       "fep-ds003944": 2,
-      "tcp-ds005237": 0
+      "tcp-ds005237": 0,
+      "ucla-cnp-ds000030": 7
     },
     "visits": {
+      "ds000115": 4,
       "fep-ds003944": 3,
-      "tcp-ds005237": 4
+      "tcp-ds005237": 4,
+      "ucla-cnp-ds000030": 4
     }
   },
   "schema_version": "benchmark_v0",
   "seed": 1729,
   "unsupported_fields_summary": {
+    "ds000115": {
+      "functioning_scores": [
+        "No functioning scale is staged in the current ds000115 root."
+      ],
+      "modality_features": [
+        "No subject-level modality availability rows are emitted for ds000115 in this PR."
+      ],
+      "outcomes": [
+        "ds000115 remains a low-weight cross-sectional representation cohort only; no benchmarkable outcome rows are emitted."
+      ],
+      "treatment_exposures": [
+        "No treatment-exposure inventory is staged in the current ds000115 root."
+      ]
+    },
     "fep-ds003944": {
       "modality_features": [
         "No staged subject-level EEG files were present in the current root."
@@ -123,6 +181,14 @@
       ],
       "treatment_exposures": [
         "No staged medication exposure table is present in the current public TCP root."
+      ]
+    },
+    "ucla-cnp-ds000030": {
+      "functioning_scores": [
+        "No public functioning scale is staged in the current UCLA CNP root."
+      ],
+      "outcomes": [
+        "ucla-cnp-ds000030 remains a cross-sectional representation cohort only; no benchmarkable outcome rows are emitted."
       ]
     }
   }

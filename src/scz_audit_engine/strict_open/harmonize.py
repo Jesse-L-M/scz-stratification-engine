@@ -737,7 +737,11 @@ def _sort_rows(rows: list[dict[str, Any]], keys: tuple[str, ...]) -> list[dict[s
 def _write_csv_table(columns: tuple[str, ...], rows: list[dict[str, Any]], destination: Path) -> Path:
     destination.parent.mkdir(parents=True, exist_ok=True)
     with destination.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(columns))
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=list(columns),
+            lineterminator="\n",
+        )
         writer.writeheader()
         for row in rows:
             writer.writerow({column_name: row.get(column_name, "") for column_name in columns})
