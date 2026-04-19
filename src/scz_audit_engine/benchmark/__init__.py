@@ -3,14 +3,17 @@
 from .harmonize import run_benchmark_harmonization
 from .dataset_audit import run_benchmark_dataset_audit
 from .dataset_registry import (
-    ACCESS_LEVELS,
+    ACCESS_TIERS,
+    ACCESS_TIER_DECISION_ORDER,
     BENCHMARK_V0_ELIGIBILITY_STATES,
     CLAIM_LEVELS,
     LOCAL_STATUSES,
+    NEXT_STEP_RECOMMENDATIONS,
     OUTCOME_FAMILIES,
     OUTCOME_TEMPORAL_VALIDITY_STATES,
     REPRESENTATION_COMPARISON_SUPPORT_STATES,
     BenchmarkDecision,
+    BenchmarkDecisionLayer,
     DatasetRegistryEntry,
     build_full_external_validation_support,
     build_outcome_support,
@@ -39,7 +42,8 @@ from .splits import (
 )
 
 __all__ = [
-    "ACCESS_LEVELS",
+    "ACCESS_TIERS",
+    "ACCESS_TIER_DECISION_ORDER",
     "BenchmarkSchema",
     "BENCHMARK_V0_ELIGIBILITY_STATES",
     "CANONICAL_BENCHMARK_SCHEMA",
@@ -47,10 +51,12 @@ __all__ = [
     "CLAIM_LEVELS",
     "BenchmarkPaths",
     "BenchmarkDecision",
+    "BenchmarkDecisionLayer",
     "DatasetReference",
     "DatasetRegistryEntry",
     "DEFAULT_SPLIT_FRACTIONS",
     "LOCAL_STATUSES",
+    "NEXT_STEP_RECOMMENDATIONS",
     "OUTCOME_FAMILIES",
     "OUTCOME_TEMPORAL_VALIDITY_STATES",
     "REPRESENTATION_COMPARISON_SUPPORT_STATES",

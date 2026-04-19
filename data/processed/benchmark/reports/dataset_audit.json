@@ -1,7 +1,7 @@
 {
   "audited_cohorts": [
     {
-      "access_level": "public",
+      "access_tier": "strict_open",
       "audit_summary": "Public transdiagnostic MRI cohort with same-visit functioning endpoints and multi-site structure, but no prospectively usable public outcome window. The public label space is still too broad to count as narrow benchmark support for psychosis heterogeneity.",
       "benchmark_v0_eligibility": "limited",
       "benchmarkable_outcome_families": [
@@ -17,9 +17,8 @@
         "Hammer"
       ],
       "concurrent_endpoint_only": true,
-      "counts_toward_cross_cohort_go": false,
-      "counts_toward_narrow_benchmark_support": false,
-      "counts_toward_prospective_benchmark": false,
+      "counts_toward_narrow_benchmark_support_if_access_allowed": false,
+      "counts_toward_prospective_benchmark_if_access_allowed": false,
       "dataset_id": "tcp-ds005237",
       "dataset_label": "Transdiagnostic Connectome Project",
       "diagnosis_coverage": "Broad psychiatric illness vs healthy comparison; README cites affective or psychotic illness history, but public participants.tsv only exposes Patient vs GenPop groups.",
@@ -49,7 +48,7 @@
       "representation_comparison_support": "limited",
       "sample_size_note": "README describes 241 participants (148 psychiatric, 93 healthy), while participants.tsv currently lists 245 rows (149 Patient, 96 GenPop).",
       "site_structure": "two public sites (Yale Brain Imaging Center and McLean Hospital) per README",
-      "supports_cross_sectional_representation_claim": false,
+      "supports_cross_sectional_representation_if_access_allowed": false,
       "symptom_scales": [
         "PANSS",
         "CGI",
@@ -63,7 +62,7 @@
       ]
     },
     {
-      "access_level": "public",
+      "access_tier": "strict_open",
       "audit_summary": "Public first-episode psychosis EEG cohort with symptom, cognition, and same-visit functioning measures. It supports a narrow concurrent outcome benchmark, but not a prospective outcome claim.",
       "benchmark_v0_eligibility": "eligible",
       "benchmarkable_outcome_families": [
@@ -79,9 +78,8 @@
         "WASI"
       ],
       "concurrent_endpoint_only": true,
-      "counts_toward_cross_cohort_go": true,
-      "counts_toward_narrow_benchmark_support": true,
-      "counts_toward_prospective_benchmark": false,
+      "counts_toward_narrow_benchmark_support_if_access_allowed": true,
+      "counts_toward_prospective_benchmark_if_access_allowed": false,
       "dataset_id": "fep-ds003944",
       "dataset_label": "EEG: First Episode Psychosis vs. Control Resting Task 1",
       "diagnosis_coverage": "participants.tsv lists 50 Psychosis and 32 Control participants.",
@@ -110,7 +108,7 @@
       "representation_comparison_support": "strong",
       "sample_size_note": "participants.tsv lists 82 rows (50 Psychosis, 32 Control).",
       "site_structure": "single public accession; README notes Task 1 includes a subset of a second acquisition but does not claim a multi-site cohort",
-      "supports_cross_sectional_representation_claim": true,
+      "supports_cross_sectional_representation_if_access_allowed": true,
       "symptom_scales": [
         "BPRS",
         "SAPS",
@@ -119,109 +117,485 @@
       "treatment_variables": [
         "chlorpromazine-equivalent medication at scan"
       ]
+    },
+    {
+      "access_tier": "strict_open",
+      "audit_summary": "Strict-open UCLA CNP snapshot with explicit schizophrenia labels and rich cross-sectional symptom/cognition coverage. It materially helps cross-sectional representation benchmarking, but it does not add a public outcome benchmark family.",
+      "benchmark_v0_eligibility": "ineligible",
+      "benchmarkable_outcome_families": [],
+      "claim_level_ceiling": "cross_sectional_representation",
+      "claim_level_contributions": [
+        "cross_sectional_representation"
+      ],
+      "cognition_scales": [
+        "CVLT",
+        "D-KEFS",
+        "Stroop",
+        "Task Switch",
+        "Visual Capacity",
+        "WAIS",
+        "WMS"
+      ],
+      "concurrent_endpoint_only": false,
+      "counts_toward_narrow_benchmark_support_if_access_allowed": false,
+      "counts_toward_prospective_benchmark_if_access_allowed": false,
+      "dataset_id": "ucla-cnp-ds000030",
+      "dataset_label": "UCLA Consortium for Neuropsychiatric Phenomics LA5c Study",
+      "diagnosis_coverage": "participants.tsv exposes explicit CONTROL, SCHZ, BIPOLAR, and ADHD groups (130 CONTROL, 50 SCHZ, 49 BIPOLAR, 43 ADHD).",
+      "functioning_scales": [],
+      "known_limitations": "Rich cross-sectional phenotyping is available, but the public snapshot does not document a benchmarkable functioning or prospective outcome window. The cohort is also transdiagnostic rather than a narrow schizophrenia-only outcome benchmark source.",
+      "local_status": "audited",
+      "longitudinal_coverage": "No repeated follow-up visit schedule or prospective public endpoint is described in the pinned snapshot metadata or README.",
+      "modality_availability": [
+        "MRI",
+        "dMRI",
+        "fMRI"
+      ],
+      "outcome_availability": "The public snapshot supports cross-sectional diagnosis, symptom, cognition, and medication context only. It does not confirm a public functioning scale or any benchmarkable longitudinal outcome family.",
+      "outcome_is_prospective": false,
+      "outcome_temporal_validity": "none",
+      "outcome_timepoint": "unmapped",
+      "outcome_window": "unmapped",
+      "population_scope": "transdiagnostic community cohort with schizophrenia, bipolar, ADHD, and control groups",
+      "predictor_timepoint": "unmapped",
+      "provenance_urls": [
+        "https://openneuro.org/datasets/ds000030",
+        "https://raw.githubusercontent.com/OpenNeuroDatasets/ds000030/1.0.0/README",
+        "https://raw.githubusercontent.com/OpenNeuroDatasets/ds000030/1.0.0/participants.tsv"
+      ],
+      "representation_comparison_support": "strong",
+      "sample_size_note": "participants.tsv lists 272 rows (130 CONTROL, 50 SCHZ, 49 BIPOLAR, 43 ADHD).",
+      "site_structure": "single recruitment program in the Los Angeles area; public metadata shows two scanner serial numbers but not a multi-site external-validation cohort",
+      "supports_cross_sectional_representation_if_access_allowed": true,
+      "symptom_scales": [
+        "BPRS",
+        "HAM-D",
+        "SAPS",
+        "SANS",
+        "YMRS"
+      ],
+      "treatment_variables": [
+        "cross-sectional medication inventory"
+      ]
+    },
+    {
+      "access_tier": "strict_open",
+      "audit_summary": "Strict-open schizophrenia working-memory cohort with explicit case, sibling, and control labels plus cross-sectional cognition. It is a low-weight representation sanity-check cohort only and does not add a public outcome benchmark family.",
+      "benchmark_v0_eligibility": "ineligible",
+      "benchmarkable_outcome_families": [],
+      "claim_level_ceiling": "cross_sectional_representation",
+      "claim_level_contributions": [
+        "cross_sectional_representation"
+      ],
+      "cognition_scales": [
+        "D-prime",
+        "Trail Making B",
+        "WCST",
+        "WAIS",
+        "Logical Memory",
+        "LNS",
+        "DST",
+        "n-back accuracy/RT"
+      ],
+      "concurrent_endpoint_only": false,
+      "counts_toward_narrow_benchmark_support_if_access_allowed": false,
+      "counts_toward_prospective_benchmark_if_access_allowed": false,
+      "dataset_id": "ds000115",
+      "dataset_label": "Working memory in healthy and schizophrenic individuals",
+      "diagnosis_coverage": "participants.tsv exposes SCZ, SCZ-SIB, CON, and CON-SIB groups (23 SCZ, 35 SCZ-SIB, 20 CON, 21 CON-SIB).",
+      "functioning_scales": [],
+      "known_limitations": "The strict-open snapshot is small, family-structured, and entirely cross-sectional. It lacks public functioning outcomes, relapse/remission windows, or other benchmarkable longitudinal endpoints.",
+      "local_status": "audited",
+      "longitudinal_coverage": "No repeated follow-up visit schedule or prospective public endpoint is described in the pinned snapshot metadata or README.",
+      "modality_availability": [
+        "MRI",
+        "fMRI"
+      ],
+      "outcome_availability": "The public snapshot exposes cross-sectional symptom severity and working-memory performance only. It does not confirm a public functioning scale or any benchmarkable longitudinal outcome family.",
+      "outcome_is_prospective": false,
+      "outcome_temporal_validity": "none",
+      "outcome_timepoint": "unmapped",
+      "outcome_window": "unmapped",
+      "population_scope": "schizophrenia, sibling, and control working-memory cohort",
+      "predictor_timepoint": "unmapped",
+      "provenance_urls": [
+        "https://openneuro.org/datasets/ds000115",
+        "https://raw.githubusercontent.com/OpenNeuroDatasets/ds000115/00001/README",
+        "https://raw.githubusercontent.com/OpenNeuroDatasets/ds000115/00001/participants.tsv"
+      ],
+      "representation_comparison_support": "strong",
+      "sample_size_note": "participants.tsv lists 99 rows (23 SCZ, 35 SCZ-SIB, 20 CON, 21 CON-SIB).",
+      "site_structure": "single published accession; the public snapshot is not described as a multi-site external-validation cohort",
+      "supports_cross_sectional_representation_if_access_allowed": true,
+      "symptom_scales": [
+        "SAPS",
+        "SANS"
+      ],
+      "treatment_variables": []
     }
   ],
   "decision": {
+    "access_tier_decisions": {
+      "controlled": {
+        "access_tier": "controlled",
+        "allowed_access_tiers": [
+          "strict_open",
+          "public_credentialed",
+          "controlled"
+        ],
+        "claim_level": "narrow_outcome_benchmark",
+        "claim_level_explanation": "Within strict_open + public_credentialed + controlled, one eligible cohort supports a real outcome family, so the repo can make a narrow outcome benchmark claim but not a full external-validation or prospective claim.",
+        "concurrent_only_cohorts": [
+          "tcp-ds005237",
+          "fep-ds003944"
+        ],
+        "cross_sectional_representation_cohorts": [
+          "fep-ds003944",
+          "ucla-cnp-ds000030",
+          "ds000115"
+        ],
+        "explanation": "Within strict_open + public_credentialed + controlled, only one audited eligible cohort currently supports poor_functional_outcome. Cohorts with weaker diagnosis granularity remain outside the eligible claim count: tcp-ds005237. Current endpoint support remains concurrent-only, so this access tier scope stays narrow-go without a prospective claim.",
+        "full_external_validation_cohorts": [],
+        "full_external_validation_support_by_outcome_family": {
+          "one_year_nonremission": [],
+          "persistent_negative_symptoms": [],
+          "poor_functional_outcome": [],
+          "relapse_hospitalization_proxy": []
+        },
+        "limited_representation_cohorts": [
+          "tcp-ds005237"
+        ],
+        "limiting_factors": [
+          "Only one cohort currently counts toward narrow benchmark support.",
+          "No outcome family is currently supported by two eligible cohorts.",
+          "No audited cohort currently exposes a prospectively usable outcome window.",
+          "Diagnosis granularity remains limited for tcp-ds005237."
+        ],
+        "narrow_supporting_cohorts": [
+          "fep-ds003944"
+        ],
+        "prospective_support_by_outcome_family": {
+          "one_year_nonremission": [],
+          "persistent_negative_symptoms": [],
+          "poor_functional_outcome": [],
+          "relapse_hospitalization_proxy": []
+        },
+        "prospectively_usable_cohorts": [],
+        "recommended_outcome_families": [
+          "poor_functional_outcome"
+        ],
+        "state": "narrow-go",
+        "support_by_outcome_family": {
+          "one_year_nonremission": [],
+          "persistent_negative_symptoms": [],
+          "poor_functional_outcome": [
+            "fep-ds003944"
+          ],
+          "relapse_hospitalization_proxy": []
+        }
+      },
+      "public_credentialed": {
+        "access_tier": "public_credentialed",
+        "allowed_access_tiers": [
+          "strict_open",
+          "public_credentialed"
+        ],
+        "claim_level": "narrow_outcome_benchmark",
+        "claim_level_explanation": "Within strict_open + public_credentialed, one eligible cohort supports a real outcome family, so the repo can make a narrow outcome benchmark claim but not a full external-validation or prospective claim.",
+        "concurrent_only_cohorts": [
+          "tcp-ds005237",
+          "fep-ds003944"
+        ],
+        "cross_sectional_representation_cohorts": [
+          "fep-ds003944",
+          "ucla-cnp-ds000030",
+          "ds000115"
+        ],
+        "explanation": "Within strict_open + public_credentialed, only one audited eligible cohort currently supports poor_functional_outcome. Cohorts with weaker diagnosis granularity remain outside the eligible claim count: tcp-ds005237. Current endpoint support remains concurrent-only, so this access tier scope stays narrow-go without a prospective claim.",
+        "full_external_validation_cohorts": [],
+        "full_external_validation_support_by_outcome_family": {
+          "one_year_nonremission": [],
+          "persistent_negative_symptoms": [],
+          "poor_functional_outcome": [],
+          "relapse_hospitalization_proxy": []
+        },
+        "limited_representation_cohorts": [
+          "tcp-ds005237"
+        ],
+        "limiting_factors": [
+          "Only one cohort currently counts toward narrow benchmark support.",
+          "No outcome family is currently supported by two eligible cohorts.",
+          "No audited cohort currently exposes a prospectively usable outcome window.",
+          "Diagnosis granularity remains limited for tcp-ds005237."
+        ],
+        "narrow_supporting_cohorts": [
+          "fep-ds003944"
+        ],
+        "prospective_support_by_outcome_family": {
+          "one_year_nonremission": [],
+          "persistent_negative_symptoms": [],
+          "poor_functional_outcome": [],
+          "relapse_hospitalization_proxy": []
+        },
+        "prospectively_usable_cohorts": [],
+        "recommended_outcome_families": [
+          "poor_functional_outcome"
+        ],
+        "state": "narrow-go",
+        "support_by_outcome_family": {
+          "one_year_nonremission": [],
+          "persistent_negative_symptoms": [],
+          "poor_functional_outcome": [
+            "fep-ds003944"
+          ],
+          "relapse_hospitalization_proxy": []
+        }
+      },
+      "strict_open": {
+        "access_tier": "strict_open",
+        "allowed_access_tiers": [
+          "strict_open"
+        ],
+        "claim_level": "narrow_outcome_benchmark",
+        "claim_level_explanation": "Within strict_open, one eligible cohort supports a real outcome family, so the repo can make a narrow outcome benchmark claim but not a full external-validation or prospective claim.",
+        "concurrent_only_cohorts": [
+          "tcp-ds005237",
+          "fep-ds003944"
+        ],
+        "cross_sectional_representation_cohorts": [
+          "fep-ds003944",
+          "ucla-cnp-ds000030",
+          "ds000115"
+        ],
+        "explanation": "Within strict_open, only one audited eligible cohort currently supports poor_functional_outcome. Cohorts with weaker diagnosis granularity remain outside the eligible claim count: tcp-ds005237. Current endpoint support remains concurrent-only, so this access tier scope stays narrow-go without a prospective claim.",
+        "full_external_validation_cohorts": [],
+        "full_external_validation_support_by_outcome_family": {
+          "one_year_nonremission": [],
+          "persistent_negative_symptoms": [],
+          "poor_functional_outcome": [],
+          "relapse_hospitalization_proxy": []
+        },
+        "limited_representation_cohorts": [
+          "tcp-ds005237"
+        ],
+        "limiting_factors": [
+          "Only one cohort currently counts toward narrow benchmark support.",
+          "No outcome family is currently supported by two eligible cohorts.",
+          "No audited cohort currently exposes a prospectively usable outcome window.",
+          "Diagnosis granularity remains limited for tcp-ds005237."
+        ],
+        "narrow_supporting_cohorts": [
+          "fep-ds003944"
+        ],
+        "prospective_support_by_outcome_family": {
+          "one_year_nonremission": [],
+          "persistent_negative_symptoms": [],
+          "poor_functional_outcome": [],
+          "relapse_hospitalization_proxy": []
+        },
+        "prospectively_usable_cohorts": [],
+        "recommended_outcome_families": [
+          "poor_functional_outcome"
+        ],
+        "state": "narrow-go",
+        "support_by_outcome_family": {
+          "one_year_nonremission": [],
+          "persistent_negative_symptoms": [],
+          "poor_functional_outcome": [
+            "fep-ds003944"
+          ],
+          "relapse_hospitalization_proxy": []
+        }
+      }
+    },
     "claim_level": "narrow_outcome_benchmark",
-    "claim_level_explanation": "One benchmark-eligible cohort supports a real outcome family, so the repo can make a narrow outcome benchmark claim but not a full external-validation or prospective claim.",
-    "concurrent_only_cohorts": [
-      "tcp-ds005237",
-      "fep-ds003944"
-    ],
-    "explanation": "Only one public benchmark-eligible cohort currently counts toward narrow benchmark support for poor_functional_outcome. Cohorts with weaker public label granularity remain outside the claim count: tcp-ds005237. Current public endpoint support is concurrent-only, so the repo remains narrow-go without a prospective claim.",
-    "full_external_validation_cohorts": [],
-    "full_external_validation_support_by_outcome_family": {
-      "one_year_nonremission": [],
-      "persistent_negative_symptoms": [],
-      "poor_functional_outcome": [],
-      "relapse_hospitalization_proxy": []
-    },
-    "limiting_factors": [
-      "Only one cohort currently counts toward narrow benchmark support.",
-      "No outcome family is currently supported by two benchmark-eligible public cohorts.",
-      "No audited cohort currently exposes a prospectively usable public outcome window.",
-      "Public label granularity remains limited for tcp-ds005237."
-    ],
-    "narrow_supporting_cohorts": [
-      "fep-ds003944"
-    ],
-    "prospective_support_by_outcome_family": {
-      "one_year_nonremission": [],
-      "persistent_negative_symptoms": [],
-      "poor_functional_outcome": [],
-      "relapse_hospitalization_proxy": []
-    },
-    "prospectively_usable_cohorts": [],
+    "current_access_tier": "strict_open",
+    "recommended_next_step": "continue_cross_sectional_representation_only",
+    "recommended_next_step_explanation": "Multiple strict-open cohorts now support cross-sectional representation comparison, but only one strict-open cohort still supports an outcome benchmark. The honest next phase is cross-sectional representation work only, not a stronger outcome benchmark line.",
     "recommended_outcome_families": [
       "poor_functional_outcome"
     ],
-    "state": "narrow-go",
-    "support_by_outcome_family": {
-      "one_year_nonremission": [],
-      "persistent_negative_symptoms": [],
-      "poor_functional_outcome": [
-        "fep-ds003944"
-      ],
-      "relapse_hospitalization_proxy": []
-    }
+    "state": "narrow-go"
   },
-  "outcome_family_support": {
-    "one_year_nonremission": {
-      "full_external_validation_support": {
-        "cohorts": [],
-        "count": 0
+  "outcome_family_support_by_access_tier": {
+    "controlled": {
+      "one_year_nonremission": {
+        "full_external_validation_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "narrow_benchmark_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "prospective_support": {
+          "cohorts": [],
+          "count": 0
+        }
       },
-      "narrow_benchmark_support": {
-        "cohorts": [],
-        "count": 0
+      "persistent_negative_symptoms": {
+        "full_external_validation_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "narrow_benchmark_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "prospective_support": {
+          "cohorts": [],
+          "count": 0
+        }
       },
-      "prospective_support": {
-        "cohorts": [],
-        "count": 0
+      "poor_functional_outcome": {
+        "full_external_validation_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "narrow_benchmark_support": {
+          "cohorts": [
+            "fep-ds003944"
+          ],
+          "count": 1
+        },
+        "prospective_support": {
+          "cohorts": [],
+          "count": 0
+        }
+      },
+      "relapse_hospitalization_proxy": {
+        "full_external_validation_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "narrow_benchmark_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "prospective_support": {
+          "cohorts": [],
+          "count": 0
+        }
       }
     },
-    "persistent_negative_symptoms": {
-      "full_external_validation_support": {
-        "cohorts": [],
-        "count": 0
+    "public_credentialed": {
+      "one_year_nonremission": {
+        "full_external_validation_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "narrow_benchmark_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "prospective_support": {
+          "cohorts": [],
+          "count": 0
+        }
       },
-      "narrow_benchmark_support": {
-        "cohorts": [],
-        "count": 0
+      "persistent_negative_symptoms": {
+        "full_external_validation_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "narrow_benchmark_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "prospective_support": {
+          "cohorts": [],
+          "count": 0
+        }
       },
-      "prospective_support": {
-        "cohorts": [],
-        "count": 0
+      "poor_functional_outcome": {
+        "full_external_validation_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "narrow_benchmark_support": {
+          "cohorts": [
+            "fep-ds003944"
+          ],
+          "count": 1
+        },
+        "prospective_support": {
+          "cohorts": [],
+          "count": 0
+        }
+      },
+      "relapse_hospitalization_proxy": {
+        "full_external_validation_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "narrow_benchmark_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "prospective_support": {
+          "cohorts": [],
+          "count": 0
+        }
       }
     },
-    "poor_functional_outcome": {
-      "full_external_validation_support": {
-        "cohorts": [],
-        "count": 0
+    "strict_open": {
+      "one_year_nonremission": {
+        "full_external_validation_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "narrow_benchmark_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "prospective_support": {
+          "cohorts": [],
+          "count": 0
+        }
       },
-      "narrow_benchmark_support": {
-        "cohorts": [
-          "fep-ds003944"
-        ],
-        "count": 1
+      "persistent_negative_symptoms": {
+        "full_external_validation_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "narrow_benchmark_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "prospective_support": {
+          "cohorts": [],
+          "count": 0
+        }
       },
-      "prospective_support": {
-        "cohorts": [],
-        "count": 0
-      }
-    },
-    "relapse_hospitalization_proxy": {
-      "full_external_validation_support": {
-        "cohorts": [],
-        "count": 0
+      "poor_functional_outcome": {
+        "full_external_validation_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "narrow_benchmark_support": {
+          "cohorts": [
+            "fep-ds003944"
+          ],
+          "count": 1
+        },
+        "prospective_support": {
+          "cohorts": [],
+          "count": 0
+        }
       },
-      "narrow_benchmark_support": {
-        "cohorts": [],
-        "count": 0
-      },
-      "prospective_support": {
-        "cohorts": [],
-        "count": 0
+      "relapse_hospitalization_proxy": {
+        "full_external_validation_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "narrow_benchmark_support": {
+          "cohorts": [],
+          "count": 0
+        },
+        "prospective_support": {
+          "cohorts": [],
+          "count": 0
+        }
       }
     }
   }

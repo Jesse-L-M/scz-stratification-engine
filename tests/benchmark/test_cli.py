@@ -75,6 +75,8 @@ def test_benchmark_audit_datasets_runs_end_to_end_with_fixture_adapters(
             {
                 "tcp-ds005237": FIXTURE_ROOT / "tcp_ds005237",
                 "fep-ds003944": FIXTURE_ROOT / "fep_ds003944",
+                "ucla-cnp-ds000030": FIXTURE_ROOT / "ucla_cnp_ds000030",
+                "ds000115": FIXTURE_ROOT / "ds000115",
             }
         ),
     )
@@ -98,14 +100,16 @@ def test_benchmark_audit_datasets_runs_end_to_end_with_fixture_adapters(
 
     assert exit_code == 0
     output = json.loads(capsys.readouterr().out)
+    assert output["current_access_tier"] == "strict_open"
     assert output["decision"] == "narrow-go"
     assert output["claim_level"] == "narrow_outcome_benchmark"
+    assert output["recommended_next_step"] == "continue_cross_sectional_representation_only"
     assert Path(output["dataset_registry"]).exists()
     assert Path(output["json_report"]).exists()
     assert Path(output["markdown_report"]).exists()
     json_report = json.loads(Path(output["json_report"]).read_text(encoding="utf-8"))
     assert json_report["decision"]["claim_level"] == "narrow_outcome_benchmark"
-    assert json_report["decision"]["full_external_validation_cohorts"] == []
+    assert json_report["decision"]["access_tier_decisions"]["strict_open"]["full_external_validation_cohorts"] == []
     manifest = json.loads(Path(output["run_manifest"]).read_text(encoding="utf-8"))
     assert manifest["command"] == [
         "scz-audit",

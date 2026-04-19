@@ -180,7 +180,7 @@ class TCPDS005237BenchmarkSourceAdapter(OpenNeuroSourceAdapter):
         return DatasetRegistryEntry(
             dataset_id=self.source_identifier,
             dataset_label=dataset_name,
-            access_level="public",
+            access_tier="strict_open",
             population_scope="transdiagnostic psychiatry cohort with affective or psychotic illness history",
             diagnosis_coverage=(
                 "Broad psychiatric illness vs healthy comparison; README cites affective or psychotic illness "
