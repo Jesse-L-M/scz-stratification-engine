@@ -1,0 +1,5 @@
+participant_id	factor_delusions	factor_hallucinations	factor_posformalthought	factor_bizarrebehav	factor_inappaffect	global_delusions	global_hallucinations
+sub-10159	n/a	n/a	n/a	n/a	n/a	n/a	n/a
+sub-50005	0.5833333	1	0.125	0	0	2	3
+sub-60005	0.75	0	1.125	0	1	2	0
+sub-70002	n/a	n/a	n/a	n/a	n/a	n/a	n/a

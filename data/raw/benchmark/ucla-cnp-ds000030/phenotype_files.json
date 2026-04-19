@@ -1,0 +1,48 @@
+{
+  "files": [
+    {
+      "filename": "scid.tsv",
+      "directory": false
+    },
+    {
+      "filename": "saps.tsv",
+      "directory": false
+    },
+    {
+      "filename": "sans.tsv",
+      "directory": false
+    },
+    {
+      "filename": "ymrs.tsv",
+      "directory": false
+    },
+    {
+      "filename": "medication.tsv",
+      "directory": false
+    },
+    {
+      "filename": "cvlt.tsv",
+      "directory": false
+    },
+    {
+      "filename": "stroop.tsv",
+      "directory": false
+    },
+    {
+      "filename": "taskswitch.tsv",
+      "directory": false
+    },
+    {
+      "filename": "vcap.tsv",
+      "directory": false
+    },
+    {
+      "filename": "wais.tsv",
+      "directory": false
+    },
+    {
+      "filename": "wms.tsv",
+      "directory": false
+    }
+  ]
+}

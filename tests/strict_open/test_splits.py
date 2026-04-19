@@ -89,6 +89,22 @@ def test_split_manifest_reports_site_and_diagnosis_summaries(tmp_path) -> None:
     assert len(split_manifest["caveats"]) >= 2
 
 
+def test_define_splits_writes_lf_only_csv_artifacts(tmp_path) -> None:
+    harmonized_root, manifests_root = _prepare_harmonized_fixture(tmp_path)
+    splits_root = tmp_path / "data" / "processed" / "strict_open" / "splits"
+
+    results = run_strict_open_split_definition(
+        harmonized_root=harmonized_root,
+        manifests_root=manifests_root,
+        splits_root=splits_root,
+        command=["scz-audit", "strict-open", "define-splits"],
+        git_sha="abc1234",
+        seed=1729,
+    )
+
+    assert b"\r\n" not in Path(results["split_assignments"]).read_bytes()
+
+
 def _prepare_harmonized_fixture(tmp_path: Path) -> tuple[Path, Path]:
     raw_root = tmp_path / "data" / "raw" / "strict_open" / "tcp"
     manifests_root = tmp_path / "data" / "processed" / "strict_open" / "manifests"

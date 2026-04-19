@@ -209,6 +209,24 @@ def test_build_targets_do_not_shift_train_targets_when_held_out_scores_change(tm
     )
 
 
+def test_build_targets_writes_lf_only_csv_artifacts(tmp_path) -> None:
+    harmonized_root, manifests_root, splits_root, features_root = _prepare_feature_fixture(tmp_path)
+    targets_root = tmp_path / "data" / "processed" / "strict_open" / "targets"
+
+    results = run_strict_open_target_build(
+        features_root=features_root,
+        harmonized_root=harmonized_root,
+        splits_root=splits_root,
+        manifests_root=manifests_root,
+        targets_root=targets_root,
+        command=["scz-audit", "strict-open", "build-targets"],
+        git_sha="abc1234",
+        seed=1729,
+    )
+
+    assert b"\r\n" not in Path(results["derived_targets"]).read_bytes()
+
+
 def _prepare_feature_fixture(
     tmp_path: Path,
     *,

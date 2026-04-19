@@ -1,63 +1,80 @@
 {
   "claim_boundary_statement": "These frozen splits stay within the current narrow benchmark lane and do not constitute a full external-validation claim.",
   "counts_by_split": {
-    "test": 2,
-    "train": 3,
-    "validation": 2
+    "test": 4,
+    "train": 7,
+    "validation": 4
   },
   "counts_by_split_and_cohort": {
     "test": {
+      "ds000115": 1,
       "fep-ds003944": 1,
-      "tcp-ds005237": 1
+      "tcp-ds005237": 1,
+      "ucla-cnp-ds000030": 1
     },
     "train": {
+      "ds000115": 2,
       "fep-ds003944": 1,
-      "tcp-ds005237": 2
+      "tcp-ds005237": 2,
+      "ucla-cnp-ds000030": 2
     },
     "validation": {
+      "ds000115": 1,
       "fep-ds003944": 1,
-      "tcp-ds005237": 1
+      "tcp-ds005237": 1,
+      "ucla-cnp-ds000030": 1
     }
   },
   "counts_by_split_and_diagnosis_group": {
     "test": {
-      "control": 1,
-      "general_population_control": 1
+      "control": 2,
+      "general_population_control": 1,
+      "schizophrenia": 1
     },
     "train": {
+      "adhd": 1,
       "broad_psychiatric_patient": 1,
+      "control": 1,
       "general_population_control": 1,
-      "psychosis": 1
+      "psychosis": 1,
+      "schizophrenia": 1,
+      "schizophrenia_sibling": 1
     },
     "validation": {
+      "bipolar_disorder": 1,
       "broad_psychiatric_patient": 1,
+      "control_sibling": 1,
       "psychosis": 1
     }
   },
   "counts_by_split_and_outcome_support": {
     "test": {
-      "no_outcome": 2
+      "no_outcome": 4
     },
     "train": {
       "has_outcome": 2,
-      "no_outcome": 1
+      "no_outcome": 5
     },
     "validation": {
-      "has_outcome": 2
+      "has_outcome": 2,
+      "no_outcome": 2
     }
   },
   "counts_by_split_and_site": {
     "test": {
       "1": 1,
-      "single_site_public_accession": 1
+      "single_program_scanner_35343": 1,
+      "single_site_public_accession": 2
     },
     "train": {
       "2": 2,
-      "single_site_public_accession": 1
+      "single_program_scanner_35343": 2,
+      "single_site_public_accession": 3
     },
     "validation": {
       "1": 1,
-      "single_site_public_accession": 1
+      "single_program_scanner_35343": 1,
+      "single_site_public_accession": 2
     }
   },
   "label_support_policy": "Within each cohort, subjects with benchmark outcome rows are ordered ahead of unlabeled subjects so the training split receives labeled rows whenever the cohort exposes any labels at all.",
@@ -70,9 +87,9 @@
     "validation": 0.2
   },
   "visit_counts_by_split": {
-    "test": 2,
-    "train": 3,
-    "validation": 2
+    "test": 4,
+    "train": 7,
+    "validation": 4
   },
   "visit_leakage_policy": "All visits for a subject inherit that subject's split assignment; no visit-level reassignment is allowed."
 }

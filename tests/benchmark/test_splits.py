@@ -38,8 +38,8 @@ def test_benchmark_split_assignments_are_deterministic_and_subject_level(tmp_pat
     )
 
     assert list(first.rows) == list(second.rows)
-    assert len(first.rows) == len(subjects) == 7
-    assert len({row["subject_id"] for row in first.rows}) == 7
+    assert len(first.rows) == len(subjects) == 15
+    assert len({row["subject_id"] for row in first.rows}) == 15
     assert {row["split_name"] for row in first.rows} == {"train", "validation", "test"}
     assert all(row["split_level"] == "subject" for row in first.rows)
     assert all(row["leakage_group_id"] == row["subject_id"] for row in first.rows)
@@ -72,28 +72,34 @@ def test_benchmark_split_manifest_reports_cohort_site_and_diagnosis_summaries_wi
     manifest = json.loads(Path(results.manifest_path).read_text(encoding="utf-8"))
     assignments = _read_csv_rows(Path(results.assignments_path))
 
-    assert len(assignments) == 7
-    assert sum(manifest["counts_by_split"].values()) == 7
+    assert len(assignments) == 15
+    assert sum(manifest["counts_by_split"].values()) == 15
     assert sum(manifest["visit_counts_by_split"].values()) == len(visits) + 1
     assert set(manifest["counts_by_split_and_cohort"]["train"]) | set(
         manifest["counts_by_split_and_cohort"]["validation"]
     ) | set(manifest["counts_by_split_and_cohort"]["test"]) == {
+        "ds000115",
         "fep-ds003944",
         "tcp-ds005237",
+        "ucla-cnp-ds000030",
     }
     diagnosis_groups = set(manifest["counts_by_split_and_diagnosis_group"]["train"]) | set(
         manifest["counts_by_split_and_diagnosis_group"]["validation"]
     ) | set(manifest["counts_by_split_and_diagnosis_group"]["test"])
     assert "psychosis" in diagnosis_groups
     assert "broad_psychiatric_patient" in diagnosis_groups
+    assert "schizophrenia" in diagnosis_groups
+    assert "adhd" in diagnosis_groups
     site_ids = set(manifest["counts_by_split_and_site"]["train"]) | set(
         manifest["counts_by_split_and_site"]["validation"]
     ) | set(manifest["counts_by_split_and_site"]["test"])
     assert "single_site_public_accession" in site_ids
+    assert "single_program_scanner_35343" in site_ids
     assert "1" in site_ids or "2" in site_ids
     assert "do not constitute a full external-validation claim" in manifest["claim_boundary_statement"]
     assert "subject's split assignment" in manifest["visit_leakage_policy"]
     assert manifest["counts_by_split_and_outcome_support"]["train"]["has_outcome"] >= 1
+    assert manifest["counts_by_split_and_outcome_support"]["train"]["no_outcome"] >= 1
     assert "training split receives labeled rows" in manifest["label_support_policy"]
 
     has_outcome = {row["subject_id"] for row in outcomes}
@@ -108,6 +114,8 @@ def test_benchmark_split_manifest_reports_cohort_site_and_diagnosis_summaries_wi
         train_labels_by_cohort[subject_by_id[row["subject_id"]]["cohort_id"]] += 1
     assert train_labels_by_cohort["fep-ds003944"] >= 1
     assert train_labels_by_cohort["tcp-ds005237"] >= 1
+    assert train_labels_by_cohort["ucla-cnp-ds000030"] == 0
+    assert train_labels_by_cohort["ds000115"] == 0
 
 
 def test_benchmark_split_rejects_negative_fractions(tmp_path) -> None:

@@ -282,7 +282,11 @@ def _read_csv_rows(path: Path) -> list[dict[str, str]]:
 def _write_csv_rows(rows: list[dict[str, str]], destination: Path, *, fieldnames: tuple[str, ...]) -> Path:
     destination.parent.mkdir(parents=True, exist_ok=True)
     with destination.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(fieldnames))
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=list(fieldnames),
+            lineterminator="\n",
+        )
         writer.writeheader()
         for row in rows:
             writer.writerow({fieldname: row.get(fieldname, "") for fieldname in fieldnames})

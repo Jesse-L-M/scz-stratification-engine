@@ -30,7 +30,12 @@ def test_benchmark_harmonize_emits_all_canonical_tables_and_manifest(tmp_path) -
         seed=1729,
     )
 
-    assert results.cohort_ids == ("tcp-ds005237", "fep-ds003944")
+    assert results.cohort_ids == (
+        "tcp-ds005237",
+        "fep-ds003944",
+        "ucla-cnp-ds000030",
+        "ds000115",
+    )
     assert Path(results.harmonization_manifest_path).exists()
     assert Path(results.split_manifest_path).exists()
     assert Path(results.run_manifest_path).exists()
@@ -43,28 +48,78 @@ def test_benchmark_harmonize_emits_all_canonical_tables_and_manifest(tmp_path) -
 
     manifest = json.loads(Path(results.harmonization_manifest_path).read_text(encoding="utf-8"))
     assert manifest["row_counts_by_table"] == {
-        "subjects": 7,
-        "visits": 7,
-        "diagnoses": 7,
-        "symptom_scores": 10,
-        "cognition_scores": 6,
+        "subjects": 15,
+        "visits": 15,
+        "diagnoses": 15,
+        "symptom_scores": 29,
+        "cognition_scores": 70,
         "functioning_scores": 8,
-        "treatment_exposures": 2,
+        "treatment_exposures": 9,
         "outcomes": 8,
-        "modality_features": 0,
-        "split_assignments": 7,
+        "modality_features": 14,
+        "split_assignments": 15,
     }
     assert manifest["row_counts_by_table_and_cohort"] == {
-        "subjects": {"fep-ds003944": 3, "tcp-ds005237": 4},
-        "visits": {"fep-ds003944": 3, "tcp-ds005237": 4},
-        "diagnoses": {"fep-ds003944": 3, "tcp-ds005237": 4},
-        "symptom_scores": {"fep-ds003944": 6, "tcp-ds005237": 4},
-        "cognition_scores": {"fep-ds003944": 6, "tcp-ds005237": 0},
-        "functioning_scores": {"fep-ds003944": 4, "tcp-ds005237": 4},
-        "treatment_exposures": {"fep-ds003944": 2, "tcp-ds005237": 0},
-        "outcomes": {"fep-ds003944": 4, "tcp-ds005237": 4},
-        "modality_features": {"fep-ds003944": 0, "tcp-ds005237": 0},
-        "split_assignments": {"fep-ds003944": 3, "tcp-ds005237": 4},
+        "subjects": {
+            "ds000115": 4,
+            "fep-ds003944": 3,
+            "tcp-ds005237": 4,
+            "ucla-cnp-ds000030": 4,
+        },
+        "visits": {
+            "ds000115": 4,
+            "fep-ds003944": 3,
+            "tcp-ds005237": 4,
+            "ucla-cnp-ds000030": 4,
+        },
+        "diagnoses": {
+            "ds000115": 4,
+            "fep-ds003944": 3,
+            "tcp-ds005237": 4,
+            "ucla-cnp-ds000030": 4,
+        },
+        "symptom_scores": {
+            "ds000115": 12,
+            "fep-ds003944": 6,
+            "tcp-ds005237": 4,
+            "ucla-cnp-ds000030": 7,
+        },
+        "cognition_scores": {
+            "ds000115": 36,
+            "fep-ds003944": 6,
+            "tcp-ds005237": 0,
+            "ucla-cnp-ds000030": 28,
+        },
+        "functioning_scores": {
+            "ds000115": 0,
+            "fep-ds003944": 4,
+            "tcp-ds005237": 4,
+            "ucla-cnp-ds000030": 0,
+        },
+        "treatment_exposures": {
+            "ds000115": 0,
+            "fep-ds003944": 2,
+            "tcp-ds005237": 0,
+            "ucla-cnp-ds000030": 7,
+        },
+        "outcomes": {
+            "ds000115": 0,
+            "fep-ds003944": 4,
+            "tcp-ds005237": 4,
+            "ucla-cnp-ds000030": 0,
+        },
+        "modality_features": {
+            "ds000115": 0,
+            "fep-ds003944": 0,
+            "tcp-ds005237": 0,
+            "ucla-cnp-ds000030": 14,
+        },
+        "split_assignments": {
+            "ds000115": 4,
+            "fep-ds003944": 3,
+            "tcp-ds005237": 4,
+            "ucla-cnp-ds000030": 4,
+        },
     }
     assert "generated_at" not in manifest
     assert "git_sha" not in manifest
@@ -105,10 +160,18 @@ def test_benchmark_harmonize_preserves_column_order_and_conservative_mapping_cav
     assert all(row["concurrent_endpoint_only"] == "true" for row in outcomes_rows)
     assert not any(row["cohort_id"] == "tcp-ds005237" for row in cognition_rows)
     assert manifest["row_counts_by_table_and_cohort"]["cognition_scores"]["tcp-ds005237"] == 0
-    assert modality_rows == []
+    assert not any(row["cohort_id"] in {"ucla-cnp-ds000030", "ds000115"} for row in outcomes_rows)
+    assert any(
+        row["cohort_id"] == "ucla-cnp-ds000030"
+        and row["feature_name"] == "rest_available"
+        and row["modality_type"] == "fMRI"
+        for row in modality_rows
+    )
     assert manifest["row_counts_by_table_and_cohort"]["modality_features"] == {
+        "ds000115": 0,
         "fep-ds003944": 0,
         "tcp-ds005237": 0,
+        "ucla-cnp-ds000030": 14,
     }
     assert (
         manifest["unsupported_fields_summary"]["tcp-ds005237"]["cognition_scores"][0]
@@ -122,11 +185,37 @@ def test_benchmark_harmonize_preserves_column_order_and_conservative_mapping_cav
         manifest["unsupported_fields_summary"]["tcp-ds005237"]["modality_features"][0]
         == "No staged subject-level MRI or fMRI files were present in the current root."
     )
+    assert (
+        manifest["unsupported_fields_summary"]["ucla-cnp-ds000030"]["outcomes"][0]
+        == "ucla-cnp-ds000030 remains a cross-sectional representation cohort only; no benchmarkable outcome rows are emitted."
+    )
+    assert (
+        manifest["unsupported_fields_summary"]["ds000115"]["outcomes"][0]
+        == "ds000115 remains a low-weight cross-sectional representation cohort only; no benchmarkable outcome rows are emitted."
+    )
     assert any(
         row["cohort_id"] == "fep-ds003944"
         and "concurrent poor functional outcome benchmark only" in row["mapping_caveat"]
         for row in outcomes_rows
     )
+
+
+def test_benchmark_harmonize_writes_lf_only_csv_artifacts(tmp_path) -> None:
+    harmonized_root = tmp_path / "harmonized"
+    manifests_root = tmp_path / "manifests"
+
+    results = run_benchmark_harmonization(
+        raw_root=FIXTURE_ROOT,
+        harmonized_root=harmonized_root,
+        manifests_root=manifests_root,
+        repo_root=Path(__file__).resolve().parents[2],
+        command=["scz-audit", "benchmark", "harmonize", "--raw-root", str(FIXTURE_ROOT)],
+        git_sha="abc1234",
+        seed=1729,
+    )
+
+    for table_path in results.table_paths.values():
+        assert b"\r\n" not in Path(table_path).read_bytes()
 
 
 def test_benchmark_harmonize_honors_adapter_snapshot_roots(tmp_path) -> None:

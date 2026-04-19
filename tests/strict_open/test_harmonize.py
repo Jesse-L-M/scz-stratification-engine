@@ -261,6 +261,48 @@ def test_tcp_harmonize_excludes_annex_backed_scores_qc_and_mri_payloads(tmp_path
     }
 
 
+def test_tcp_harmonize_writes_lf_only_csv_artifacts(tmp_path) -> None:
+    raw_root = tmp_path / "data" / "raw" / "strict_open" / "tcp"
+    manifests_root = tmp_path / "data" / "processed" / "strict_open" / "manifests"
+    harmonized_root = tmp_path / "data" / "processed" / "strict_open" / "harmonized"
+    adapter = TCPDS005237SourceAdapter()
+    staged = adapter.stage(raw_root, source_root=FIXTURE_SOURCE_ROOT)
+
+    source_manifest = build_source_manifest(
+        source=staged.source,
+        source_identifier=staged.source_identifier,
+        dataset_accession=staged.dataset_accession,
+        dataset_version=staged.dataset_version,
+        command=["scz-audit", "strict-open", "ingest", "--source", "tcp"],
+        git_sha="abc1234",
+        raw_root=staged.raw_root,
+        files=staged.files,
+        ingest_timestamp="2026-04-16T12:00:00Z",
+    )
+    source_manifest_path = manifests_root / "tcp_source_manifest.json"
+    write_source_manifest(source_manifest, source_manifest_path)
+
+    results = run_tcp_harmonization(
+        raw_root=raw_root,
+        manifests_root=manifests_root,
+        harmonized_root=harmonized_root,
+        command=["scz-audit", "strict-open", "harmonize"],
+        git_sha="abc1234",
+        seed=1729,
+        dataset_version="1.1.3",
+        source_manifest_path=source_manifest_path,
+    )
+
+    for artifact_name in (
+        "subjects",
+        "visits",
+        "cognition_scores",
+        "symptom_behavior_scores",
+        "mri_features",
+    ):
+        assert b"\r\n" not in Path(results[artifact_name]).read_bytes()
+
+
 def test_tcp_harmonize_does_not_claim_manifest_only_mri_payloads_are_available(tmp_path) -> None:
     raw_root = tmp_path / "data" / "raw" / "strict_open" / "tcp"
     manifests_root = tmp_path / "data" / "processed" / "strict_open" / "manifests"
