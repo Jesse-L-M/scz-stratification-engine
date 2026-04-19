@@ -8,6 +8,7 @@ benchmark mainline.
 Run:
 
 - `scz-audit benchmark build-representations`
+- `scz-audit benchmark run-benchmark`
 
 The command consumes the harmonized benchmark tables and deterministic split
 assignments already written by `scz-audit benchmark harmonize`.
@@ -28,6 +29,20 @@ assignments already written by `scz-audit benchmark harmonize`.
 - `representation_manifest.json`
   - stable coverage and comparability summary for the representation families
 
+## How These Feed Benchmarking
+
+`scz-audit benchmark run-benchmark` consumes the checked-in representation
+families exactly as written and compares them on explicit cross-sectional label
+recovery tasks using a deterministic nearest-centroid baseline.
+
+The benchmark layer must:
+
+- keep headline tasks separate from context-only tasks
+- skip families or splits explicitly when train support is too weak
+- say plainly whether anything meaningfully improves on `diagnosis_anchor`
+- stop at a descriptive artifact recommendation if the headline evidence stays
+  weak
+
 ## Current Claim Boundary
 
 - these artifacts improve cross-sectional comparison readiness only
@@ -36,6 +51,8 @@ assignments already written by `scz-audit benchmark harmonize`.
 - they do not constitute benchmark model results
 - `ucla-cnp-ds000030` and `ds000115` remain cross-sectional-only cohorts with
   zero outcome rows in this layer
+- ties on tiny single-class holdouts do not count as meaningful representation
+  wins
 
 ## Sparse Areas That Stay Explicit
 

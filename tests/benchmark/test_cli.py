@@ -48,7 +48,7 @@ def test_benchmark_subcommand_help_is_registered(
     tuple(
         command_name
         for command_name in BENCHMARK_COMMANDS
-        if command_name not in {"audit-datasets", "define-schema", "harmonize", "build-representations"}
+        if command_name not in {"audit-datasets", "define-schema", "harmonize", "build-representations", "run-benchmark"}
     ),
 )
 def test_benchmark_stub_commands_exit_with_not_implemented_message(
@@ -335,6 +335,86 @@ def test_benchmark_build_representations_runs_and_writes_artifacts(
         str(harmonized_dir),
         "--output-dir",
         str(representations_dir),
+        "--manifest-dir",
+        str(manifests_dir),
+    ]
+
+
+def test_benchmark_run_benchmark_runs_and_writes_artifacts(
+    tmp_path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    harmonized_dir = tmp_path / "harmonized"
+    representations_dir = tmp_path / "representations"
+    benchmarks_dir = tmp_path / "benchmarks"
+    manifests_dir = tmp_path / "manifests"
+
+    harmonize_exit_code = main(
+        [
+            "benchmark",
+            "harmonize",
+            "--raw-root",
+            str(FIXTURE_ROOT),
+            "--output-dir",
+            str(harmonized_dir),
+            "--manifest-dir",
+            str(manifests_dir),
+        ]
+    )
+    assert harmonize_exit_code == 0
+    capsys.readouterr()
+
+    build_exit_code = main(
+        [
+            "benchmark",
+            "build-representations",
+            "--harmonized-dir",
+            str(harmonized_dir),
+            "--output-dir",
+            str(representations_dir),
+            "--manifest-dir",
+            str(manifests_dir),
+        ]
+    )
+    assert build_exit_code == 0
+    capsys.readouterr()
+
+    exit_code = main(
+        [
+            "benchmark",
+            "run-benchmark",
+            "--harmonized-dir",
+            str(harmonized_dir),
+            "--representations-dir",
+            str(representations_dir),
+            "--output-dir",
+            str(benchmarks_dir),
+            "--manifest-dir",
+            str(manifests_dir),
+        ]
+    )
+
+    assert exit_code == 0
+    output = json.loads(capsys.readouterr().out)
+    assert output["recommendation"] == "continue_only_as_descriptive_artifact_repo"
+    assert output["evaluable_results"] == 11
+    assert Path(output["task_results"]).exists()
+    assert Path(output["summary_json"]).exists()
+    assert Path(output["summary_markdown"]).exists()
+    assert Path(output["task_registry"]).exists()
+    assert Path(output["run_manifest"]).exists()
+
+    manifest = json.loads(Path(output["run_manifest"]).read_text(encoding="utf-8"))
+    assert manifest["command"] == [
+        "scz-audit",
+        "benchmark",
+        "run-benchmark",
+        "--representations-dir",
+        str(representations_dir),
+        "--harmonized-dir",
+        str(harmonized_dir),
+        "--output-dir",
+        str(benchmarks_dir),
         "--manifest-dir",
         str(manifests_dir),
     ]

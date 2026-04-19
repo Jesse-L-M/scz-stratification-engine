@@ -1,0 +1,385 @@
+{
+  "baseline_comparison": {
+    "baseline_family": "diagnosis_anchor",
+    "comparable_headline_pairs": [],
+    "families_beating_baseline_on_headline_tasks": [],
+    "families_with_full_meaningful_headline_coverage": [],
+    "summary": "No headline task produced a fully comparable non-single-class diagnosis_anchor result, so there is no meaningful baseline race to call."
+  },
+  "benchmark_method": {
+    "classifier": "train_only_nearest_centroid",
+    "family_feature_columns": {
+      "clinical_snapshot": [
+        "symptom_burden_mean_z",
+        "cognition_performance_mean_z",
+        "functioning_status_mean_z",
+        "treatment_exposure_count",
+        "current_treatment_count",
+        "modality_availability_count",
+        "modality_type_count",
+        "outcome_row_count"
+      ],
+      "cognition_profile": [
+        "cognition_performance_mean_z",
+        "cognition_executive_function_z",
+        "cognition_general_intellectual_ability_z",
+        "cognition_global_cognition_z",
+        "cognition_processing_speed_z",
+        "cognition_set_shifting_z",
+        "cognition_verbal_ability_z",
+        "cognition_verbal_memory_z",
+        "cognition_visual_memory_z",
+        "cognition_working_memory_z"
+      ],
+      "diagnosis_anchor": [
+        "diagnosis_is_case",
+        "diagnosis_is_control",
+        "diagnosis_psychosis_flag",
+        "diagnosis_schizophrenia_flag",
+        "diagnosis_bipolar_flag",
+        "diagnosis_adhd_flag",
+        "diagnosis_broad_psychiatric_flag",
+        "diagnosis_general_population_flag",
+        "diagnosis_family_context_flag"
+      ],
+      "symptom_profile": [
+        "symptom_burden_mean_z",
+        "symptom_depressive_symptoms_z",
+        "symptom_disorganization_z",
+        "symptom_general_psychopathology_z",
+        "symptom_mania_symptoms_z",
+        "symptom_negative_symptoms_z",
+        "symptom_positive_symptoms_z",
+        "symptom_psychosis_symptoms_z"
+      ]
+    },
+    "metric_caveat": "Balanced accuracy is computed over the classes observed in each evaluation split. On single-class validation or test splits it collapses to observed-class recall and should not be treated as strong separability evidence.",
+    "missing_value_policy": "Rows with no substantive family features are skipped. Remaining blank feature values are zero-filled within the selected family columns for deterministic distance calculations."
+  },
+  "benchmark_scope": "cross_sectional_representation_only",
+  "claim_boundary_statement": "Representation artifacts extend cross-sectional comparison support only. They do not upgrade the repo beyond narrow-go or narrow_outcome_benchmark, and they do not constitute model benchmarking.",
+  "claim_level": "narrow_outcome_benchmark",
+  "context_only_tasks": [
+    {
+      "best_family_by_split": {},
+      "cohort_id": "ds000115",
+      "evaluable_families": [],
+      "evaluable_result_count": 0,
+      "headline_status": "context_only",
+      "is_context_only": true,
+      "label_caveat": "This cohort is tiny and family-structured. It is context only and should not be treated as headline evidence for schizophrenia separability.",
+      "label_definition": "schizophrenia versus pooled sibling/control family-context labels within ds000115",
+      "skipped_result_count": 8,
+      "split_rows": [
+        {
+          "evaluable_families": [],
+          "single_class_eval_families": [],
+          "skipped_families": {
+            "clinical_snapshot": "Train split has one class only (negative=2,positive=0).",
+            "cognition_profile": "Train split has one class only (negative=2,positive=0).",
+            "diagnosis_anchor": "Train split has one class only (negative=2,positive=0).",
+            "symptom_profile": "Train split has one class only (negative=2,positive=0)."
+          },
+          "split": "validation"
+        },
+        {
+          "evaluable_families": [],
+          "single_class_eval_families": [],
+          "skipped_families": {
+            "clinical_snapshot": "Train split has one class only (negative=2,positive=0).",
+            "cognition_profile": "Train split has one class only (negative=2,positive=0).",
+            "diagnosis_anchor": "Train split has one class only (negative=2,positive=0).",
+            "symptom_profile": "Train split has one class only (negative=2,positive=0)."
+          },
+          "split": "test"
+        }
+      ],
+      "task_name": "schizophrenia_vs_non_schizophrenia_family_context",
+      "task_scope": "context_only_family_structure"
+    },
+    {
+      "best_family_by_split": {},
+      "cohort_id": "tcp-ds005237",
+      "evaluable_families": [
+        "clinical_snapshot",
+        "diagnosis_anchor"
+      ],
+      "evaluable_result_count": 4,
+      "headline_status": "context_only",
+      "is_context_only": true,
+      "label_caveat": "Public TCP labels remain broad patient versus GenPop only, so this task is explicitly context only and not psychosis-specific evidence.",
+      "label_definition": "broad psychiatric patient versus general population control within TCP",
+      "skipped_result_count": 4,
+      "split_rows": [
+        {
+          "evaluable_families": [
+            "diagnosis_anchor",
+            "clinical_snapshot"
+          ],
+          "single_class_eval_families": [
+            "diagnosis_anchor",
+            "clinical_snapshot"
+          ],
+          "skipped_families": {
+            "cognition_profile": "No labeled train rows with usable feature support.",
+            "symptom_profile": "Train split has one class only (negative=0,positive=1)."
+          },
+          "split": "validation"
+        },
+        {
+          "evaluable_families": [
+            "diagnosis_anchor",
+            "clinical_snapshot"
+          ],
+          "single_class_eval_families": [
+            "diagnosis_anchor",
+            "clinical_snapshot"
+          ],
+          "skipped_families": {
+            "cognition_profile": "No labeled train rows with usable feature support.",
+            "symptom_profile": "Train split has one class only (negative=0,positive=1)."
+          },
+          "split": "test"
+        }
+      ],
+      "task_name": "patient_vs_genpop_context_only",
+      "task_scope": "context_only_broad_patient_vs_genpop"
+    }
+  ],
+  "current_limitations": [
+    "ucla-cnp-ds000030 and ds000115 remain cross-sectional-only cohorts with zero outcome rows.",
+    "tcp-ds005237 remains label-limited and does not support psychosis-specific equivalence.",
+    "These artifacts standardize public measures conservatively for representation comparison only; no predictive claim is implied."
+  ],
+  "decision": "narrow-go",
+  "family_evaluability": {
+    "clinical_snapshot": {
+      "evaluable_results": 4,
+      "skip_reasons": [
+        "Train split has one class only (negative=0,positive=1).",
+        "Train split has one class only (negative=2,positive=0)."
+      ],
+      "skipped_results": 4,
+      "tasks_with_any_evaluable_split": [
+        "patient_vs_genpop_context_only",
+        "schizophrenia_vs_non_schizophrenia_context"
+      ]
+    },
+    "cognition_profile": {
+      "evaluable_results": 2,
+      "skip_reasons": [
+        "No labeled train rows with usable feature support.",
+        "Train split has one class only (negative=0,positive=1).",
+        "Train split has one class only (negative=2,positive=0)."
+      ],
+      "skipped_results": 6,
+      "tasks_with_any_evaluable_split": [
+        "schizophrenia_vs_non_schizophrenia_context"
+      ]
+    },
+    "diagnosis_anchor": {
+      "evaluable_results": 4,
+      "skip_reasons": [
+        "Train split has one class only (negative=0,positive=1).",
+        "Train split has one class only (negative=2,positive=0)."
+      ],
+      "skipped_results": 4,
+      "tasks_with_any_evaluable_split": [
+        "patient_vs_genpop_context_only",
+        "schizophrenia_vs_non_schizophrenia_context"
+      ]
+    },
+    "symptom_profile": {
+      "evaluable_results": 1,
+      "skip_reasons": [
+        "No labeled test rows with usable feature support.",
+        "Train split has one class only (negative=0,positive=1).",
+        "Train split has one class only (negative=2,positive=0)."
+      ],
+      "skipped_results": 7,
+      "tasks_with_any_evaluable_split": [
+        "schizophrenia_vs_non_schizophrenia_context"
+      ]
+    }
+  },
+  "headline_tasks": [
+    {
+      "best_family_by_split": {},
+      "cohort_id": "fep-ds003944",
+      "evaluable_families": [],
+      "evaluable_result_count": 0,
+      "headline_status": "headline",
+      "is_context_only": false,
+      "label_caveat": "This remains the strongest current strict-open psychosis/control task, but the frozen split contract is still concurrent-only and extremely small.",
+      "label_definition": "psychosis versus control within the public FEP cross-sectional cohort",
+      "skipped_result_count": 8,
+      "split_rows": [
+        {
+          "evaluable_families": [],
+          "single_class_eval_families": [],
+          "skipped_families": {
+            "clinical_snapshot": "Train split has one class only (negative=0,positive=1).",
+            "cognition_profile": "Train split has one class only (negative=0,positive=1).",
+            "diagnosis_anchor": "Train split has one class only (negative=0,positive=1).",
+            "symptom_profile": "Train split has one class only (negative=0,positive=1)."
+          },
+          "split": "validation"
+        },
+        {
+          "evaluable_families": [],
+          "single_class_eval_families": [],
+          "skipped_families": {
+            "clinical_snapshot": "Train split has one class only (negative=0,positive=1).",
+            "cognition_profile": "Train split has one class only (negative=0,positive=1).",
+            "diagnosis_anchor": "Train split has one class only (negative=0,positive=1).",
+            "symptom_profile": "Train split has one class only (negative=0,positive=1)."
+          },
+          "split": "test"
+        }
+      ],
+      "task_name": "psychosis_vs_control",
+      "task_scope": "headline_cross_sectional"
+    },
+    {
+      "best_family_by_split": {},
+      "cohort_id": "ucla-cnp-ds000030",
+      "evaluable_families": [
+        "clinical_snapshot",
+        "cognition_profile",
+        "diagnosis_anchor",
+        "symptom_profile"
+      ],
+      "evaluable_result_count": 7,
+      "headline_status": "headline",
+      "is_context_only": false,
+      "label_caveat": "This task is useful for representation comparison, but it remains transdiagnostic context rather than a stronger psychosis-specific or outcome claim.",
+      "label_definition": "schizophrenia versus pooled non-schizophrenia context labels within UCLA CNP",
+      "skipped_result_count": 1,
+      "split_rows": [
+        {
+          "evaluable_families": [
+            "diagnosis_anchor",
+            "symptom_profile",
+            "cognition_profile",
+            "clinical_snapshot"
+          ],
+          "single_class_eval_families": [
+            "diagnosis_anchor",
+            "symptom_profile",
+            "cognition_profile",
+            "clinical_snapshot"
+          ],
+          "skipped_families": {},
+          "split": "validation"
+        },
+        {
+          "evaluable_families": [
+            "diagnosis_anchor",
+            "cognition_profile",
+            "clinical_snapshot"
+          ],
+          "single_class_eval_families": [
+            "diagnosis_anchor",
+            "cognition_profile",
+            "clinical_snapshot"
+          ],
+          "skipped_families": {
+            "symptom_profile": "No labeled test rows with usable feature support."
+          },
+          "split": "test"
+        }
+      ],
+      "task_name": "schizophrenia_vs_non_schizophrenia_context",
+      "task_scope": "headline_cross_sectional_transdiagnostic_context"
+    }
+  ],
+  "recommendation": {
+    "decision": "continue_only_as_descriptive_artifact_repo",
+    "rationale": [
+      "fep-ds003944 / psychosis_vs_control has no evaluable holdout comparison under the frozen split contract.",
+      "ucla-cnp-ds000030 / schizophrenia_vs_non_schizophrenia_context only yields single-class holdout rows, so it does not provide meaningful headline evidence.",
+      "There are no fully comparable non-single-class headline task/split pairs for a meaningful diagnosis_anchor baseline race."
+    ],
+    "summary": "Headline comparisons do not clear the diagnosis_anchor baseline on fully comparable non-single-class holdouts. Keep the repo at the descriptive artifact layer rather than pulling model comparison forward."
+  },
+  "recommended_next_step_before_benchmark": "continue_cross_sectional_representation_only",
+  "representation_families": [
+    "diagnosis_anchor",
+    "symptom_profile",
+    "cognition_profile",
+    "clinical_snapshot"
+  ],
+  "results_overview": {
+    "evaluable_results": 11,
+    "single_class_eval_results": 11,
+    "skipped_results": 21,
+    "total_results": 32
+  },
+  "seed": 1729,
+  "tasks": [
+    {
+      "cohort_id": "fep-ds003944",
+      "headline_status": "headline",
+      "is_context_only": false,
+      "label_caveat": "This remains the strongest current strict-open psychosis/control task, but the frozen split contract is still concurrent-only and extremely small.",
+      "label_definition": "psychosis versus control within the public FEP cross-sectional cohort",
+      "negative_diagnosis_groups": [
+        "control"
+      ],
+      "positive_diagnosis_groups": [
+        "psychosis"
+      ],
+      "task_name": "psychosis_vs_control",
+      "task_scope": "headline_cross_sectional"
+    },
+    {
+      "cohort_id": "ucla-cnp-ds000030",
+      "headline_status": "headline",
+      "is_context_only": false,
+      "label_caveat": "This task is useful for representation comparison, but it remains transdiagnostic context rather than a stronger psychosis-specific or outcome claim.",
+      "label_definition": "schizophrenia versus pooled non-schizophrenia context labels within UCLA CNP",
+      "negative_diagnosis_groups": [
+        "control",
+        "bipolar_disorder",
+        "adhd"
+      ],
+      "positive_diagnosis_groups": [
+        "schizophrenia"
+      ],
+      "task_name": "schizophrenia_vs_non_schizophrenia_context",
+      "task_scope": "headline_cross_sectional_transdiagnostic_context"
+    },
+    {
+      "cohort_id": "ds000115",
+      "headline_status": "context_only",
+      "is_context_only": true,
+      "label_caveat": "This cohort is tiny and family-structured. It is context only and should not be treated as headline evidence for schizophrenia separability.",
+      "label_definition": "schizophrenia versus pooled sibling/control family-context labels within ds000115",
+      "negative_diagnosis_groups": [
+        "schizophrenia_sibling",
+        "control_sibling",
+        "control"
+      ],
+      "positive_diagnosis_groups": [
+        "schizophrenia"
+      ],
+      "task_name": "schizophrenia_vs_non_schizophrenia_family_context",
+      "task_scope": "context_only_family_structure"
+    },
+    {
+      "cohort_id": "tcp-ds005237",
+      "headline_status": "context_only",
+      "is_context_only": true,
+      "label_caveat": "Public TCP labels remain broad patient versus GenPop only, so this task is explicitly context only and not psychosis-specific evidence.",
+      "label_definition": "broad psychiatric patient versus general population control within TCP",
+      "negative_diagnosis_groups": [
+        "general_population_control"
+      ],
+      "positive_diagnosis_groups": [
+        "broad_psychiatric_patient"
+      ],
+      "task_name": "patient_vs_genpop_context_only",
+      "task_scope": "context_only_broad_patient_vs_genpop"
+    }
+  ]
+}

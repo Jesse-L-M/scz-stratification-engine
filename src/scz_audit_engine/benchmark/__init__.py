@@ -1,5 +1,6 @@
 """Benchmark scaffolding contracts and helpers."""
 
+from .benchmark_tasks import BENCHMARK_TASKS, BenchmarkTask, benchmark_task_registry
 from .harmonize import run_benchmark_harmonization
 from .representations import (
     BenchmarkRepresentationArtifacts,
@@ -38,6 +39,7 @@ from .dataset_registry import (
 )
 from .paths import BenchmarkPaths, benchmark_paths
 from .provenance import file_sha256, resolve_git_sha, write_json_artifact, write_text_artifact
+from .run_benchmark import BenchmarkRunArtifacts, run_cross_sectional_benchmark
 from .run_manifest import DatasetReference, RunManifest, build_run_manifest, write_run_manifest
 from .schema import (
     BenchmarkSchema,
@@ -59,11 +61,14 @@ from .splits import (
 __all__ = [
     "ACCESS_TIERS",
     "ACCESS_TIER_DECISION_ORDER",
+    "BENCHMARK_TASKS",
     "BenchmarkSchema",
     "BENCHMARK_V0_ELIGIBILITY_STATES",
     "CANONICAL_BENCHMARK_SCHEMA",
     "CANONICAL_TABLE_NAMES",
     "CLAIM_LEVELS",
+    "BenchmarkRunArtifacts",
+    "BenchmarkTask",
     "BenchmarkPaths",
     "BenchmarkRepresentationArtifacts",
     "BenchmarkDecision",
@@ -90,6 +95,7 @@ __all__ = [
     "SPLIT_ORDER",
     "SPLIT_PROTOCOL_VERSION",
     "benchmark_paths",
+    "benchmark_task_registry",
     "build_full_external_validation_support",
     "build_outcome_support",
     "build_run_manifest",
@@ -102,6 +108,7 @@ __all__ = [
     "run_benchmark_define_schema",
     "run_benchmark_harmonization",
     "run_benchmark_representation_build",
+    "run_cross_sectional_benchmark",
     "SCHEMA_VERSION",
     "SYMPTOM_DOMAIN_COLUMNS",
     "SYMPTOM_PROFILE_COLUMNS",

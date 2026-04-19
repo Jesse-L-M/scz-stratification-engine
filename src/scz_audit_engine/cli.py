@@ -16,6 +16,7 @@ from .benchmark import (
     run_benchmark_define_schema,
     run_benchmark_harmonization,
     run_benchmark_representation_build,
+    run_cross_sectional_benchmark,
 )
 from .strict_open import (
     build_source_manifest,
@@ -195,6 +196,13 @@ def _build_benchmark_invoked_command(command_name: str, args: argparse.Namespace
         return command
 
     if command_name == "build-representations":
+        _append_flag(command, "--harmonized-dir", getattr(args, "harmonized_dir", None))
+        _append_flag(command, "--output-dir", getattr(args, "output_dir", None))
+        _append_flag(command, "--manifest-dir", getattr(args, "manifest_dir", None))
+        return command
+
+    if command_name == "run-benchmark":
+        _append_flag(command, "--representations-dir", getattr(args, "representations_dir", None))
         _append_flag(command, "--harmonized-dir", getattr(args, "harmonized_dir", None))
         _append_flag(command, "--output-dir", getattr(args, "output_dir", None))
         _append_flag(command, "--manifest-dir", getattr(args, "manifest_dir", None))
@@ -379,6 +387,63 @@ def _build_benchmark_build_representations_handler() -> Callable[[argparse.Names
             manifests_root=manifests_root,
             repo_root=repo_root,
             command=_build_benchmark_invoked_command("build-representations", args),
+            git_sha=git_sha,
+            seed=seed,
+        )
+        print(json.dumps(artifacts.to_summary(), indent=2, sort_keys=True))
+        return 0
+
+    return handler
+
+
+def _build_benchmark_run_benchmark_handler() -> Callable[[argparse.Namespace], int]:
+    def handler(args: argparse.Namespace) -> int:
+        path_contract = benchmark_paths()
+        repo_root = path_contract.repo_root
+        config_path = _resolve_path(args.config, repo_root=repo_root, fallback=path_contract.config_path)
+        config = _load_toml_config(config_path)
+        paths_config = config.get("paths", {})
+        if not isinstance(paths_config, dict):
+            paths_config = {}
+
+        harmonized_root = _resolve_path(
+            paths_config.get("harmonized_root"),
+            repo_root=repo_root,
+            fallback=path_contract.harmonized_root,
+        )
+        representations_root = _resolve_path(
+            paths_config.get("representations_root"),
+            repo_root=repo_root,
+            fallback=path_contract.representations_root,
+        )
+        benchmarks_root = _resolve_path(
+            paths_config.get("benchmarks_root"),
+            repo_root=repo_root,
+            fallback=path_contract.benchmarks_root,
+        )
+        manifests_root = _resolve_path(
+            paths_config.get("manifests_root"),
+            repo_root=repo_root,
+            fallback=path_contract.manifests_root,
+        )
+        if args.harmonized_dir:
+            harmonized_root = Path(args.harmonized_dir).resolve()
+        if args.representations_dir:
+            representations_root = Path(args.representations_dir).resolve()
+        if args.output_dir:
+            benchmarks_root = Path(args.output_dir).resolve()
+        if args.manifest_dir:
+            manifests_root = Path(args.manifest_dir).resolve()
+
+        seed = int(config.get("seed", 1729))
+        git_sha = resolve_git_sha(repo_root)
+        artifacts = run_cross_sectional_benchmark(
+            harmonized_root=harmonized_root,
+            representations_root=representations_root,
+            benchmarks_root=benchmarks_root,
+            manifests_root=manifests_root,
+            repo_root=repo_root,
+            command=_build_benchmark_invoked_command("run-benchmark", args),
             git_sha=git_sha,
             seed=seed,
         )
@@ -844,6 +909,24 @@ def build_parser() -> argparse.ArgumentParser:
                 help="Destination directory for benchmark run manifests.",
             )
             command_parser.set_defaults(handler=_build_benchmark_build_representations_handler())
+        elif command_name == "run-benchmark":
+            command_parser.add_argument(
+                "--representations-dir",
+                help="Directory containing benchmark representation artifacts.",
+            )
+            command_parser.add_argument(
+                "--harmonized-dir",
+                help="Directory containing harmonized benchmark tables.",
+            )
+            command_parser.add_argument(
+                "--output-dir",
+                help="Destination directory for cross-sectional benchmark result artifacts.",
+            )
+            command_parser.add_argument(
+                "--manifest-dir",
+                help="Destination directory for benchmark run manifests.",
+            )
+            command_parser.set_defaults(handler=_build_benchmark_run_benchmark_handler())
         else:
             command_parser.set_defaults(handler=_build_benchmark_stub_handler(command_name))
 
