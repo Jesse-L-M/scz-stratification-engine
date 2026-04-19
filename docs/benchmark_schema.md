@@ -46,9 +46,6 @@ That command writes:
 
 ## Still Deferred
 
-- cohort harmonization
-- split generation
 - subject-level outcome construction
-- representation builders
 - model training and evaluation
 - biomarker logic

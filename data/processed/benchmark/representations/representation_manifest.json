@@ -1,0 +1,193 @@
+{
+  "claim_boundary_statement": "Representation artifacts extend cross-sectional comparison support only. They do not upgrade the repo beyond narrow-go or narrow_outcome_benchmark, and they do not constitute model benchmarking.",
+  "cross_sectional_only_cohorts": [
+    "ds000115",
+    "ucla-cnp-ds000030"
+  ],
+  "current_limitations": [
+    "ucla-cnp-ds000030 and ds000115 remain cross-sectional-only cohorts with zero outcome rows.",
+    "tcp-ds005237 remains label-limited and does not support psychosis-specific equivalence.",
+    "These artifacts standardize public measures conservatively for representation comparison only; no predictive claim is implied."
+  ],
+  "family_summaries": {
+    "clinical_snapshot": {
+      "counts_by_cohort": {
+        "ds000115": 4,
+        "fep-ds003944": 3,
+        "tcp-ds005237": 4,
+        "ucla-cnp-ds000030": 4
+      },
+      "counts_by_split": {
+        "test": 4,
+        "train": 7,
+        "validation": 4
+      },
+      "feature_columns": [
+        "available_feature_count",
+        "available_family_count",
+        "symptom_burden_mean_z",
+        "cognition_performance_mean_z",
+        "functioning_status_mean_z",
+        "treatment_exposure_count",
+        "current_treatment_count",
+        "modality_availability_count",
+        "modality_type_count",
+        "outcome_row_count"
+      ],
+      "row_count": 15,
+      "rows_with_any_features_by_cohort": {
+        "ds000115": 4,
+        "fep-ds003944": 3,
+        "tcp-ds005237": 2,
+        "ucla-cnp-ds000030": 4
+      },
+      "rows_with_any_features_by_split": {
+        "test": 3,
+        "train": 6,
+        "validation": 4
+      }
+    },
+    "cognition_profile": {
+      "counts_by_cohort": {
+        "ds000115": 4,
+        "fep-ds003944": 3,
+        "tcp-ds005237": 4,
+        "ucla-cnp-ds000030": 4
+      },
+      "counts_by_split": {
+        "test": 4,
+        "train": 7,
+        "validation": 4
+      },
+      "feature_columns": [
+        "available_feature_count",
+        "available_domain_count",
+        "cognition_performance_mean_z",
+        "cognition_executive_function_z",
+        "cognition_general_intellectual_ability_z",
+        "cognition_global_cognition_z",
+        "cognition_processing_speed_z",
+        "cognition_set_shifting_z",
+        "cognition_verbal_ability_z",
+        "cognition_verbal_memory_z",
+        "cognition_visual_memory_z",
+        "cognition_working_memory_z"
+      ],
+      "row_count": 15,
+      "rows_with_any_features_by_cohort": {
+        "ds000115": 4,
+        "fep-ds003944": 3,
+        "ucla-cnp-ds000030": 4
+      },
+      "rows_with_any_features_by_split": {
+        "test": 3,
+        "train": 5,
+        "validation": 3
+      }
+    },
+    "diagnosis_anchor": {
+      "counts_by_cohort": {
+        "ds000115": 4,
+        "fep-ds003944": 3,
+        "tcp-ds005237": 4,
+        "ucla-cnp-ds000030": 4
+      },
+      "counts_by_split": {
+        "test": 4,
+        "train": 7,
+        "validation": 4
+      },
+      "feature_columns": [
+        "available_feature_count",
+        "diagnosis_is_case",
+        "diagnosis_is_control",
+        "diagnosis_psychosis_flag",
+        "diagnosis_schizophrenia_flag",
+        "diagnosis_bipolar_flag",
+        "diagnosis_adhd_flag",
+        "diagnosis_broad_psychiatric_flag",
+        "diagnosis_general_population_flag",
+        "diagnosis_family_context_flag"
+      ],
+      "row_count": 15,
+      "rows_with_any_features_by_cohort": {
+        "ds000115": 4,
+        "fep-ds003944": 3,
+        "tcp-ds005237": 4,
+        "ucla-cnp-ds000030": 4
+      },
+      "rows_with_any_features_by_split": {
+        "test": 4,
+        "train": 7,
+        "validation": 4
+      }
+    },
+    "symptom_profile": {
+      "counts_by_cohort": {
+        "ds000115": 4,
+        "fep-ds003944": 3,
+        "tcp-ds005237": 4,
+        "ucla-cnp-ds000030": 4
+      },
+      "counts_by_split": {
+        "test": 4,
+        "train": 7,
+        "validation": 4
+      },
+      "feature_columns": [
+        "available_feature_count",
+        "available_domain_count",
+        "symptom_burden_mean_z",
+        "symptom_depressive_symptoms_z",
+        "symptom_disorganization_z",
+        "symptom_general_psychopathology_z",
+        "symptom_mania_symptoms_z",
+        "symptom_negative_symptoms_z",
+        "symptom_positive_symptoms_z",
+        "symptom_psychosis_symptoms_z"
+      ],
+      "row_count": 15,
+      "rows_with_any_features_by_cohort": {
+        "ds000115": 4,
+        "fep-ds003944": 2,
+        "tcp-ds005237": 2,
+        "ucla-cnp-ds000030": 3
+      },
+      "rows_with_any_features_by_split": {
+        "test": 1,
+        "train": 6,
+        "validation": 4
+      }
+    }
+  },
+  "input_paths": {
+    "cognition_scores": "cognition_scores.csv",
+    "diagnoses": "diagnoses.csv",
+    "functioning_scores": "functioning_scores.csv",
+    "modality_features": "modality_features.csv",
+    "outcomes": "outcomes.csv",
+    "split_assignments": "split_assignments.csv",
+    "subjects": "subjects.csv",
+    "symptom_scores": "symptom_scores.csv",
+    "treatment_exposures": "treatment_exposures.csv",
+    "visits": "visits.csv"
+  },
+  "outcome_bearing_cohorts": [
+    "fep-ds003944",
+    "tcp-ds005237"
+  ],
+  "output_paths": {
+    "clinical_snapshot": "clinical_snapshot.csv",
+    "cognition_profile": "cognition_profile.csv",
+    "diagnosis_anchor": "diagnosis_anchor.csv",
+    "representation_manifest": "representation_manifest.json",
+    "symptom_profile": "symptom_profile.csv"
+  },
+  "row_counts_by_family": {
+    "clinical_snapshot": 15,
+    "cognition_profile": 15,
+    "diagnosis_anchor": 15,
+    "symptom_profile": 15
+  },
+  "seed": 1729
+}

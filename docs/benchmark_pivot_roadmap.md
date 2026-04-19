@@ -6,13 +6,13 @@ The old `strict_open` roadmap is archived. New work should follow this file.
 
 ## Current Phase
 
-Current phase: benchmark schema.
+Current phase: cross-sectional representation builders.
 
 Current stop line:
 
-- do not pull harmonization forward
-- do not pull representation builders forward
 - do not pull modeling forward
+- do not pull benchmark comparison metrics forward
+- do not pull biomarker-heavy benchmarking forward
 
 ## Sequencing
 
@@ -26,15 +26,17 @@ Current stop line:
    Build harmonized tables and frozen split rules only after the schema is
    justified by the feasibility gate.
 4. Representation and model benchmarking
-   Compare diagnosis, dimensions, trajectories, or clusters only after the repo
-   can honestly state what kind of outcome benchmark exists.
+   First build cross-sectional representation artifacts, then compare
+   diagnosis, dimensions, trajectories, or clusters only after the repo can
+   honestly state what kind of outcome benchmark exists.
 
 ## Current Status
 
 - current benchmark decision: `narrow-go`
 - current claim level: `narrow_outcome_benchmark`
 - current public support is concurrent-only
-- canonical benchmark tables can now be defined and emitted as schema artifacts
+- canonical benchmark tables, harmonized outputs, split contracts, and
+  cross-sectional representation artifacts now exist
 - full external validation remains intentionally out of scope until another
   eligible cohort exists
 

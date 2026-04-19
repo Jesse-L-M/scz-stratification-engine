@@ -48,7 +48,7 @@ def test_benchmark_subcommand_help_is_registered(
     tuple(
         command_name
         for command_name in BENCHMARK_COMMANDS
-        if command_name not in {"audit-datasets", "define-schema", "harmonize"}
+        if command_name not in {"audit-datasets", "define-schema", "harmonize", "build-representations"}
     ),
 )
 def test_benchmark_stub_commands_exit_with_not_implemented_message(
@@ -273,6 +273,71 @@ def test_benchmark_harmonize_runs_and_writes_split_contracts(
         str(manifests_dir),
     ]
     assert manifest["output_paths"]["split_assignments"] == str(harmonized_dir / "split_assignments.csv")
+
+
+def test_benchmark_build_representations_runs_and_writes_artifacts(
+    tmp_path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    harmonized_dir = tmp_path / "harmonized"
+    representations_dir = tmp_path / "representations"
+    manifests_dir = tmp_path / "manifests"
+
+    harmonize_exit_code = main(
+        [
+            "benchmark",
+            "harmonize",
+            "--raw-root",
+            str(FIXTURE_ROOT),
+            "--output-dir",
+            str(harmonized_dir),
+            "--manifest-dir",
+            str(manifests_dir),
+        ]
+    )
+    assert harmonize_exit_code == 0
+    capsys.readouterr()
+
+    exit_code = main(
+        [
+            "benchmark",
+            "build-representations",
+            "--harmonized-dir",
+            str(harmonized_dir),
+            "--output-dir",
+            str(representations_dir),
+            "--manifest-dir",
+            str(manifests_dir),
+        ]
+    )
+
+    assert exit_code == 0
+    output = json.loads(capsys.readouterr().out)
+    assert output["row_counts_by_family"] == {
+        "clinical_snapshot": 15,
+        "cognition_profile": 15,
+        "diagnosis_anchor": 15,
+        "symptom_profile": 15,
+    }
+    assert Path(output["diagnosis_anchor"]).exists()
+    assert Path(output["symptom_profile"]).exists()
+    assert Path(output["cognition_profile"]).exists()
+    assert Path(output["clinical_snapshot"]).exists()
+    assert Path(output["representation_manifest"]).exists()
+    assert Path(output["run_manifest"]).exists()
+
+    manifest = json.loads(Path(output["run_manifest"]).read_text(encoding="utf-8"))
+    assert manifest["command"] == [
+        "scz-audit",
+        "benchmark",
+        "build-representations",
+        "--harmonized-dir",
+        str(harmonized_dir),
+        "--output-dir",
+        str(representations_dir),
+        "--manifest-dir",
+        str(manifests_dir),
+    ]
 
 
 def test_strict_open_help_still_works(capsys: pytest.CaptureFixture[str]) -> None:
