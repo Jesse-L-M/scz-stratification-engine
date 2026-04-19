@@ -1,0 +1,35 @@
+{
+  "dataset": {
+    "id": "ds000115",
+    "name": "ds000115",
+    "metadata": {
+      "species": null,
+      "studyDesign": null,
+      "studyDomain": null,
+      "modalities": [
+        "mri"
+      ],
+      "ages": [
+        19,
+        21,
+        24,
+        29
+      ]
+    },
+    "latestSnapshot": {
+      "tag": "00001",
+      "description": {
+        "Name": "Working memory in healthy and schizophrenic individuals",
+        "DatasetDOI": null,
+        "License": null,
+        "Authors": [
+          "Grega Repovas",
+          "Deanna M. Barch"
+        ],
+        "ReferencesAndLinks": [
+          "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3358772/"
+        ]
+      }
+    }
+  }
+}

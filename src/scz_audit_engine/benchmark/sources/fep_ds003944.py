@@ -192,7 +192,7 @@ class FEPDS003944BenchmarkSourceAdapter(OpenNeuroSourceAdapter):
         return DatasetRegistryEntry(
             dataset_id=self.source_identifier,
             dataset_label=dataset_name,
-            access_level="public",
+            access_tier="strict_open",
             population_scope="first-episode psychosis case-control cohort",
             diagnosis_coverage=(
                 f"participants.tsv lists {participant_groups.get('Psychosis', 0)} Psychosis and "

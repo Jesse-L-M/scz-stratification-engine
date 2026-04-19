@@ -2,41 +2,46 @@
 
 ## Current Mainline Claim
 
-This repo's active job is to preserve the benchmark feasibility boundary while
-defining the canonical benchmark schema ahead of harmonization or modeling.
+This repo's active job is still to preserve the benchmark feasibility boundary
+while making the dataset registry explicit enough to say what is possible under
+each access tier.
 
 Current repo status:
 
+- current access tier in scope: `strict_open`
 - benchmark decision: `narrow-go`
 - supported claim level: `narrow_outcome_benchmark`
-- current public support: one benchmark-eligible cohort with a concurrent
+- recommended next step: `continue_cross_sectional_representation_only`
+- current `strict_open` outcome support: one eligible cohort with a concurrent
   `poor_functional_outcome` endpoint
-- schema status: canonical benchmark tables are now defined in code and emitted
-  as benchmark artifacts
 
 ## What The Repo Can Claim Right Now
 
-- the public audit surface can distinguish concurrent endpoints from prospective
-  outcomes
-- the registry and reports can state the current claim level explicitly
-- one public cohort currently supports a narrow, concurrent outcome benchmark
-- the benchmark namespace can define canonical schema artifacts without implying
-  harmonization or stronger claims
-- `tcp-ds005237` remains useful metadata and comparison context, but not full
-  narrow-support claim evidence
+- the registry and audit report can now separate `strict_open`,
+  `public_credentialed`, and `controlled` support explicitly
+- the public audit can distinguish cross-sectional-only cohorts from real
+  outcome-supporting cohorts
+- `ucla-cnp-ds000030` and `ds000115` materially improve the honest
+  cross-sectional representation-benchmark picture
+- one `strict_open` cohort (`fep-ds003944`) still supports a narrow concurrent
+  outcome benchmark
+- `tcp-ds005237` remains useful context and comparison metadata, but not outcome
+  claim evidence
 
 ## What The Repo Cannot Claim Right Now
 
-- full external validation
+- full external validation under `strict_open`
 - a prospective outcome benchmark
-- harmonized cross-cohort tables
+- a stronger outcome benchmark justified by audited `public_credentialed` data
+- harmonized cross-cohort tables for the new expansion candidates
 - representation benchmarking results
 - biomarker value
 - mechanism or subtype discovery
 
 ## Mainline Commitments
 
-- keep the benchmark decision conservative and machine-readable
+- keep access tiers machine-readable and separate
+- keep `strict_open` strict
 - treat temporal outcome validity as structured metadata, not prose only
 - keep diagnosis granularity and mapping caveats explicit in schema contracts
 - keep cohort notes operational
@@ -50,3 +55,5 @@ Current repo status:
   as infrastructure reference
 - do not pull harmonization, representation, or modeling work forward in this
   PR line
+- do not treat `public_credentialed` or `controlled` improvements as evidence
+  for the `strict_open` line

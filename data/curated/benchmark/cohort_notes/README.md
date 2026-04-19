@@ -5,6 +5,9 @@ These notes are the human-readable companion to
 
 Each cohort note should state:
 
-- which real outcome family is benchmarkable right now
-- what public metadata supports that call
+- exact `access_tier`
+- exact diagnosis or label structure exposed in that tier
+- whether the useful benchmark value is cross-sectional representation only,
+  narrow concurrent outcome support, stronger external validation support, or
+  prospective support
 - what remains unsupported or unclear

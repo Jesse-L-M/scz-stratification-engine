@@ -69,6 +69,8 @@ def run_benchmark_harmonization(
     missing_expected_cohorts: list[str] = []
     explicit_snapshot_root_failures: list[str] = []
     for adapter in adapters or build_default_source_adapters():
+        if not getattr(adapter, "supports_harmonization", True):
+            continue
         cohort_root = _resolve_adapter_root(raw_path, adapter)
         if cohort_root is None:
             snapshot_root = getattr(adapter, "snapshot_root", None)

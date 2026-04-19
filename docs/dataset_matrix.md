@@ -3,8 +3,9 @@
 This document defines the dataset registry contract for the current benchmark
 feasibility gate.
 
-The goal in this phase is not to model. The goal is to say, in a machine-readable
-way, what kind of benchmark the available cohorts can honestly support.
+The goal in this phase is still not to model. The goal is to say, in a
+machine-readable way, what kind of benchmark the audited cohorts can honestly
+support under each access tier.
 
 ## Required Registry Columns
 
@@ -14,21 +15,21 @@ Maintain a checked-in dataset registry with at least these fields:
 | --- | --- |
 | `dataset_id` | Stable local identifier |
 | `dataset_label` | Human-readable cohort name |
-| `access_level` | `public`, `controlled`, or `gated` |
+| `access_tier` | `strict_open`, `public_credentialed`, or `controlled` |
 | `population_scope` | e.g. first-episode psychosis, schizophrenia, transdiagnostic psychiatry |
-| `diagnosis_coverage` | Which diagnoses or groups are present publicly |
+| `diagnosis_coverage` | Which diagnoses or groups are exposed publicly or in the audited tier |
 | `symptom_scales` | PANSS, BPRS, SAPS/SANS, BNSS, etc. |
 | `cognition_scales` | MCCB or other cognition measures |
 | `functioning_scales` | GAF, SOFAS, PSP, LIFE-RIFT, SFS, etc. |
 | `treatment_variables` | medication, exposure, adherence, etc. |
-| `longitudinal_coverage` | whether repeated visits are documented publicly |
+| `longitudinal_coverage` | whether repeated visits are documented in the audited tier |
 | `outcome_availability` | which benchmark outcomes can be defined honestly |
 | `modality_availability` | MRI, genetics, EEG, speech, etc. |
 | `site_structure` | single-site vs multi-site |
 | `sample_size_note` | rough usable size |
 | `known_limitations` | what weakens claim strength |
 | `local_status` | `candidate`, `audited`, `harmonized`, or `deferred` |
-| `benchmark_v0_eligibility` | `eligible`, `limited`, or `ineligible` for the current narrow public benchmark |
+| `benchmark_v0_eligibility` | `eligible`, `limited`, or `ineligible` for the current benchmark question if that cohort's access tier is in scope |
 | `representation_comparison_support` | `strong`, `limited`, or `insufficient` support for psychosis-relevant representation comparison |
 | `predictor_timepoint` | predictor timing, e.g. `scan/baseline` |
 | `outcome_timepoint` | endpoint timing, e.g. `same_visit` or `12_month_follow_up` |
@@ -40,20 +41,33 @@ Maintain a checked-in dataset registry with at least these fields:
 The checked-in CSV should also emit derived row-level claim fields:
 
 - `claim_level_ceiling`: the highest claim level that cohort could contribute
-  toward if the surrounding support exists
+  toward if its access tier is in scope
 - `claim_level_contributions`
+
+## Access-Tier Rule
+
+The audit must keep these tiers explicit and separate:
+
+1. `strict_open`
+2. `strict_open + public_credentialed`
+3. `strict_open + public_credentialed + controlled`
+
+`public_credentialed` must not silently count as `strict_open`.
+
+`controlled` must stay visibly separate from both of the tiers above it.
 
 ## Representation-Support Rule
 
 Use `representation_comparison_support` to distinguish:
 
-- `strong`: public data is psychosis-relevant enough to support a real
-  representation comparison
-- `limited`: public data is psychosis-relevant but label granularity is too weak
-  to count as main claim support
+- `strong`: diagnosis/public metadata is psychosis-relevant enough to support a
+  real representation comparison if that access tier is allowed
+- `limited`: psychosis-relevant metadata exists, but label granularity is too
+  weak to count as main claim support
 - `insufficient`: useful metadata or context only
 
-`benchmark_v0_eligibility=eligible` should map to `representation_comparison_support=strong`.
+`benchmark_v0_eligibility=eligible` should map to
+`representation_comparison_support=strong`.
 
 ## Temporal Outcome Rule
 
@@ -85,25 +99,37 @@ contribute to without prose-only inference.
 
 ## Benchmark Decision Rule
 
-Before schema or modeling work starts, the audited public registry should support
-one of these benchmark decisions:
+For each access-tier scope, the audited registry should support one of these
+benchmark decisions:
 
-- `go`: at least two `benchmark_v0_eligibility=eligible` cohorts support the same
-  outcome family
-- `narrow-go`: exactly one cohort currently supports the narrowed benchmark claim
-- `no-go`: no honest public benchmark outcome family exists yet
+- `go`: at least two `benchmark_v0_eligibility=eligible` cohorts support the
+  same outcome family
+- `narrow-go`: exactly one cohort currently supports the narrowed benchmark
+  claim
+- `no-go`: no honest benchmark outcome family exists yet in that tier scope
 
-The decision state and the claim level are related but not identical. The repo
-can remain `narrow-go` while the supported claim level is only
-`narrow_outcome_benchmark`.
+The report should always surface:
 
-## Current Public Status
+- the current `strict_open` decision
+- the current supported claim level under `strict_open`
+- the access-tier decision table for all three scopes
+- an explicit recommendation about whether to stay paused, continue only as a
+  cross-sectional representation benchmark, or wait for stronger
+  credentialed/controlled data
 
-The current public audit should be read conservatively:
+## Current Audited Reading
 
-- `fep-ds003944` provides narrow concurrent support for
-  `poor_functional_outcome`
-- `tcp-ds005237` remains `limited` because public labels are too broad for the
-  current psychosis representation claim
-- current repo status remains `narrow-go`
-- current supported claim level remains `narrow_outcome_benchmark`
+The current conservative benchmark reading should be:
+
+- `fep-ds003944` remains the only `strict_open` cohort that supports a narrow
+  concurrent `poor_functional_outcome` benchmark
+- `tcp-ds005237` remains `limited` because public labels are still too broad for
+  psychosis-specific outcome benchmarking
+- `ucla-cnp-ds000030` adds strong `strict_open` cross-sectional representation
+  support only
+- `ds000115` adds low-weight `strict_open` cross-sectional representation
+  support only
+- current `strict_open` repo status remains `narrow-go`
+- current `strict_open` claim level remains `narrow_outcome_benchmark`
+- current audited `public_credentialed` and `controlled` layers do not yet add a
+  stronger outcome benchmark claim

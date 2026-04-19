@@ -7,8 +7,10 @@ from pathlib import Path
 from typing import Any
 
 from .dataset_registry import (
+    ACCESS_TIER_DECISION_ORDER,
     OUTCOME_FAMILIES,
     BenchmarkDecision,
+    BenchmarkDecisionLayer,
     DatasetRegistryEntry,
     derive_benchmark_decision,
     write_dataset_registry,
@@ -26,6 +28,10 @@ def _format_cohort_list(cohorts: tuple[str, ...]) -> str:
     return ", ".join(f"`{cohort}`" for cohort in cohorts) if cohorts else "none"
 
 
+def _format_access_tier_scope(allowed_access_tiers: tuple[str, ...]) -> str:
+    return ", ".join(f"`{access_tier}`" for access_tier in allowed_access_tiers)
+
+
 @dataclass(frozen=True, slots=True)
 class DatasetAuditArtifacts:
     """Paths and structured outputs emitted by the benchmark dataset audit."""
@@ -41,9 +47,13 @@ class DatasetAuditArtifacts:
     def to_summary(self) -> dict[str, object]:
         return {
             "audited_cohort_count": len(self.entries),
+            "current_access_tier": self.decision.current_access_tier,
             "decision": self.decision.state,
             "claim_level": self.decision.claim_level,
-            "recommended_outcome_families": list(self.decision.recommended_outcome_families),
+            "recommended_outcome_families": list(
+                self.decision.recommended_outcome_families
+            ),
+            "recommended_next_step": self.decision.recommended_next_step,
             "dataset_registry": str(self.registry_path),
             "json_report": str(self.json_report_path),
             "markdown_report": str(self.markdown_report_path),
@@ -58,41 +68,95 @@ def _render_markdown_report(
     lines = [
         "# Benchmark Dataset Audit",
         "",
-        f"- Current benchmark decision: `{decision.state}`",
-        f"- Current claim level supported: `{decision.claim_level}`",
-        f"- Decision explanation: {decision.explanation}",
-        f"- Claim-level explanation: {decision.claim_level_explanation}",
-        f"- Narrow benchmark supporting cohorts: {_format_cohort_list(decision.narrow_supporting_cohorts)}",
-        (
-            "- Full external-validation cohorts: "
-            f"{_format_cohort_list(decision.full_external_validation_cohorts)}"
-        ),
-        f"- Concurrent-only cohorts: {_format_cohort_list(decision.concurrent_only_cohorts)}",
-        (
-            "- Prospectively usable cohorts: "
-            f"{_format_cohort_list(decision.prospectively_usable_cohorts)}"
-        ),
-        (
-            "- Limiting factors: "
-            + ("; ".join(decision.limiting_factors) if decision.limiting_factors else "none")
-        ),
+        f"- Current access tier in scope: `{decision.current_access_tier}`",
+        f"- Current benchmark decision under `strict_open`: `{decision.state}`",
+        f"- Current claim level under `strict_open`: `{decision.claim_level}`",
+        f"- Recommended next step: `{decision.recommended_next_step}`",
+        f"- Recommendation explanation: {decision.recommended_next_step_explanation}",
         "",
-        "## Outcome Family Support",
+        "## Access-Tier Decisions",
         "",
         (
-            "| Outcome family | Narrow benchmark support | Full external-validation support | "
-            "Prospective support |"
+            "| Access tier in scope | Included cohort tiers | Decision | Claim level | "
+            "Cross-sectional representation cohorts | Narrow support cohorts |"
         ),
-        "| --- | --- | --- | --- |",
+        "| --- | --- | --- | --- | --- | --- |",
     ]
-    for family in OUTCOME_FAMILIES:
+    for access_tier in ACCESS_TIER_DECISION_ORDER:
+        layer = decision.layer_for(access_tier)
         lines.append(
             "| "
-            f"`{family}` | "
-            f"{', '.join(decision.support_by_outcome_family[family]) or 'none'} | "
-            f"{', '.join(decision.full_external_validation_support_by_outcome_family[family]) or 'none'} | "
-            f"{', '.join(decision.prospective_support_by_outcome_family[family]) or 'none'} |"
+            f"`{layer.access_tier}` | "
+            f"{_format_access_tier_scope(layer.allowed_access_tiers)} | "
+            f"`{layer.state}` | "
+            f"`{layer.claim_level}` | "
+            f"{', '.join(layer.cross_sectional_representation_cohorts) or 'none'} | "
+            f"{', '.join(layer.narrow_supporting_cohorts) or 'none'} |"
         )
+
+    lines.extend(["", "## Access-Tier Notes", ""])
+    for access_tier in ACCESS_TIER_DECISION_ORDER:
+        layer = decision.layer_for(access_tier)
+        lines.extend(
+            [
+                f"### `{layer.access_tier}`",
+                f"- Included cohort tiers: {_format_access_tier_scope(layer.allowed_access_tiers)}",
+                f"- Decision explanation: {layer.explanation}",
+                f"- Claim-level explanation: {layer.claim_level_explanation}",
+                (
+                    "- Cross-sectional representation cohorts: "
+                    f"{_format_cohort_list(layer.cross_sectional_representation_cohorts)}"
+                ),
+                (
+                    "- Narrow benchmark supporting cohorts: "
+                    f"{_format_cohort_list(layer.narrow_supporting_cohorts)}"
+                ),
+                (
+                    "- Full external-validation cohorts: "
+                    f"{_format_cohort_list(layer.full_external_validation_cohorts)}"
+                ),
+                (
+                    "- Concurrent-only cohorts: "
+                    f"{_format_cohort_list(layer.concurrent_only_cohorts)}"
+                ),
+                (
+                    "- Prospectively usable cohorts: "
+                    f"{_format_cohort_list(layer.prospectively_usable_cohorts)}"
+                ),
+                (
+                    "- Limiting factors: "
+                    + (
+                        "; ".join(layer.limiting_factors)
+                        if layer.limiting_factors
+                        else "none"
+                    )
+                ),
+                "",
+            ]
+        )
+
+    lines.extend(
+        [
+            "## Outcome Family Support By Access Tier",
+            "",
+            (
+                "| Access tier in scope | Outcome family | Narrow benchmark support | "
+                "Full external-validation support | Prospective support |"
+            ),
+            "| --- | --- | --- | --- | --- |",
+        ]
+    )
+    for access_tier in ACCESS_TIER_DECISION_ORDER:
+        layer = decision.layer_for(access_tier)
+        for family in OUTCOME_FAMILIES:
+            lines.append(
+                "| "
+                f"`{layer.access_tier}` | "
+                f"`{family}` | "
+                f"{', '.join(layer.support_by_outcome_family[family]) or 'none'} | "
+                f"{', '.join(layer.full_external_validation_support_by_outcome_family[family]) or 'none'} | "
+                f"{', '.join(layer.prospective_support_by_outcome_family[family]) or 'none'} |"
+            )
 
     lines.extend(
         [
@@ -100,8 +164,9 @@ def _render_markdown_report(
             "## Audited Cohorts",
             "",
             (
-                "| Dataset | Access | Local status | Benchmark v0 eligibility | Representation support | "
-                "Temporal validity | Claim ceiling | Narrow support | Outcome families |"
+                "| Dataset | Access tier | Local status | Benchmark v0 eligibility | "
+                "Representation support | Temporal validity | Claim ceiling | "
+                "Narrow support if tier allowed | Outcome families |"
             ),
             "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
         ]
@@ -110,30 +175,46 @@ def _render_markdown_report(
         families = ", ".join(entry.benchmarkable_outcome_families) or "none"
         lines.append(
             "| "
-            f"`{entry.dataset_id}` | `{entry.access_level}` | `{entry.local_status}` | "
+            f"`{entry.dataset_id}` | `{entry.access_tier}` | `{entry.local_status}` | "
             f"`{entry.benchmark_v0_eligibility}` | `{entry.representation_comparison_support}` | "
             f"`{entry.outcome_temporal_validity}` | `{entry.claim_level_ceiling}` | "
-            f"`{'yes' if entry.counts_toward_narrow_benchmark_support else 'no'}` | {families} |"
+            f"`{'yes' if entry.counts_toward_narrow_benchmark_support_if_access_allowed else 'no'}` | {families} |"
         )
 
     lines.extend(["", "## Cohort Notes", ""])
     for entry in entries:
         lines.append(f"### `{entry.dataset_id}`")
         lines.append(f"- Label: {entry.dataset_label}")
+        lines.append(f"- Access tier: {entry.access_tier}")
         lines.append(f"- Local status: {entry.local_status}")
         lines.append(f"- Benchmark v0 eligibility: {entry.benchmark_v0_eligibility}")
-        lines.append(f"- Representation comparison support: {entry.representation_comparison_support}")
+        lines.append(
+            f"- Representation comparison support: {entry.representation_comparison_support}"
+        )
         lines.append(f"- Predictor timepoint: {entry.predictor_timepoint}")
         lines.append(f"- Outcome timepoint: {entry.outcome_timepoint}")
         lines.append(f"- Outcome window: {entry.outcome_window}")
         lines.append(f"- Outcome temporal validity: {entry.outcome_temporal_validity}")
-        lines.append(f"- Concurrent endpoint only: {'yes' if entry.concurrent_endpoint_only else 'no'}")
-        lines.append(f"- Prospectively usable: {'yes' if entry.outcome_is_prospective else 'no'}")
+        lines.append(
+            f"- Concurrent endpoint only: {'yes' if entry.concurrent_endpoint_only else 'no'}"
+        )
+        lines.append(
+            f"- Prospectively usable: {'yes' if entry.outcome_is_prospective else 'no'}"
+        )
+        lines.append(
+            "- Cross-sectional representation support if tier allowed: "
+            f"{'yes' if entry.supports_cross_sectional_representation_if_access_allowed else 'no'}"
+        )
+        lines.append(
+            "- Narrow benchmark support if tier allowed: "
+            f"{'yes' if entry.counts_toward_narrow_benchmark_support_if_access_allowed else 'no'}"
+        )
         lines.append(
             f"- Claim level contributions: {', '.join(entry.claim_level_contributions) or 'none'}"
         )
         lines.append(
-            f"- Benchmarkable outcome families: {', '.join(entry.benchmarkable_outcome_families) or 'none'}"
+            "- Benchmarkable outcome families: "
+            f"{', '.join(entry.benchmarkable_outcome_families) or 'none'}"
         )
         lines.append(f"- Diagnosis coverage: {entry.diagnosis_coverage}")
         lines.append(
@@ -150,30 +231,43 @@ def _render_markdown_report(
     return "\n".join(lines).rstrip() + "\n"
 
 
+def _build_layer_outcome_family_support(
+    layer: BenchmarkDecisionLayer,
+) -> dict[str, dict[str, object]]:
+    return {
+        family: {
+            "narrow_benchmark_support": {
+                "count": len(layer.support_by_outcome_family[family]),
+                "cohorts": list(layer.support_by_outcome_family[family]),
+            },
+            "full_external_validation_support": {
+                "count": len(
+                    layer.full_external_validation_support_by_outcome_family[family]
+                ),
+                "cohorts": list(
+                    layer.full_external_validation_support_by_outcome_family[family]
+                ),
+            },
+            "prospective_support": {
+                "count": len(layer.prospective_support_by_outcome_family[family]),
+                "cohorts": list(layer.prospective_support_by_outcome_family[family]),
+            },
+        }
+        for family in OUTCOME_FAMILIES
+    }
+
+
 def _build_json_report(
     entries: tuple[DatasetRegistryEntry, ...],
     decision: BenchmarkDecision,
 ) -> dict[str, Any]:
     return {
         "decision": decision.to_dict(),
-        "outcome_family_support": {
-            family: {
-                "narrow_benchmark_support": {
-                    "count": len(decision.support_by_outcome_family[family]),
-                    "cohorts": list(decision.support_by_outcome_family[family]),
-                },
-                "full_external_validation_support": {
-                    "count": len(decision.full_external_validation_support_by_outcome_family[family]),
-                    "cohorts": list(
-                        decision.full_external_validation_support_by_outcome_family[family]
-                    ),
-                },
-                "prospective_support": {
-                    "count": len(decision.prospective_support_by_outcome_family[family]),
-                    "cohorts": list(decision.prospective_support_by_outcome_family[family]),
-                },
-            }
-            for family in OUTCOME_FAMILIES
+        "outcome_family_support_by_access_tier": {
+            access_tier: _build_layer_outcome_family_support(
+                decision.layer_for(access_tier)
+            )
+            for access_tier in ACCESS_TIER_DECISION_ORDER
         },
         "audited_cohorts": [entry.to_dict() for entry in entries],
     }

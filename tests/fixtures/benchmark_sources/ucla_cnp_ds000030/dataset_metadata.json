@@ -1,0 +1,38 @@
+{
+  "dataset": {
+    "id": "ds000030",
+    "name": "ds000030_R1.0.5",
+    "metadata": {
+      "species": "",
+      "studyDesign": "",
+      "studyDomain": "",
+      "modalities": [
+        "mri"
+      ],
+      "ages": [
+        21,
+        24,
+        29,
+        33
+      ]
+    },
+    "latestSnapshot": {
+      "tag": "1.0.0",
+      "description": {
+        "Name": "UCLA Consortium for Neuropsychiatric Phenomics LA5c Study",
+        "DatasetDOI": "10.18112/openneuro.ds000030.v1.0.0",
+        "License": "CC0",
+        "Authors": [
+          "Bilder, R",
+          "Poldrack, R",
+          "Cannon, T",
+          "London, E"
+        ],
+        "ReferencesAndLinks": [
+          "https://www.nature.com/articles/sdata2016110",
+          "https://f1000research.com/articles/6-1262/v2"
+        ]
+      }
+    }
+  }
+}

@@ -6,7 +6,7 @@ Keep this separate from raw inputs and generated processing artifacts.
 
 Current curated artifacts:
 
-- `dataset_registry.csv`: audited benchmark cohort registry with temporal outcome
-  and claim-level fields
+- `dataset_registry.csv`: audited benchmark cohort registry with explicit
+  `access_tier`, temporal outcome, and claim-level fields
 - `cohort_notes/`: short cohort-specific notes describing currently supportable
-  outcome families, timing, label strength, controls, and major claim limits
+  benchmark value, timing, label structure, access tier, and major claim limits

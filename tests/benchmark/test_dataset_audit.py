@@ -9,21 +9,22 @@ def _entry(
     dataset_id: str,
     outcomes: tuple[str, ...],
     *,
+    access_tier: str = "strict_open",
     benchmark_v0_eligibility: str = "eligible",
     representation_comparison_support: str = "strong",
 ) -> DatasetRegistryEntry:
     return DatasetRegistryEntry(
         dataset_id=dataset_id,
         dataset_label=f"{dataset_id} label",
-        access_level="public",
+        access_tier=access_tier,
         population_scope="psychosis cohort",
         diagnosis_coverage="psychosis vs control",
         symptom_scales=("PANSS",),
         cognition_scales=("MATRICS",),
-        functioning_scales=("GAF/GAS",),
+        functioning_scales=("GAF/GAS",) if outcomes else (),
         treatment_variables=("medication",),
         longitudinal_coverage="No repeated follow-up",
-        outcome_availability="Poor functional outcome only",
+        outcome_availability="Poor functional outcome only" if outcomes else "No benchmarkable outcome",
         modality_availability=("MRI",),
         site_structure="single site",
         sample_size_note="n=10",
@@ -31,12 +32,12 @@ def _entry(
         local_status="audited",
         benchmark_v0_eligibility=benchmark_v0_eligibility,
         representation_comparison_support=representation_comparison_support,
-        predictor_timepoint="baseline",
-        outcome_timepoint="same_visit",
-        outcome_window="same_visit",
+        predictor_timepoint="baseline" if outcomes else "unmapped",
+        outcome_timepoint="same_visit" if outcomes else "unmapped",
+        outcome_window="same_visit" if outcomes else "unmapped",
         outcome_is_prospective=False,
-        concurrent_endpoint_only=True,
-        outcome_temporal_validity="concurrent_only",
+        concurrent_endpoint_only=bool(outcomes),
+        outcome_temporal_validity="concurrent_only" if outcomes else "none",
         benchmarkable_outcome_families=outcomes,
         provenance_urls=("https://example.org",),
         audit_summary="fixture row",
@@ -53,12 +54,19 @@ class _FixtureAdapter(SourceAdapter):
         return self._entry
 
 
-def test_markdown_report_surfaces_claim_level_temporal_and_support_lists(tmp_path) -> None:
+def test_markdown_report_surfaces_access_tier_layers_and_recommendation(tmp_path) -> None:
     entries = (
-        _entry("public-cohort", ("poor_functional_outcome",)),
+        _entry("strict-open-outcome", ("poor_functional_outcome",)),
+        _entry("strict-open-representation", (), benchmark_v0_eligibility="ineligible"),
+        _entry(
+            "credentialed-outcome",
+            ("poor_functional_outcome",),
+            access_tier="public_credentialed",
+        ),
         _entry(
             "weak-label-cohort",
             ("poor_functional_outcome",),
+            access_tier="public_credentialed",
             benchmark_v0_eligibility="limited",
             representation_comparison_support="limited",
         ),
@@ -76,32 +84,47 @@ def test_markdown_report_surfaces_claim_level_temporal_and_support_lists(tmp_pat
 
     markdown = artifacts.markdown_report_path.read_text(encoding="utf-8")
 
-    assert "- Current benchmark decision: `narrow-go`" in markdown
-    assert "- Current claim level supported: `narrow_outcome_benchmark`" in markdown
-    assert "- Concurrent-only cohorts: `public-cohort`, `weak-label-cohort`" in markdown
-    assert "- Prospectively usable cohorts: none" in markdown
+    assert "- Current benchmark decision under `strict_open`: `narrow-go`" in markdown
+    assert "- Current claim level under `strict_open`: `narrow_outcome_benchmark`" in markdown
+    assert "- Recommended next step: `defer_until_stronger_credentialed_or_controlled_data`" in markdown
     assert (
-        "| Outcome family | Narrow benchmark support | Full external-validation support | Prospective support |"
+        "| `strict_open` | `strict_open` | `narrow-go` | `narrow_outcome_benchmark` | "
+        "strict-open-outcome, strict-open-representation | strict-open-outcome |"
         in markdown
     )
-    assert "| `poor_functional_outcome` | public-cohort | none | none |" in markdown
     assert (
-        "| `public-cohort` | `public` | `audited` | `eligible` | `strong` | "
+        "| `public_credentialed` | `strict_open`, `public_credentialed` | `go` | "
+        "`full_external_validation` | strict-open-outcome, strict-open-representation, credentialed-outcome | "
+        "strict-open-outcome, credentialed-outcome |"
+        in markdown
+    )
+    assert "| `controlled` | `strict_open`, `public_credentialed`, `controlled` | `go` |" in markdown
+    assert (
+        "| `public_credentialed` | `poor_functional_outcome` | strict-open-outcome, credentialed-outcome | "
+        "strict-open-outcome, credentialed-outcome | none |"
+        in markdown
+    )
+    assert (
+        "| `credentialed-outcome` | `public_credentialed` | `audited` | `eligible` | `strong` | "
         "`concurrent_only` | `narrow_outcome_benchmark` | `yes` | poor_functional_outcome |"
         in markdown
     )
-    assert (
-        "`weak-label-cohort` | `public` | `audited` | `limited` | `limited` | `concurrent_only` | `none`"
-        in markdown
-    )
+    assert "- Access tier: public_credentialed" in markdown
 
 
-def test_json_report_exposes_claim_level_and_temporal_fields(tmp_path) -> None:
+def test_json_report_exposes_access_tier_decisions_and_row_level_support_flags(tmp_path) -> None:
     entries = (
-        _entry("public-cohort", ("poor_functional_outcome",)),
+        _entry("strict-open-outcome", ("poor_functional_outcome",)),
+        _entry("strict-open-representation", (), benchmark_v0_eligibility="ineligible"),
+        _entry(
+            "credentialed-outcome",
+            ("poor_functional_outcome",),
+            access_tier="public_credentialed",
+        ),
         _entry(
             "weak-label-cohort",
             ("poor_functional_outcome",),
+            access_tier="public_credentialed",
             benchmark_v0_eligibility="limited",
             representation_comparison_support="limited",
         ),
@@ -119,43 +142,76 @@ def test_json_report_exposes_claim_level_and_temporal_fields(tmp_path) -> None:
 
     payload = json.loads(artifacts.json_report_path.read_text(encoding="utf-8"))
     by_id = {entry["dataset_id"]: entry for entry in payload["audited_cohorts"]}
+    strict_open = payload["decision"]["access_tier_decisions"]["strict_open"]
+    public_credentialed = payload["decision"]["access_tier_decisions"]["public_credentialed"]
 
+    assert payload["decision"]["current_access_tier"] == "strict_open"
     assert payload["decision"]["claim_level"] == "narrow_outcome_benchmark"
-    assert payload["decision"]["narrow_supporting_cohorts"] == ["public-cohort"]
-    assert payload["decision"]["full_external_validation_cohorts"] == []
-    assert payload["decision"]["concurrent_only_cohorts"] == [
-        "public-cohort",
-        "weak-label-cohort",
+    assert (
+        payload["decision"]["recommended_next_step"]
+        == "defer_until_stronger_credentialed_or_controlled_data"
+    )
+    assert strict_open["narrow_supporting_cohorts"] == ["strict-open-outcome"]
+    assert strict_open["full_external_validation_cohorts"] == []
+    assert public_credentialed["state"] == "go"
+    assert public_credentialed["claim_level"] == "full_external_validation"
+    assert public_credentialed["narrow_supporting_cohorts"] == [
+        "strict-open-outcome",
+        "credentialed-outcome",
     ]
-    assert payload["outcome_family_support"]["poor_functional_outcome"]["narrow_benchmark_support"] == {
-        "count": 1,
-        "cohorts": ["public-cohort"],
+    assert payload["outcome_family_support_by_access_tier"]["strict_open"]["poor_functional_outcome"] == {
+        "narrow_benchmark_support": {
+            "count": 1,
+            "cohorts": ["strict-open-outcome"],
+        },
+        "full_external_validation_support": {
+            "count": 0,
+            "cohorts": [],
+        },
+        "prospective_support": {
+            "count": 0,
+            "cohorts": [],
+        },
     }
-    assert payload["outcome_family_support"]["poor_functional_outcome"]["prospective_support"] == {
-        "count": 0,
-        "cohorts": [],
+    assert payload["outcome_family_support_by_access_tier"]["public_credentialed"]["poor_functional_outcome"] == {
+        "narrow_benchmark_support": {
+            "count": 2,
+            "cohorts": ["strict-open-outcome", "credentialed-outcome"],
+        },
+        "full_external_validation_support": {
+            "count": 2,
+            "cohorts": ["strict-open-outcome", "credentialed-outcome"],
+        },
+        "prospective_support": {
+            "count": 0,
+            "cohorts": [],
+        },
     }
-    assert by_id["public-cohort"]["benchmark_v0_eligibility"] == "eligible"
-    assert by_id["public-cohort"]["counts_toward_narrow_benchmark_support"] is True
-    assert by_id["public-cohort"]["outcome_temporal_validity"] == "concurrent_only"
-    assert by_id["public-cohort"]["claim_level_ceiling"] == "narrow_outcome_benchmark"
-    assert by_id["public-cohort"]["claim_level_contributions"] == [
-        "cross_sectional_representation",
-        "narrow_outcome_benchmark",
+    assert by_id["strict-open-outcome"]["access_tier"] == "strict_open"
+    assert (
+        by_id["strict-open-outcome"]["counts_toward_narrow_benchmark_support_if_access_allowed"]
+        is True
+    )
+    assert by_id["strict-open-outcome"]["claim_level_ceiling"] == "narrow_outcome_benchmark"
+    assert by_id["strict-open-representation"]["claim_level_contributions"] == [
+        "cross_sectional_representation"
     ]
+    assert by_id["credentialed-outcome"]["access_tier"] == "public_credentialed"
     assert by_id["weak-label-cohort"]["benchmark_v0_eligibility"] == "limited"
-    assert by_id["weak-label-cohort"]["counts_toward_narrow_benchmark_support"] is False
-    assert by_id["weak-label-cohort"]["representation_comparison_support"] == "limited"
+    assert (
+        by_id["weak-label-cohort"]["counts_toward_narrow_benchmark_support_if_access_allowed"]
+        is False
+    )
 
 
 def test_dataset_audit_reports_are_deterministic_and_omit_generated_timestamps(tmp_path) -> None:
     entries = (
-        _entry("public-cohort", ("poor_functional_outcome",)),
+        _entry("strict-open-outcome", ("poor_functional_outcome",)),
+        _entry("strict-open-representation", (), benchmark_v0_eligibility="ineligible"),
         _entry(
-            "weak-label-cohort",
+            "credentialed-outcome",
             ("poor_functional_outcome",),
-            benchmark_v0_eligibility="limited",
-            representation_comparison_support="limited",
+            access_tier="public_credentialed",
         ),
     )
     adapters = tuple(_FixtureAdapter(entry) for entry in entries)

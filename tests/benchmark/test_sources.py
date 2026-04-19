@@ -5,8 +5,10 @@ from pathlib import Path
 import pytest
 
 from scz_audit_engine.benchmark.sources import (
+    DS000115BenchmarkSourceAdapter,
     FEPDS003944BenchmarkSourceAdapter,
     TCPDS005237BenchmarkSourceAdapter,
+    UCLACNPDS000030BenchmarkSourceAdapter,
     build_default_source_adapters,
 )
 
@@ -19,13 +21,51 @@ def test_tcp_adapter_normalizes_fixture_snapshot_without_subject_level_leakage()
     entry = adapter.audit()
 
     assert entry.dataset_id == "tcp-ds005237"
-    assert entry.access_level == "public"
+    assert entry.access_tier == "strict_open"
     assert entry.benchmark_v0_eligibility == "limited"
     assert entry.representation_comparison_support == "limited"
     assert entry.outcome_temporal_validity == "concurrent_only"
     assert entry.outcome_is_prospective is False
     assert entry.benchmarkable_outcome_families == ("poor_functional_outcome",)
     assert "LIFE-RIFT" in entry.functioning_scales
+    assert "sub-" not in json.dumps(entry.to_dict())
+
+
+def test_ucla_cnp_adapter_normalizes_fixture_snapshot_as_cross_sectional_only() -> None:
+    adapter = UCLACNPDS000030BenchmarkSourceAdapter(
+        snapshot_root=FIXTURE_ROOT / "ucla_cnp_ds000030"
+    )
+
+    entry = adapter.audit()
+
+    assert entry.dataset_id == "ucla-cnp-ds000030"
+    assert entry.access_tier == "strict_open"
+    assert entry.benchmark_v0_eligibility == "ineligible"
+    assert entry.representation_comparison_support == "strong"
+    assert entry.outcome_temporal_validity == "none"
+    assert entry.claim_level_contributions == ("cross_sectional_representation",)
+    assert entry.claim_level_ceiling == "cross_sectional_representation"
+    assert "SAPS" in entry.symptom_scales
+    assert "WAIS" in entry.cognition_scales
+    assert entry.benchmarkable_outcome_families == ()
+    assert "sub-" not in json.dumps(entry.to_dict())
+
+
+def test_ds000115_adapter_normalizes_fixture_snapshot_as_low_weight_representation_check() -> None:
+    adapter = DS000115BenchmarkSourceAdapter(snapshot_root=FIXTURE_ROOT / "ds000115")
+
+    entry = adapter.audit()
+
+    assert entry.dataset_id == "ds000115"
+    assert entry.access_tier == "strict_open"
+    assert entry.benchmark_v0_eligibility == "ineligible"
+    assert entry.representation_comparison_support == "strong"
+    assert entry.outcome_temporal_validity == "none"
+    assert entry.claim_level_contributions == ("cross_sectional_representation",)
+    assert entry.claim_level_ceiling == "cross_sectional_representation"
+    assert "SAPS" in entry.symptom_scales
+    assert "n-back accuracy/RT" in entry.cognition_scales
+    assert entry.benchmarkable_outcome_families == ()
     assert "sub-" not in json.dumps(entry.to_dict())
 
 
@@ -54,13 +94,20 @@ def test_default_source_adapter_builder_can_audit_two_candidates() -> None:
         {
             "tcp-ds005237": FIXTURE_ROOT / "tcp_ds005237",
             "fep-ds003944": FIXTURE_ROOT / "fep_ds003944",
+            "ucla-cnp-ds000030": FIXTURE_ROOT / "ucla_cnp_ds000030",
+            "ds000115": FIXTURE_ROOT / "ds000115",
         }
     )
 
     audited = tuple(adapter.audit() for adapter in adapters)
 
-    assert len(audited) == 2
-    assert tuple(entry.dataset_id for entry in audited) == ("tcp-ds005237", "fep-ds003944")
+    assert len(audited) == 4
+    assert tuple(entry.dataset_id for entry in audited) == (
+        "tcp-ds005237",
+        "fep-ds003944",
+        "ucla-cnp-ds000030",
+        "ds000115",
+    )
 
 
 def test_live_openneuro_loader_uses_pinned_snapshot_metadata_not_latest_snapshot(
