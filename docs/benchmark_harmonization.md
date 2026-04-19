@@ -15,6 +15,7 @@ benchmark mainline.
 Run:
 
 - `scz-audit benchmark harmonize`
+- `scz-audit benchmark build-representations`
 
 That command writes canonical CSV tables under
 `data/processed/benchmark/harmonized/`, plus:
@@ -42,6 +43,10 @@ authoritative over any stale `latestSnapshot` fields saved inside
 The checked-in harmonization summary is also deterministic by design: it omits
 timestamps, git SHA, and absolute machine-local paths, and records stable
 artifact references rather than invocation-specific output locations.
+
+The representation builder writes checked-in cross-sectional benchmark artifacts
+under `data/processed/benchmark/representations/`. Those artifacts consume the
+harmonized tables directly and stay deterministic across reruns.
 
 ## How This Preserves `narrow-go`
 
@@ -72,7 +77,6 @@ artifact references rather than invocation-specific output locations.
 
 ## Deferred On Purpose
 
-- representation builders
 - benchmark model training
 - outcome performance reporting
 - biomarker-heavy benchmarking

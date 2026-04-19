@@ -1,6 +1,6 @@
 # scz-audit-engine
 
-`scz-audit-engine` is currently in the benchmark dataset and outcome feasibility
+`scz-audit-engine` is currently in the cross-sectional benchmark representation
 phase.
 
 Current repo status:
@@ -9,10 +9,10 @@ Current repo status:
 - supported claim level: `narrow_outcome_benchmark`
 - public support today: one benchmark-eligible cohort with a concurrent
   `poor_functional_outcome` endpoint
-- benchmark schema status: canonical tables and schema artifacts are defined, but
-  harmonization and modeling remain deferred
-- not yet supported: full external validation, prospective outcome claims,
-  harmonization, split generation, representation builders, or modeling
+- benchmark table status: canonical tables, harmonization outputs, split
+  contracts, and representation artifacts now exist
+- not yet supported: full external validation, prospective outcome claims, or
+  benchmark model comparison
 
 `strict_open` remains in the repo as archived exploratory infrastructure. It is
 not the active scientific line.
@@ -31,8 +31,10 @@ Current source-of-truth docs:
   feasibility audit protocol for `scz-audit benchmark audit-datasets`
 - [`docs/benchmark_schema.md`](docs/benchmark_schema.md): canonical benchmark
   table contracts and artifact outputs
+- [`docs/benchmark_representations.md`](docs/benchmark_representations.md):
+  current cross-sectional representation families and artifact outputs
 - [`docs/benchmark_pivot_roadmap.md`](docs/benchmark_pivot_roadmap.md):
-  canonical roadmap from feasibility hardening to later schema work
+  canonical roadmap from feasibility hardening to later benchmark-running work
 
 Current code scaffold:
 
@@ -44,6 +46,10 @@ Current code scaffold:
   audit reports, and run manifest from audited cohort metadata
 - `scz-audit benchmark define-schema`: writes the canonical schema JSON,
   Markdown artifact, and run manifest
+- `scz-audit benchmark harmonize`: writes the checked-in harmonized benchmark
+  tables plus deterministic split contracts
+- `scz-audit benchmark build-representations`: writes cross-sectional
+  representation artifacts from the harmonized tables
 - `data/curated/benchmark/dataset_registry.csv`: machine-readable cohort
   registry with temporal outcome and claim-level fields
 - `data/curated/benchmark/schema/benchmark_schema.json`: machine-readable table

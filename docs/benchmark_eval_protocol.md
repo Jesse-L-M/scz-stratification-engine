@@ -14,10 +14,13 @@ Use:
 - `scz-audit benchmark audit-datasets`
 - `scz-audit benchmark define-schema`
 - `scz-audit benchmark harmonize`
+- `scz-audit benchmark build-representations`
 
 `audit-datasets` remains the feasibility gate. `define-schema` freezes the
 canonical table contract. `harmonize` operationalizes only the cohorts already
-approved for benchmark-table emission.
+approved for benchmark-table emission. `build-representations` derives the
+current cross-sectional representation families without pulling model
+comparison forward.
 
 ## Required Audit Outputs
 
@@ -44,6 +47,17 @@ The harmonization phase should emit:
 3. concurrent-only outcome rows where public support is concurrent-only
 4. deterministic within-cohort subject-level split assignments
 5. harmonization and split manifests with cohort caveats and coverage counts
+
+The representation-building phase should emit:
+
+1. deterministic cross-sectional representation artifacts keyed by
+   `cohort_id`, `subject_id`, and `visit_id`
+2. explicit coverage for diagnosis-anchor, symptom, cognition, and clinical
+   snapshot families
+3. zero or sparse support where the harmonized public tables stay sparse
+4. a stable representation manifest that says which cohorts contribute to which
+   family
+5. no benchmark model outputs
 
 ## Claim-Boundary Rules
 
@@ -96,15 +110,16 @@ second eligible cohort actually appears.
   including unlabeled cross-sectional cohorts
 - split manifests must say explicitly that the current contract is not a full
   external-validation claim
+- representation artifacts now exist for all harmonized cohorts, but they are
+  still descriptive inputs to a later benchmark rather than benchmark results
 
 ## Deferred Until Later PRs
 
 This protocol intentionally does not pull forward:
 
-- representation builders
 - model comparison
 - biomarker-heavy benchmarking
 - prospective benchmark claims
-- representation benchmarking on the new expansion cohorts
+- any claim that the new expansion cohorts add public outcome support
 
 Those belong only after this feasibility gate is settled again.

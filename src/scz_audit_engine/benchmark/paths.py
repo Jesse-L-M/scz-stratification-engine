@@ -53,6 +53,10 @@ class BenchmarkPaths:
         return self.processed_root / "harmonized"
 
     @property
+    def representations_root(self) -> Path:
+        return self.processed_root / "representations"
+
+    @property
     def examples_root(self) -> Path:
         return self.repo_root / "examples" / "benchmark_v0"
 
@@ -72,6 +76,7 @@ class BenchmarkPaths:
             "manifests": self.manifests_root,
             "reports": self.reports_root,
             "harmonized": self.harmonized_root,
+            "representations": self.representations_root,
             "examples": self.examples_root,
         }
 
@@ -89,6 +94,11 @@ class BenchmarkPaths:
         """Return the default destination for a harmonized benchmark artifact."""
 
         return self.harmonized_root / filename
+
+    def default_representation_path(self, filename: str = "diagnosis_anchor.csv") -> Path:
+        """Return the default destination for a benchmark representation artifact."""
+
+        return self.representations_root / filename
 
 
 def benchmark_paths(repo_root: str | Path | None = None) -> BenchmarkPaths:

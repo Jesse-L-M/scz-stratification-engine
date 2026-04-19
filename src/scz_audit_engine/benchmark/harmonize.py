@@ -180,7 +180,7 @@ def run_benchmark_harmonization(
         "current_limitations": [
             "Outcome rows remain concurrent-only where the public cohorts are concurrent-only.",
             "tcp-ds005237 stays explicitly limited because public labels remain broad Patient versus GenPop.",
-            "Representation builders and benchmark models remain intentionally deferred.",
+            "Benchmark model comparison remains intentionally deferred beyond the current cross-sectional representation layer.",
         ],
     }
     harmonization_manifest_path = write_json_artifact(
