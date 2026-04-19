@@ -1,0 +1,5 @@
+participant_id	condit	gender	race	age	saps7	sans8
+sub-01	SCZ	MALE	WHITE	29.0	2	3
+sub-02	SCZ-SIB	FEMALE	WHITE	24.0	0	0
+sub-03	CON	MALE	AA	21.0	0	0
+sub-04	CON-SIB	FEMALE	AA	19.0	0	0
