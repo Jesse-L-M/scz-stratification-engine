@@ -19,8 +19,10 @@ from .benchmark import (
     run_cross_sectional_benchmark,
 )
 from .strict_open import (
+    BASELINE_FAMILY_NAMES,
     build_source_manifest,
     build_run_manifest,
+    run_strict_open_baseline_training,
     run_strict_open_feature_build,
     run_strict_open_split_definition,
     run_strict_open_target_build,
@@ -166,6 +168,15 @@ def _build_invoked_command(command_name: str, args: argparse.Namespace) -> list[
         _append_flag(command, "--splits-dir", getattr(args, "splits_dir", None))
         _append_flag(command, "--manifest-dir", getattr(args, "manifest_dir", None))
         _append_flag(command, "--output-dir", getattr(args, "output_dir", None))
+        return command
+
+    if command_name == "train-baselines":
+        _append_flag(command, "--features-dir", getattr(args, "features_dir", None))
+        _append_flag(command, "--targets-dir", getattr(args, "targets_dir", None))
+        _append_flag(command, "--splits-dir", getattr(args, "splits_dir", None))
+        _append_flag(command, "--manifest-dir", getattr(args, "manifest_dir", None))
+        _append_flag(command, "--models-dir", getattr(args, "models_dir", None))
+        _append_flag(command, "--reports-dir", getattr(args, "reports_dir", None))
         return command
 
     return command
@@ -814,6 +825,77 @@ def _build_build_targets_handler() -> Callable[[argparse.Namespace], int]:
     return handler
 
 
+def _build_train_baselines_handler() -> Callable[[argparse.Namespace], int]:
+    def handler(args: argparse.Namespace) -> int:
+        path_contract = strict_open_paths()
+        repo_root = path_contract.repo_root
+        config_path = _resolve_path(args.config, repo_root=repo_root, fallback=path_contract.config_path)
+        config = _load_strict_open_config(config_path)
+        paths_config = config.get("paths", {})
+        if not isinstance(paths_config, dict):
+            paths_config = {}
+
+        manifests_root = _resolve_path(
+            paths_config.get("manifests_root"),
+            repo_root=repo_root,
+            fallback=path_contract.manifests_root,
+        )
+        features_root = _resolve_path(
+            paths_config.get("features_root"),
+            repo_root=repo_root,
+            fallback=path_contract.features_root,
+        )
+        targets_root = _resolve_path(
+            paths_config.get("targets_root"),
+            repo_root=repo_root,
+            fallback=path_contract.targets_root,
+        )
+        splits_root = _resolve_path(
+            paths_config.get("splits_root"),
+            repo_root=repo_root,
+            fallback=path_contract.splits_root,
+        )
+        models_root = _resolve_path(
+            paths_config.get("models_root"),
+            repo_root=repo_root,
+            fallback=path_contract.models_root,
+        )
+        reports_root = _resolve_path(
+            paths_config.get("reports_root"),
+            repo_root=repo_root,
+            fallback=path_contract.reports_root,
+        )
+        if args.features_dir:
+            features_root = Path(args.features_dir).resolve()
+        if args.targets_dir:
+            targets_root = Path(args.targets_dir).resolve()
+        if args.splits_dir:
+            splits_root = Path(args.splits_dir).resolve()
+        if args.manifest_dir:
+            manifests_root = Path(args.manifest_dir).resolve()
+        models_dir = Path(args.models_dir).resolve() if args.models_dir else models_root / "baselines"
+        reports_dir = Path(args.reports_dir).resolve() if args.reports_dir else reports_root
+
+        seed = int(config.get("seed", 1729))
+        git_sha = resolve_git_sha(repo_root)
+        command = _build_invoked_command("train-baselines", args)
+        results = run_strict_open_baseline_training(
+            features_root=features_root,
+            targets_root=targets_root,
+            splits_root=splits_root,
+            manifests_root=manifests_root,
+            models_root=models_dir,
+            reports_root=reports_dir,
+            command=command,
+            git_sha=git_sha,
+            seed=seed,
+        )
+        print(json.dumps(results, indent=2, sort_keys=True))
+        return 0
+
+    return handler
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Create the top-level CLI parser."""
 
@@ -1061,6 +1143,38 @@ def build_parser() -> argparse.ArgumentParser:
                 help="Destination directory for derived target outputs.",
             )
             command_parser.set_defaults(handler=_build_build_targets_handler())
+        elif command_name == "train-baselines":
+            command_parser.description = (
+                "Train deterministic strict-open baseline families and evaluate them by frozen split."
+            )
+            command_parser.add_argument(
+                "--features-dir",
+                help="Directory containing strict-open feature outputs.",
+            )
+            command_parser.add_argument(
+                "--targets-dir",
+                help="Directory containing strict-open derived target outputs.",
+            )
+            command_parser.add_argument(
+                "--splits-dir",
+                help="Directory containing frozen strict-open split assignments.",
+            )
+            command_parser.add_argument(
+                "--manifest-dir",
+                help="Destination directory for run manifests.",
+            )
+            command_parser.add_argument(
+                "--models-dir",
+                help="Destination directory for baseline model artifacts.",
+            )
+            command_parser.add_argument(
+                "--reports-dir",
+                help="Destination directory for baseline summary artifacts.",
+            )
+            command_parser.epilog = (
+                "Required baseline families: " + ", ".join(BASELINE_FAMILY_NAMES) + "."
+            )
+            command_parser.set_defaults(handler=_build_train_baselines_handler())
         else:
             command_parser.set_defaults(handler=_build_stub_handler(command_name))
 

@@ -11,6 +11,8 @@ harmonized_root = "data/processed/strict_open/harmonized"
 splits_root = "data/processed/strict_open/splits"
 features_root = "data/processed/strict_open/features"
 targets_root = "data/processed/strict_open/targets"
+models_root = "data/processed/strict_open/models"
+reports_root = "data/processed/strict_open/reports"
 examples_root = "examples/strict_open_v0"
 default_manifest_path = "data/processed/strict_open/manifests/run_manifest.json"
 

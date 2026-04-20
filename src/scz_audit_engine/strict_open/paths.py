@@ -57,6 +57,14 @@ class StrictOpenPaths:
         return self.processed_root / "targets"
 
     @property
+    def models_root(self) -> Path:
+        return self.processed_root / "models"
+
+    @property
+    def reports_root(self) -> Path:
+        return self.processed_root / "reports"
+
+    @property
     def examples_root(self) -> Path:
         return self.repo_root / "examples" / "strict_open_v0"
 
@@ -77,6 +85,8 @@ class StrictOpenPaths:
             "splits": self.splits_root,
             "features": self.features_root,
             "targets": self.targets_root,
+            "models": self.models_root,
+            "reports": self.reports_root,
             "examples": self.examples_root,
         }
 
@@ -114,6 +124,16 @@ class StrictOpenPaths:
         """Return the default destination for a target artifact."""
 
         return self.targets_root / filename
+
+    def default_model_path(self, filename: str = "baselines/baseline_predictions.csv") -> Path:
+        """Return the default destination for a model artifact."""
+
+        return self.models_root / filename
+
+    def default_report_path(self, filename: str = "baseline_summary.json") -> Path:
+        """Return the default destination for a report artifact."""
+
+        return self.reports_root / filename
 
 
 def strict_open_paths(repo_root: str | Path | None = None) -> StrictOpenPaths:

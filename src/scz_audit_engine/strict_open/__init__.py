@@ -1,6 +1,8 @@
 """Strict-open bootstrap contracts and helpers."""
 
 from .audit import run_tcp_audit
+from .baseline_eval import run_strict_open_baseline_training
+from .baselines import BASELINE_FAMILY_NAMES
 from .features import FEATURE_COLUMNS, run_strict_open_feature_build
 from .harmonize import run_tcp_harmonization
 from .paths import StrictOpenPaths, strict_open_paths
@@ -22,6 +24,7 @@ from .targets import TARGET_LABELS, run_strict_open_target_build
 
 __all__ = [
     "AuditProvenance",
+    "BASELINE_FAMILY_NAMES",
     "DatasetReference",
     "FEATURE_COLUMNS",
     "ProcessedOutputRecord",
@@ -37,6 +40,7 @@ __all__ = [
     "build_audit_provenance",
     "build_run_manifest",
     "build_source_manifest",
+    "run_strict_open_baseline_training",
     "run_strict_open_feature_build",
     "run_strict_open_split_definition",
     "run_strict_open_target_build",
